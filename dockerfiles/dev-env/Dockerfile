@@ -1,5 +1,5 @@
 FROM phusion/baseimage:0.9.17
-MAINTAINER Christophe Prud'homme <christophe.prudhomme@feelpp.org>
+MAINTAINER Feel++ Support <support@feelpp.org>
 
 # Install build environment
 RUN apt-get -qq update && \
@@ -57,4 +57,35 @@ RUN cd /tmp && \
     rm -rf /tmp/*
 ENV SLEPC_DIR /usr/local
 ENV PETSC_DIR /usr/local
-                
+
+# Set up user so that we do not run as root
+RUN useradd -m -s /bin/bash -G sudo,docker_env feelpp && \
+    echo "feelpp:docker" | chpasswd && \
+    echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# See https://github.com/phusion/baseimage-docker/issues/186
+RUN touch /etc/service/syslog-forwarder/down
+
+ENV HOME /home/feelpp
+
+# Our helper script
+COPY feelpp.conf $HOME/feelpp.conf
+# and the README
+COPY WELCOME $HOME/WELCOME
+RUN chown feelpp:feelpp $HOME/WELCOME && \
+    chown feelpp:feelpp $HOME/feelpp.conf && \
+    chmod u+rw $HOME/WELCOME && \
+    chmod u+rw $HOME/feelpp.conf
+
+# OpenBLAS threads should be 1 to ensure performance
+RUN echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc && \
+    echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
+
+# This makes sure we launch with ENTRYPOINT /bin/bash into the home directory
+RUN echo "source $HOME/feelpp.conf" >> $HOME/.bashrc && \
+    cp $HOME/.bashrc $HOME/.bashrc.tmp && \
+    echo "cd $HOME" >> $HOME/.bashrc.tmp && \
+    echo "cat $HOME/WELCOME" >> $HOME/.bashrc.tmp
+
+ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
+CMD ["/bin/bash --rcfile /home/feelpp/.bashrc.tmp"]
