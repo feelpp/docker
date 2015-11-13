@@ -24,10 +24,12 @@ RUN apt-get -qq update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # C++
-ENV CXX=clang++-3.7 CC=clang-3.7
+ENV CXX clang++-3.7 
+ENV CC clang-3.7
 
 # Boost
-ENV BOOST_VERSION=1.59.0 BOOST_DIR=boost_1_59_0
+ENV BOOST_VERSION 1.59.0 
+ENV BOOST_DIR boost_1_59_0
 RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
     && cd ${BOOST_DIR} \
@@ -86,8 +88,9 @@ ENV PETSC_DIR /usr/local
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION=2.10.1
-RUN wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
+ENV GMSH_VERSION 2.10.1
+RUN cd /tmp \
+    && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
     && cd gmsh-${GMSH_VERSION}-source \
     && mkdir build \
@@ -105,11 +108,36 @@ RUN wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
         -DENABLE_OPENMP=ON  \
         .. \
     && make -j4 \
-    && make install
+    && make install \
+    && rm -rf /tmp/*
+
+# ParaView
+ENV PARAVIEW_VERSION 4.4.0
+RUN cd /tmp \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v4.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && cd ParaView-v${PARAVIEW_VERSION}-source \
+    && mkdir build \
+    && cd build \
+    && cmake \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DPARAVIEW_BUILD_QT_GUI=OFF \
+        -DPARAVIEW_ENABLE_CATALYST=ON \
+        -DPARAVIEW_ENABLE_PYTHON=ON \
+        -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
+        -DPARAVIEW_USE_MPI=ON \
+        .. \
+    && make -j8 \
+    && make install \
+    && rm -rf /tmp/*
 
 # Set up user so that we do not run as root
+# Changing the password does not work on certain OS and is not needed
+# echo "feelpp:docker" | chpasswd && \
 RUN useradd -m -s /bin/bash -G sudo,docker_env feelpp && \
-    echo "feelpp:docker" | chpasswd && \
     echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # See https://github.com/phusion/baseimage-docker/issues/186
@@ -118,23 +146,22 @@ RUN touch /etc/service/syslog-forwarder/down
 ENV HOME /home/feelpp
 
 # Our helper script
-COPY feelpp.conf $HOME/feelpp.conf
+COPY feelpp.env.sh $HOME/feelpp.env.sh
 # and the README
 COPY WELCOME $HOME/WELCOME
 RUN chown feelpp:feelpp $HOME/WELCOME && \
-    chown feelpp:feelpp $HOME/feelpp.conf && \
+    chown feelpp:feelpp $HOME/feelpp.env.sh && \
     chmod u+rw $HOME/WELCOME && \
-    chmod u+rw $HOME/feelpp.conf
+    chmod u+rw $HOME/feelpp.env.sh
 
 # OpenBLAS threads should be 1 to ensure performance
 RUN echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc && \
     echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
 
 # This makes sure we launch with ENTRYPOINT /bin/bash into the home directory
-RUN echo "source $HOME/feelpp.conf" >> $HOME/.bashrc && \
-    cp $HOME/.bashrc $HOME/.bashrc.tmp && \
-    echo "cd $HOME" >> $HOME/.bashrc.tmp && \
-    echo "cat $HOME/WELCOME" >> $HOME/.bashrc.tmp
+RUN echo "source $HOME/feelpp.env.sh" >> $HOME/.bashrc && \
+    echo "cd $HOME" >> $HOME/.bashrc && \
+    echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
 ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/bin/bash --rcfile /home/feelpp/.bashrc.tmp"]
+CMD ["/bin/bash"]
