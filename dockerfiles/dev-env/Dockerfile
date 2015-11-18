@@ -15,7 +15,7 @@ RUN apt-get -qq update && \
          automake autoconf libtool \
          libopenblas-dev libcln-dev libcppunit-dev \
          libeigen3-dev liblapack-dev libmpfr-dev \
-         libopenmpi-dev \
+         libopenmpi-dev libann-dev libglpk-dev \
          python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
          libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
          python-numpy python-vtk6 python-six python-ply \
