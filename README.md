@@ -3,6 +3,53 @@ Docker 4 Feel++
 
 ## In-situ visulization with ParaView
 
+### In a nutshell
+
+```
+# This setup is valid if you are launching ParaView 
+# and docker on the same computer.
+# You must ensure that your ParaView version matches the one used in docker
+# (It should be the latest available)
+
+# Download Feel++ docker image
+shell> docker pull feelpp/develop
+```
+
+From here, you have 2 ways to proceed:   
+   
+* Directly use the network of the host:
+
+```
+# Launch a pvserver
+shell> pvserver
+# Launch ParaView, connect to the pvserver and enable Catalyst in the interface 
+shell> paraview
+
+# Run the feelpp image
+shell> docker run -ti --net=host feelpp/develop
+
+# Run the application
+dockershell> mpirun -np 2 feelpp_qs_laplacian_2d --config-file src/feelpp/quickstart/laplacian/qs_laplacian_2d.cfg --exporter.format vtk --exporter.vtk.insitu.enable 1
+```
+
+* Use the port export feature from docker (safer regarding to security):
+
+```
+# Run feelpp image
+shell> docker run -ti -P 11111:11111 feelpp/develop
+
+# Launch tmux to multiplex terminals
+dockershell> tmux
+# Launch a pvserver in the first terminal
+dockershell1> pvserver
+
+# Launch ParaView and connect to the pvserver
+shell> paraview
+
+dockershell2> mpirun -np 2 feelpp_qs_laplacian_2d --config-file src/feelpp/quickstart/laplacian/qs_laplacian_2d.cfg --exporter.format vtk --exporter.vtk.insitu.enable 1
+```
+
+### Full description
 The dev-env image builds the latest stable version of ParaView with Catalyst enabled for In-Situ visualization.
 The develop image uses the dev-env base image and enables In-Situ visualization.
 
