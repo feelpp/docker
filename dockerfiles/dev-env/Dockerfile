@@ -90,7 +90,7 @@ ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION 2.10.1
+ENV GMSH_VERSION 2.12.0
 RUN cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
