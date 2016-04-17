@@ -46,7 +46,7 @@ RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BO
       link=shared
 
 # Install PETSc from source
-ENV PETSC_VERSION 3.6.1
+ENV PETSC_VERSION 3.6.3
 RUN cd /tmp && \
     wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz && \
     tar -xf petsc-${PETSC_VERSION}.tar.gz && \
@@ -74,7 +74,7 @@ RUN cd /tmp && \
      rm -rf /tmp/*
 
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.6.1
+ENV SLEPC_VERSION 3.6.3
 RUN cd /tmp && \
     export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} && \
     wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz && \
