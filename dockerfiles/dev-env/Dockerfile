@@ -1,5 +1,4 @@
-
-FROM phusion/baseimage:0.9.17
+FROM phusion/baseimage:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 
@@ -23,13 +22,21 @@ RUN apt-get -qq update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Openturns
+RUN curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add -
+RUN apt-add-repository 'deb http://ubuntu.openturns.org trusty main'
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install python-openturns && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # C++
-ENV CXX clang++-3.7 
+ENV CXX clang++-3.7
 ENV CC clang-3.7
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 # Boost
-ENV BOOST_VERSION 1.59.0 
+ENV BOOST_VERSION 1.59.0
 ENV BOOST_DIR boost_1_59_0
 RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
