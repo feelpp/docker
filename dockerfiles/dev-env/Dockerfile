@@ -129,6 +129,7 @@ RUN cd /tmp \
     && mkdir build \
     && cd build \
     && cmake \
+        -DBUILD_TESTING=OFF \
         -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
