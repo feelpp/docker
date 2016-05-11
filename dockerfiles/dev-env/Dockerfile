@@ -37,8 +37,8 @@ ENV CC clang-3.7
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 # Boost
-ENV BOOST_VERSION 1.59.0
-ENV BOOST_DIR boost_1_59_0
+ENV BOOST_VERSION 1.60.0
+ENV BOOST_DIR boost_1_60_0
 RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
     && cd ${BOOST_DIR} \
@@ -117,14 +117,14 @@ RUN cd /tmp \
         -DENABLE_MUMPS=OFF \
         -DENABLE_OPENMP=ON  \
         .. \
-    && make -j4 \
+    && make -j16 \
     && make install \
     && rm -rf /tmp/*
 
 # ParaView
-ENV PARAVIEW_VERSION 4.4.0
+ENV PARAVIEW_VERSION 5.0.1
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v4.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION}-source \
     && mkdir build \
@@ -141,7 +141,7 @@ RUN cd /tmp \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
         -DPARAVIEW_USE_MPI=ON \
         .. \
-    && make -j8 \
+    && make -j16 \
     && make install \
     && rm -rf /tmp/*
 
