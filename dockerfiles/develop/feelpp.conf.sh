@@ -44,8 +44,13 @@ build_feelpp()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
+clean_feelpp()
+{
+   rm -rf ${FEELPP_BUILD_DIR}
+}
 install_feelpp()
 {
   pull_feelpp
   build_feelpp
+  clean_feelpp
 }

@@ -18,7 +18,8 @@ RUN apt-get -qq update && \
          python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
          libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
          python-numpy python-vtk6 python-six python-ply \
-         python-h5py python-urllib3 xterm tmux screen && \
+         python-h5py python-urllib3 xterm tmux screen \
+         libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -134,7 +135,7 @@ RUN cd /tmp \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
         -DCMAKE_BUILD_TYPE=Release \
-        -DPARAVIEW_BUILD_QT_GUI=OFF \
+        -DPARAVIEW_BUILD_QT_GUI=ON \
         -DPARAVIEW_ENABLE_CATALYST=ON \
         -DPARAVIEW_ENABLE_PYTHON=ON \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
