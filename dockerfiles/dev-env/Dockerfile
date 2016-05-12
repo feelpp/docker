@@ -140,6 +140,7 @@ RUN cd /tmp \
         -DPARAVIEW_ENABLE_PYTHON=ON \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
         -DPARAVIEW_USE_MPI=ON \
+        -DVTK_RENDERING_BACKEND=OpenGL \
         .. \
     && make -j16 \
     && make install \
