@@ -1,4 +1,4 @@
-FROM quay.io/feelpp/dev-env:latest
+FROM quay.io/feelpp/feelpp-env:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 USER feelpp
