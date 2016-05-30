@@ -34,19 +34,20 @@ ENV CC clang-3.7
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 # Openturns
-RUN [ $INSTALL_OPENTURNS = 1 ]; \
-    && curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add - \
+RUN if [ x$INSTALL_OPENTURNS = x1 ]; then \
+    curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add - \
     && apt-add-repository 'deb http://ubuntu.openturns.org trusty main' \
     && apt-get -qq update \
     && apt-get -y --force-yes install python-openturns \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    ; fi
 
 # Boost
 ENV BOOST_VERSION 1.60.0
 ENV BOOST_DIR boost_1_60_0
-RUN [ $INSTALL_BOOST = 1 ]; \
-    && wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
+RUN if [ x$INSTALL_BOOST = x1 ]; then \
+    wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
     && cd ${BOOST_DIR} \
     && echo "using mpi ;" >> user-config.jam \
@@ -58,12 +59,13 @@ RUN [ $INSTALL_BOOST = 1 ]; \
       --user-config=user-config.jam \
       variant=release \
       threading=multi \
-      link=shared
+      link=shared \
+    ; fi
 
 # Install PETSc from source
 ENV PETSC_VERSION 3.6.3
-RUN [ $INSTALL_PETSC = 1 ]; \
-    && cd /tmp \
+RUN if [ x$INSTALL_PETSC = x1 ]; then \
+    cd /tmp \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
     && tar -xf petsc-${PETSC_VERSION}.tar.gz \
     && cd petsc-${PETSC_VERSION} \
@@ -87,12 +89,13 @@ RUN [ $INSTALL_PETSC = 1 ]; \
                 --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
      && make \
      && make install \
-     && rm -rf /tmp/*
+     && rm -rf /tmp/* \
+     ; fi
 
 # Install SLEPc from source
 ENV SLEPC_VERSION 3.6.3
-RUN [ $INSTALL_SLEPC = 1 ]; \
-    && cd /tmp \
+RUN if [ x$INSTALL_SLEPC = x1 ]; then \
+    cd /tmp \
     && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
     && wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz \
     && tar -xf slepc-${SLEPC_VERSION}.tar.gz \
@@ -100,7 +103,9 @@ RUN [ $INSTALL_SLEPC = 1 ]; \
     && ./configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
     && make \
     && make install \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    ; fi
+
 
 ENV SLEPC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
@@ -108,8 +113,8 @@ ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 # Gmsh
 # check to see if protobuf folder is empty
 ENV GMSH_VERSION 2.12.0
-RUN [ $INSTALL_GMSH = 1 ] \
-    && cd /tmp \
+RUN if [ x$INSTALL_GMSH = x1 ]; then \
+    cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
     && cd gmsh-${GMSH_VERSION}-source \
@@ -129,12 +134,13 @@ RUN [ $INSTALL_GMSH = 1 ] \
         .. \
     && make -j16 \
     && make install \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    ; fi
 
 # ParaView
 ENV PARAVIEW_VERSION 5.0.1
-RUN [ $INSTALL_PARAVIEW = 1 ]; \
-    && cd /tmp \
+RUN if [ x$INSTALL_PARAVIEW = x1 ]; then \
+    cd /tmp \
     && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION}-source \
@@ -155,7 +161,8 @@ RUN [ $INSTALL_PARAVIEW = 1 ]; \
         .. \
     && make -j16 \
     && make install \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    ; fi
 
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed
