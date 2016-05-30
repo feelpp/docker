@@ -1,6 +1,11 @@
 FROM phusion/baseimage:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
+ARG INSTALL_OPENTURNS=1
+ARG INSTALL_PETSC=1
+ARG INSTALL_SLEPC=1
+ARG INSTALL_GMSH=1
+ARG INSTALL_PARAVIEW=1
 
 # Install build environment
 RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
@@ -23,23 +28,25 @@ RUN apt-get -qq update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Openturns
-RUN curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add -
-RUN apt-add-repository 'deb http://ubuntu.openturns.org trusty main'
-RUN apt-get -qq update && \
-    apt-get -y --force-yes install python-openturns && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # C++
 ENV CXX clang++-3.7
 ENV CC clang-3.7
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
+# Openturns
+RUN [ $INSTALL_OPENTURNS = 1 ]; \
+    && curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add - \
+    && apt-add-repository 'deb http://ubuntu.openturns.org trusty main' \
+    && apt-get -qq update \
+    && apt-get -y --force-yes install python-openturns \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Boost
 ENV BOOST_VERSION 1.60.0
 ENV BOOST_DIR boost_1_60_0
-RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
+RUN [ $INSTALL_BOOST = 1 ]; \
+    && wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
     && cd ${BOOST_DIR} \
     && echo "using mpi ;" >> user-config.jam \
@@ -55,7 +62,8 @@ RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BO
 
 # Install PETSc from source
 ENV PETSC_VERSION 3.6.3
-RUN cd /tmp && \
+RUN [ $INSTALL_PETSC = 1 ]; \
+    cd /tmp && \
     wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz && \
     tar -xf petsc-${PETSC_VERSION}.tar.gz && \
     cd petsc-${PETSC_VERSION} && \
@@ -83,7 +91,8 @@ RUN cd /tmp && \
 
 # Install SLEPc from source
 ENV SLEPC_VERSION 3.6.3
-RUN cd /tmp && \
+RUN [ $INSTALL_SLEPC = 1 ]; && \
+    cd /tmp && \
     export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} && \
     wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz && \
     tar -xf slepc-${SLEPC_VERSION}.tar.gz && \
@@ -99,7 +108,8 @@ ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 # Gmsh
 # check to see if protobuf folder is empty
 ENV GMSH_VERSION 2.12.0
-RUN cd /tmp \
+RUN [ $INSTALL_GMSH = 1 ] && \
+    cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
     && cd gmsh-${GMSH_VERSION}-source \
@@ -123,7 +133,8 @@ RUN cd /tmp \
 
 # ParaView
 ENV PARAVIEW_VERSION 5.0.1
-RUN cd /tmp \
+RUN [ $INSTALL_PARAVIEW = 1 ]; && \
+    cd /tmp \
     && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION}-source \
