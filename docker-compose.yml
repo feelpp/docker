@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+    feelpp-full-dev-env:
+        build:
+            context: ./dockerfiles/dev-env
+            dockerfile: Dockerfile
+        image: feelpp/dev-env:full
+
+    feelpp-minimal-dev-env:
+        build:
+            context: ./dockerfiles/dev-env
+            dockerfile: Dockerfile
+            args:
+                - INSTALL_OPENTURNS=0
+                - INSTALL_PETSC=0
+                - INSTALL_SLEPC=0
+                - INSTALL_GMSH=0
+                - INSTALL_PARAVIEW=0
+        image: feelpp/dev-env:minimal
+
+    feelpp-full-develop:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile
+        image: feelpp/develop:full
+        depends_on: 
+            - feelpp-full-dev-env
