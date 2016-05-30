@@ -24,9 +24,9 @@ RUN apt-get -qq update && \
          libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
          python-numpy python-vtk6 python-six python-ply \
          python-h5py python-urllib3 xterm tmux screen \
-         libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+         libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # C++
 ENV CXX clang++-3.7
@@ -63,11 +63,11 @@ RUN [ $INSTALL_BOOST = 1 ]; \
 # Install PETSc from source
 ENV PETSC_VERSION 3.6.3
 RUN [ $INSTALL_PETSC = 1 ]; \
-    cd /tmp && \
-    wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz && \
-    tar -xf petsc-${PETSC_VERSION}.tar.gz && \
-    cd petsc-${PETSC_VERSION} && \
-    ./configure --COPTFLAGS="-O2" \
+    && cd /tmp \
+    && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
+    && tar -xf petsc-${PETSC_VERSION}.tar.gz \
+    && cd petsc-${PETSC_VERSION} \
+    && ./configure --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2" \
                 --FOPTFLAGS="-O2" \
                 --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
@@ -84,23 +84,23 @@ RUN [ $INSTALL_PETSC = 1 ]; \
                 --download-blacs \
                 --download-spai \
                 --download-ml \
-                --prefix=${FEELPP_DEP_INSTALL_PREFIX} && \
-     make && \
-     make install && \
-     rm -rf /tmp/*
+                --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+     && make \
+     && make install \
+     && rm -rf /tmp/*
 
 # Install SLEPc from source
 ENV SLEPC_VERSION 3.6.3
-RUN [ $INSTALL_SLEPC = 1 ]; && \
-    cd /tmp && \
-    export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} && \
-    wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz && \
-    tar -xf slepc-${SLEPC_VERSION}.tar.gz && \
-    cd slepc-${SLEPC_VERSION} && \
-    ./configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} && \
-    make && \
-    make install && \
-    rm -rf /tmp/*
+RUN [ $INSTALL_SLEPC = 1 ]; \
+    && cd /tmp \
+    && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
+    && wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz \
+    && tar -xf slepc-${SLEPC_VERSION}.tar.gz \
+    && cd slepc-${SLEPC_VERSION} \
+    && ./configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+    && make \
+    && make install \
+    && rm -rf /tmp/*
 
 ENV SLEPC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
@@ -108,8 +108,8 @@ ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 # Gmsh
 # check to see if protobuf folder is empty
 ENV GMSH_VERSION 2.12.0
-RUN [ $INSTALL_GMSH = 1 ] && \
-    cd /tmp \
+RUN [ $INSTALL_GMSH = 1 ] \
+    && cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
     && cd gmsh-${GMSH_VERSION}-source \
@@ -133,8 +133,8 @@ RUN [ $INSTALL_GMSH = 1 ] && \
 
 # ParaView
 ENV PARAVIEW_VERSION 5.0.1
-RUN [ $INSTALL_PARAVIEW = 1 ]; && \
-    cd /tmp \
+RUN [ $INSTALL_PARAVIEW = 1 ]; \
+    && cd /tmp \
     && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION}-source \
