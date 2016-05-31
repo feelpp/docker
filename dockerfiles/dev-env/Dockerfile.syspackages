@@ -3,11 +3,11 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 
 # Install build environment
 RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
-RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main'
+#RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main'
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-    	 xauth cmake flex g++-4.9 clang-3.8 gfortran git ipython openmpi-bin pkg-config \
+    	 xauth cmake flex g++-4.9 clang-3.6 gfortran git ipython openmpi-bin pkg-config \
          wget bison sudo \
          libbz2-dev \
          automake autoconf libtool \

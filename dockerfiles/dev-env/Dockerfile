@@ -3,14 +3,15 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BUILD_JOBS=16
 ARG INSTALL_OPENTURNS=1
+ARG INSTALL_BOOST=1
 ARG INSTALL_PETSC=1
 ARG INSTALL_SLEPC=1
 ARG INSTALL_GMSH=1
 ARG INSTALL_PARAVIEW=1
 
 # C++
-ENV CXX clang++-3.8
-ENV CC clang-3.8
+ENV CXX clang++-3.6
+ENV CC clang-3.6
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 # Openturns
@@ -24,8 +25,8 @@ RUN if [ x$INSTALL_OPENTURNS = x1 ]; then \
     ; fi
 
 # Boost
-ENV BOOST_VERSION 1.60.0
-ENV BOOST_DIR boost_1_60_0
+ENV BOOST_VERSION 1.61.0
+ENV BOOST_DIR boost_1_61_0
 RUN if [ x$INSTALL_BOOST = x1 ]; then \
     wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \

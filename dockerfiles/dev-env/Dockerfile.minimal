@@ -4,12 +4,13 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 ENV NJOBS 16
 
 # Install build environment
-RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
-RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.7 main'
+RUN apt-add-repository ppa:ubuntu-toolchain-r/ppa #'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
+#RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
+#RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.7 main'
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-    	 xauth cmake flex g++-4.9 clang-3.7 gfortran git ipython openmpi-bin pkg-config \
+    	 xauth cmake flex g++-4.9 clang-3.6 gfortran git ipython openmpi-bin pkg-config \
          wget bison sudo \
          automake autoconf libtool \
          libcln-dev libcppunit-dev libopenblas-dev liblapack-dev \
@@ -23,15 +24,15 @@ RUN apt-get -qq update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # C++
-ENV CXX clang++-3.7
-ENV CC clang-3.7
+ENV CXX clang++-3.6
+ENV CC clang-3.6
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 WORKDIR /tmp
 
 # Boost
-ENV BOOST_VERSION 1.60.0
-ENV BOOST_DIR boost_1_60_0
+ENV BOOST_VERSION 1.61.0
+ENV BOOST_DIR boost_1_61_0
 RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 && tar xjf ${BOOST_DIR}.tar.bz2
 
 WORKDIR /tmp/${BOOST_DIR}
@@ -47,7 +48,7 @@ RUN ./bjam -j${NJOBS} install \
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION 2.12.0
+ENV GMSH_VERSION 2.11.0
 
 WORKDIR /tmp
 RUN wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz && tar xvzf gmsh-${GMSH_VERSION}-source.tgz && mkdir -p gmsh-${GMSH_VERSION}-source/build
