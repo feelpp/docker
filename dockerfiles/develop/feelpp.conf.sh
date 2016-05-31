@@ -39,7 +39,7 @@ build_feelpp()
   then
         cd ${FEELPP_BUILD_DIR}
     	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} "
-        sudo make -j 16 install-feelpp-base
+        sudo make -j20 install-feelpp-base
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
