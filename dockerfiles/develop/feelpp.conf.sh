@@ -20,13 +20,15 @@ export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 pull_feelpp ()
 {
   echo "Pulling feelpp..."
+  git config --global user.name "Docker Robot"
+  git config --global user.email "docker@feelpp.org"
   cd ${FEELPP_SRC_DIR}
   if [ -d feelpp ]
   then
 	 cd feelpp
- 	 git pull
+     git pull --depth 1 origin $1
   else
-	 git clone --depth 1 https://www.github.com/feelpp/feelpp.git
+	 git clone --depth 1 --branch $1 https://www.github.com/feelpp/feelpp.git
      cd feelpp
      git submodule update --init --recursive contrib/nlopt
      git submodule update --init --recursive quickstart
@@ -37,9 +39,14 @@ build_feelpp()
   echo "Building Feel++..."
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]
   then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        shift
+        # $* now contains possible additional cmake flags
+
         cd ${FEELPP_BUILD_DIR}
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} "
-        sudo make -j20 install-feelpp-base
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"
+        sudo make -j $NJOBS install-feelpp-lib
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
@@ -50,7 +57,16 @@ clean_feelpp()
 }
 install_feelpp()
 {
-  pull_feelpp
-  build_feelpp
+  if [[ $# -ge 1 ]]; then
+      pull_feelpp $1
+      shift 
+  else
+      pull_feelpp develop
+  fi
+  if [[ $# -ge 1 ]]; then
+      build_feelpp $*
+  else
+      build_feelpp 20
+  fi
   clean_feelpp
 }

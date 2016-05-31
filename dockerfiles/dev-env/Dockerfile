@@ -1,65 +1,55 @@
-FROM phusion/baseimage:latest
+FROM feelpp/syspackages:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
-
-# Install build environment
-RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
-RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.7 main'
-
-RUN apt-get -qq update && \
-    apt-get -y --force-yes install \
-    	 xauth cmake flex g++-4.9 clang-3.7 gfortran git ipython openmpi-bin pkg-config \
-         wget bison sudo \
-         libbz2-dev \
-         automake autoconf libtool \
-         libopenblas-dev libcln-dev libcppunit-dev \
-         libeigen3-dev liblapack-dev libmpfr-dev \
-         libopenmpi-dev libann-dev libglpk-dev \
-         python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
-         libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
-         python-numpy python-vtk6 python-six python-ply \
-         python-h5py python-urllib3 xterm tmux screen \
-         libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Openturns
-RUN curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add -
-RUN apt-add-repository 'deb http://ubuntu.openturns.org trusty main'
-RUN apt-get -qq update && \
-    apt-get -y --force-yes install python-openturns && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ARG BUILD_JOBS=16
+ARG INSTALL_OPENTURNS=1
+ARG INSTALL_PETSC=1
+ARG INSTALL_SLEPC=1
+ARG INSTALL_GMSH=1
+ARG INSTALL_PARAVIEW=1
 
 # C++
-ENV CXX clang++-3.7
-ENV CC clang-3.7
+ENV CXX clang++-3.8
+ENV CC clang-3.8
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+
+# Openturns
+RUN if [ x$INSTALL_OPENTURNS = x1 ]; then \
+    curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add - \
+    && apt-add-repository 'deb http://ubuntu.openturns.org trusty main' \
+    && apt-get -qq update \
+    && apt-get -y --force-yes install python-openturns \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    ; fi
 
 # Boost
 ENV BOOST_VERSION 1.60.0
 ENV BOOST_DIR boost_1_60_0
-RUN wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
+RUN if [ x$INSTALL_BOOST = x1 ]; then \
+    wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
     && tar xjf ${BOOST_DIR}.tar.bz2 \
     && cd ${BOOST_DIR} \
     && echo "using mpi ;" >> user-config.jam \
     && echo "" >> user-config.jam \
     && ./bootstrap.sh \
-    && ./bjam -j4 install \
+    && ./bjam -j${BUILD_JOBS} install \
       --layout=tagged \
       --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
       --user-config=user-config.jam \
       variant=release \
       threading=multi \
-      link=shared
+      link=shared \
+    ; fi
 
 # Install PETSc from source
-ENV PETSC_VERSION 3.6.3
-RUN cd /tmp && \
-    wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz && \
-    tar -xf petsc-${PETSC_VERSION}.tar.gz && \
-    cd petsc-${PETSC_VERSION} && \
-    ./configure --COPTFLAGS="-O2" \
+ENV PETSC_VERSION 3.7.0
+RUN if [ x$INSTALL_PETSC = x1 ]; then \
+    cd /tmp \
+    && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
+    && tar -xf petsc-${PETSC_VERSION}.tar.gz \
+    && cd petsc-${PETSC_VERSION} \
+    && ./configure --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2" \
                 --FOPTFLAGS="-O2" \
                 --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
@@ -76,30 +66,35 @@ RUN cd /tmp && \
                 --download-blacs \
                 --download-spai \
                 --download-ml \
-                --prefix=${FEELPP_DEP_INSTALL_PREFIX} && \
-     make && \
-     make install && \
-     rm -rf /tmp/*
+                --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+     && make \
+     && make install \
+     && rm -rf /tmp/* \
+     ; fi
 
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.6.3
-RUN cd /tmp && \
-    export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} && \
-    wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz && \
-    tar -xf slepc-${SLEPC_VERSION}.tar.gz && \
-    cd slepc-${SLEPC_VERSION} && \
-    ./configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} && \
-    make && \
-    make install && \
-    rm -rf /tmp/*
+ENV SLEPC_VERSION 3.7.0
+RUN if [ x$INSTALL_SLEPC = x1 ]; then \
+    cd /tmp \
+    && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
+    && wget -nc http://www.grycap.upv.es/slepc/download/download.php?filename=slepc-${SLEPC_VERSION}.tar.gz -O slepc-${SLEPC_VERSION}.tar.gz \
+    && tar -xf slepc-${SLEPC_VERSION}.tar.gz \
+    && cd slepc-${SLEPC_VERSION} \
+    && ./configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+    && make \
+    && make install \
+    && rm -rf /tmp/* \
+    ; fi
+
 
 ENV SLEPC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION 2.12.0
-RUN cd /tmp \
+ENV GMSH_VERSION 2.11.0
+RUN if [ x$INSTALL_GMSH = x1 ]; then \
+    cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
     && tar xvzf gmsh-${GMSH_VERSION}-source.tgz \
     && cd gmsh-${GMSH_VERSION}-source \
@@ -113,17 +108,20 @@ RUN cd /tmp \
         -DENABLE_BUILD_LIB=ON \
         -DENABLE_BUILD_SHARED=ON \
         -DENABLE_BUILD_DYNAMIC=ON \
+        -DENABLE_PETSC=OFF \
         -DENABLE_MPI=OFF \
         -DENABLE_MUMPS=OFF \
         -DENABLE_OPENMP=ON  \
         .. \
-    && make -j16 \
+    && make -j${BUILD_JOBS} \
     && make install \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    ; fi
 
 # ParaView
 ENV PARAVIEW_VERSION 5.0.1
-RUN cd /tmp \
+RUN if [ x$INSTALL_PARAVIEW = x1 ]; then \
+    cd /tmp \
     && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION}-source \
@@ -142,9 +140,10 @@ RUN cd /tmp \
         -DPARAVIEW_USE_MPI=ON \
         -DVTK_RENDERING_BACKEND=OpenGL \
         .. \
-    && make -j16 \
+    && make -j${BUILD_JOBS} \
     && make install \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    ; fi
 
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed
