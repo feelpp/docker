@@ -1,4 +1,4 @@
-FROM feelpp/dev-env:latest
+FROM feelpp/feelpp-env:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 USER feelpp

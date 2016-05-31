@@ -1,11 +1,19 @@
 version: '2'
 
 services:
+    feelpp-syspackages:
+        build:
+            context: ./dockerfiles/dev-env
+            dockerfile: Dockerfile.syspackages
+        image: feelpp/syspackages:latest
+
     feelpp-full-dev-env:
         build:
             context: ./dockerfiles/dev-env
             dockerfile: Dockerfile
         image: feelpp/dev-env:full
+        depends_on: 
+            - feelpp-syspackages
 
     feelpp-minimal-dev-env:
         build:
@@ -18,6 +26,8 @@ services:
                 - INSTALL_GMSH=0
                 - INSTALL_PARAVIEW=0
         image: feelpp/dev-env:minimal
+        depends_on: 
+            - feelpp-syspackages
 
     feelpp-full-develop:
         build:

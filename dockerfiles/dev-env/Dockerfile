@@ -1,36 +1,16 @@
-FROM phusion/baseimage:latest
+FROM feelpp/syspackages:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
+ARG BUILD_JOBS=16
 ARG INSTALL_OPENTURNS=1
 ARG INSTALL_PETSC=1
 ARG INSTALL_SLEPC=1
 ARG INSTALL_GMSH=1
 ARG INSTALL_PARAVIEW=1
 
-# Install build environment
-RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
-RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.7 main'
-
-RUN apt-get -qq update && \
-    apt-get -y --force-yes install \
-    	 xauth cmake flex g++-4.9 clang-3.7 gfortran git ipython openmpi-bin pkg-config \
-         wget bison sudo \
-         libbz2-dev \
-         automake autoconf libtool \
-         libopenblas-dev libcln-dev libcppunit-dev \
-         libeigen3-dev liblapack-dev libmpfr-dev \
-         libopenmpi-dev libann-dev libglpk-dev \
-         python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
-         libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
-         python-numpy python-vtk6 python-six python-ply \
-         python-h5py python-urllib3 xterm tmux screen \
-         libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # C++
-ENV CXX clang++-3.7
-ENV CC clang-3.7
+ENV CXX clang++-3.8
+ENV CC clang-3.8
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 # Openturns
@@ -53,7 +33,7 @@ RUN if [ x$INSTALL_BOOST = x1 ]; then \
     && echo "using mpi ;" >> user-config.jam \
     && echo "" >> user-config.jam \
     && ./bootstrap.sh \
-    && ./bjam -j4 install \
+    && ./bjam -j${BUILD_JOBS} install \
       --layout=tagged \
       --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
       --user-config=user-config.jam \
@@ -63,7 +43,7 @@ RUN if [ x$INSTALL_BOOST = x1 ]; then \
     ; fi
 
 # Install PETSc from source
-ENV PETSC_VERSION 3.6.3
+ENV PETSC_VERSION 3.7.0
 RUN if [ x$INSTALL_PETSC = x1 ]; then \
     cd /tmp \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
@@ -93,7 +73,7 @@ RUN if [ x$INSTALL_PETSC = x1 ]; then \
      ; fi
 
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.6.3
+ENV SLEPC_VERSION 3.7.0
 RUN if [ x$INSTALL_SLEPC = x1 ]; then \
     cd /tmp \
     && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
@@ -112,7 +92,7 @@ ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION 2.12.0
+ENV GMSH_VERSION 2.11.0
 RUN if [ x$INSTALL_GMSH = x1 ]; then \
     cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
@@ -128,11 +108,12 @@ RUN if [ x$INSTALL_GMSH = x1 ]; then \
         -DENABLE_BUILD_LIB=ON \
         -DENABLE_BUILD_SHARED=ON \
         -DENABLE_BUILD_DYNAMIC=ON \
+        -DENABLE_PETSC=OFF \
         -DENABLE_MPI=OFF \
         -DENABLE_MUMPS=OFF \
         -DENABLE_OPENMP=ON  \
         .. \
-    && make -j16 \
+    && make -j${BUILD_JOBS} \
     && make install \
     && rm -rf /tmp/* \
     ; fi
@@ -159,7 +140,7 @@ RUN if [ x$INSTALL_PARAVIEW = x1 ]; then \
         -DPARAVIEW_USE_MPI=ON \
         -DVTK_RENDERING_BACKEND=OpenGL \
         .. \
-    && make -j16 \
+    && make -j${BUILD_JOBS} \
     && make install \
     && rm -rf /tmp/* \
     ; fi
