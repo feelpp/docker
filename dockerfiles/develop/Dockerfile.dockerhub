@@ -1,6 +1,8 @@
 FROM feelpp/feelpp-env:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
+ARG BUILD_JOBS=1
+
 USER feelpp
 ENV HOME /home/feelpp
 
@@ -10,7 +12,7 @@ COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.conf.sh" >> ${HOME}/.bashrc'
 
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp ${BUILD_JOBS}"
 
 # COPY WELCOME $HOME/WELCOME
 USER root
