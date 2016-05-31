@@ -20,15 +20,16 @@ export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 pull_feelpp ()
 {
   echo "Pulling feelpp..."
+  git config --global user.name "Docker Robot"
+  git config --global user.email "docker@feelpp.org"
   cd ${FEELPP_SRC_DIR}
   if [ -d feelpp ]
   then
 	 cd feelpp
      git pull --depth 1 origin $1
   else
-	 git clone --depth 1 https://www.github.com/feelpp/feelpp.git
+	 git clone --depth 1 --branch $1 https://www.github.com/feelpp/feelpp.git
      cd feelpp
-     git pull --depth 1 origin $1
      git submodule update --init --recursive contrib/nlopt
      git submodule update --init --recursive quickstart
   fi
