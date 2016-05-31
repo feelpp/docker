@@ -24,10 +24,11 @@ pull_feelpp ()
   if [ -d feelpp ]
   then
 	 cd feelpp
- 	 git pull
+     git pull --depth 1 origin $1
   else
 	 git clone --depth 1 https://www.github.com/feelpp/feelpp.git
      cd feelpp
+     git pull --depth 1 origin $1
      git submodule update --init --recursive contrib/nlopt
      git submodule update --init --recursive quickstart
   fi
@@ -37,9 +38,14 @@ build_feelpp()
   echo "Building Feel++..."
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]
   then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        shift
+        # $* now contains possible additional cmake flags
+
         cd ${FEELPP_BUILD_DIR}
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} "
-        sudo make -j $1 install-feelpp-lib
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"
+        sudo make -j $NJOBS install-feelpp-lib
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
@@ -50,9 +56,14 @@ clean_feelpp()
 }
 install_feelpp()
 {
-  pull_feelpp
   if [[ $# -ge 1 ]]; then
-      build_feelpp $1
+      pull_feelpp $1
+      shift 
+  else
+      pull_feelpp develop
+  fi
+  if [[ $# -ge 1 ]]; then
+      build_feelpp $*
   else
       build_feelpp 16
   fi
