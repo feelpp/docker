@@ -11,7 +11,7 @@ services:
         build:
             context: ./dockerfiles/dev-env
             dockerfile: Dockerfile
-        image: feelpp/dev-env:full
+        image: feelpp/feelpp-env:latest
         depends_on: 
             - feelpp-syspackages
 
@@ -25,7 +25,7 @@ services:
                 - INSTALL_SLEPC=0
                 - INSTALL_GMSH=0
                 - INSTALL_PARAVIEW=0
-        image: feelpp/dev-env:minimal
+        image: feelpp/feelpp-env:minimal
         depends_on: 
             - feelpp-syspackages
 
@@ -33,6 +33,6 @@ services:
         build:
             context: ./dockerfiles/develop
             dockerfile: Dockerfile
-        image: feelpp/develop:full
+        image: feelpp/develop:latest
         depends_on: 
             - feelpp-full-dev-env
