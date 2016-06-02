@@ -35,7 +35,9 @@ services:
     feelpp-full-develop:
         build:
             context: ./dockerfiles/develop
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.dockerhub
+            args:
+                - BUILD_JOBS=32
         image: feelpp/develop:latest
         depends_on: 
             - feelpp-full-dev-env
