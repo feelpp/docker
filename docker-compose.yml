@@ -7,7 +7,7 @@ services:
             #dockerfile: Dockerfile.syspackages
         #image: feelpp/syspackages:latest
 
-    feelpp-full-dev-env:
+    feelpp-dev-env-full:
         build:
             context: ./dockerfiles/dev-env
             dockerfile: Dockerfile
@@ -17,7 +17,7 @@ services:
         #depends_on: 
             #- feelpp-syspackages
 
-    feelpp-minimal-dev-env:
+    feelpp-dev-env-minimal:
         build:
             context: ./dockerfiles/dev-env
             dockerfile: Dockerfile
@@ -32,12 +32,13 @@ services:
         #depends_on: 
             #- feelpp-syspackages
 
-    feelpp-full-develop:
+    feelpp-develop-full:
         build:
             context: ./dockerfiles/develop
             dockerfile: Dockerfile.dockerhub
             args:
                 - BUILD_JOBS=32
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
         image: feelpp/develop:latest
         depends_on: 
-            - feelpp-full-dev-env
+            - feelpp-dev-env-full

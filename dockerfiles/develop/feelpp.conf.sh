@@ -45,7 +45,7 @@ build_feelpp()
         # $* now contains possible additional cmake flags
 
         cd ${FEELPP_BUILD_DIR}
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DFEELPP_ENABLE_VTK_INSITU=ON -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"
         sudo make -j $NJOBS install-feelpp-lib
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."

@@ -10,12 +10,12 @@ ARG INSTALL_GMSH=1
 ARG INSTALL_PARAVIEW=1
 
 # Install build environment
-RUN apt-add-repository 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 #RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main'
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-    	 xauth cmake flex g++-4.9 clang-3.6 gfortran git ipython openmpi-bin pkg-config \
+    	 xauth cmake flex gcc-4.9 g++-4.9 clang-3.6 gfortran git ipython openmpi-bin pkg-config \
          wget bison sudo \
          libbz2-dev \
          automake autoconf libtool \
@@ -29,6 +29,14 @@ RUN apt-get -qq update && \
     && if [ x$INSTALL_PARAVIEW = x1 ]; then \
     apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-core libqt4-gui qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
     ; fi \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 10 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 10 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 20 \
+    && update-alternatives --set gcc "/usr/bin/gcc-4.9" \
+    && update-alternatives --set g++ "/usr/bin/g++-4.9" \
+    && update-alternatives --set cc /usr/bin/gcc \
+    && update-alternatives --set c++ /usr/bin/g++ \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
