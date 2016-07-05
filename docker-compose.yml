@@ -38,7 +38,29 @@ services:
             dockerfile: Dockerfile.dockerhub
             args:
                 - BUILD_JOBS=32
-                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
+                - CMAKE_FLAGS=""
         image: feelpp/develop:latest
+        depends_on: 
+            - feelpp-dev-env-full
+
+    feelpp-develop-full-insitu:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.dockerhub
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
+        image: feelpp/develop:insitu
+        depends_on: 
+            - feelpp-dev-env-full
+
+    feelpp-develop-full-novtk:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.dockerhub
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK=OFF"
+        image: feelpp/develop:novtk
         depends_on: 
             - feelpp-dev-env-full
