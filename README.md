@@ -1,5 +1,22 @@
-# docker
-Docker 4 Feel++
+# Docker 4 Feel++
+
+## What can you generate with this repository ?
+
+Using docker and docker-compose, you will currently generate the following images:
+- feelpp/feelpp-env:latest
+- feelpp/feelpp-env:minimal
+- feelpp/develop:latest
+- feelpp/develop:insitu
+- feelpp/develop:novtk
+- feelpp/develop:models-fluid
+- feelpp/develop:models-solid
+- feelpp/develop:models-fsi
+- feelpp/develop:crb
+
+To generate those images, use the following command at the base of the repository:
+```
+docker-compose build
+```
 
 ## In-situ visulization with ParaView
 
