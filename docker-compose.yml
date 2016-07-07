@@ -1,12 +1,7 @@
 version: '2'
 
 services:
-    #feelpp-syspackages:
-        #build:
-            #context: ./dockerfiles/dev-env
-            #dockerfile: Dockerfile.syspackages
-        #image: feelpp/syspackages:latest
-
+    # Build and install full development environment with all dependencies
     feelpp-dev-env-full:
         build:
             context: ./dockerfiles/dev-env
@@ -14,9 +9,8 @@ services:
             args:
                 - BUILD_JOBS=32
         image: feelpp/feelpp-env:latest
-        #depends_on: 
-            #- feelpp-syspackages
 
+    # Build and install minimal development environment
     feelpp-dev-env-minimal:
         build:
             context: ./dockerfiles/dev-env
@@ -29,9 +23,8 @@ services:
                 - INSTALL_GMSH=0
                 - INSTALL_PARAVIEW=0
         image: feelpp/feelpp-env:minimal
-        #depends_on: 
-            #- feelpp-syspackages
 
+    # Build and install Feel++ without specific options
     feelpp-develop-full:
         build:
             context: ./dockerfiles/develop
@@ -40,9 +33,10 @@ services:
                 - BUILD_JOBS=32
                 - CMAKE_FLAGS=""
         image: feelpp/develop:latest
-        depends_on: 
+        depends_on:
             - feelpp-dev-env-full
 
+    # Build and install Feel++ with In-situ support
     feelpp-develop-full-insitu:
         build:
             context: ./dockerfiles/develop
@@ -51,9 +45,10 @@ services:
                 - BUILD_JOBS=32
                 - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
         image: feelpp/develop:insitu
-        depends_on: 
+        depends_on:
             - feelpp-dev-env-full
 
+    # Build and install Feel++ without VTK
     feelpp-develop-full-novtk:
         build:
             context: ./dockerfiles/develop
@@ -62,5 +57,57 @@ services:
                 - BUILD_JOBS=32
                 - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK=OFF"
         image: feelpp/develop:novtk
+        depends_on:
+            - feelpp-dev-env-full
+
+    # Build and install Feel++ and the fluid model apps
+    feelpp-develop-models-fluid:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.apps
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
+                - APP_INSTALL_CMD="install_feelpp_models_fluid"
+        image: feelpp/develop:models-fluid
+        depends_on:
+            - feelpp-dev-env-full
+
+    # Build and install Feel++ and the solid model apps
+    feelpp-develop-models-solid:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.apps
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS=""
+                - APP_INSTALL_CMD="install_feelpp_models_solid"
+        image: feelpp/develop:models-solid
+        depends_on:
+            - feelpp-dev-env-full
+
+    # Build and install Feel++ and the fsi model apps
+    feelpp-develop-models-fsi:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.apps
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS=""
+                - APP_INSTALL_CMD="install_feelpp_models_fsi"
+        image: feelpp/develop:models-fsi
+        depends_on: 
+            - feelpp-dev-env-full
+              #
+    # Build and install Feel++ and the CRB apps
+    feelpp-develop-crb-apps:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.apps
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS=""
+                - APP_INSTALL_CMD="install_feelpp_crb_apps"
+        image: feelpp/develop:crb
         depends_on: 
             - feelpp-dev-env-full

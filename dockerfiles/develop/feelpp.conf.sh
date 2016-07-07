@@ -51,6 +51,56 @@ build_feelpp()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
+install_feelpp_models_fluid()
+{
+  if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+  then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        shift
+        cd ${FEELPP_BUILD_DIR}
+        sudo make -j $NJOBS install-apps-models-fluid
+  else
+	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
+  fi
+}
+install_feelpp_models_solid()
+{
+  if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+  then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        shift
+        cd ${FEELPP_BUILD_DIR}
+        sudo make -j $NJOBS install-apps-models-solid
+  else
+	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
+  fi
+}
+install_feelpp_models_solid()
+{
+  if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+  then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        cd ${FEELPP_BUILD_DIR}
+        sudo make -j $NJOBS install-apps-models-fsi
+  else
+	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
+  fi
+}
+install_feelpp_crb_apps()
+{
+  if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+  then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        cd ${FEELPP_BUILD_DIR}/applications/crb
+        sudo make -j $NJOBS install
+  else
+	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
+  fi
+}
 clean_feelpp()
 {
    rm -rf ${FEELPP_BUILD_DIR}
