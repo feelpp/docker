@@ -77,7 +77,7 @@ install_feelpp_models_solid()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
-install_feelpp_models_solid()
+install_feelpp_models_fsi()
 {
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]
   then

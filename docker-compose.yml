@@ -80,7 +80,7 @@ services:
             dockerfile: Dockerfile.apps
             args:
                 - BUILD_JOBS=32
-                - CMAKE_FLAGS=""
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
                 - APP_INSTALL_CMD="install_feelpp_models_solid"
         image: feelpp/develop:models-solid
         depends_on:
@@ -93,7 +93,7 @@ services:
             dockerfile: Dockerfile.apps
             args:
                 - BUILD_JOBS=32
-                - CMAKE_FLAGS=""
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
                 - APP_INSTALL_CMD="install_feelpp_models_fsi"
         image: feelpp/develop:models-fsi
         depends_on: 
@@ -106,7 +106,7 @@ services:
             dockerfile: Dockerfile.apps
             args:
                 - BUILD_JOBS=32
-                - CMAKE_FLAGS=""
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
                 - APP_INSTALL_CMD="install_feelpp_crb_apps"
         image: feelpp/develop:crb
         depends_on: 
