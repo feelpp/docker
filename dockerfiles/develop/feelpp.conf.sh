@@ -51,6 +51,19 @@ build_feelpp()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
+install_feelpp_quickstart()
+{
+  if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+  then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        shift
+        cd ${FEELPP_BUILD_DIR}
+        sudo make -j $NJOBS install-feelpp-base
+  else
+	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
+  fi
+}
 install_feelpp_models_fluid()
 {
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]

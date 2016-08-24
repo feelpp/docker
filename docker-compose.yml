@@ -9,6 +9,15 @@ services:
             args:
                 - BUILD_JOBS=32
         image: feelpp/feelpp-env:latest
+            
+    # Build and install full development environment with all dependencies
+    feelpp-dev-env-full-ubuntu-16.04:
+        build:
+            context: ./dockerfiles/dev-env
+            dockerfile: Dockerfile.ubuntu-16.04
+            args:
+                - BUILD_JOBS=32
+        image: feelpp/feelpp-env:latest-ubuntu-16.04
 
     # Build and install minimal development environment
     feelpp-dev-env-minimal:
@@ -45,6 +54,18 @@ services:
                 - BUILD_JOBS=32
                 - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
         image: feelpp/develop:insitu
+        depends_on:
+            - feelpp-dev-env-full
+              
+    # Build and install Feel++ with In-situ support
+    feelpp-develop-full-insitu-ubuntu-16.04:
+        build:
+            context: ./dockerfiles/develop
+            dockerfile: Dockerfile.dockerhub.ubuntu-16.04
+            args:
+                - BUILD_JOBS=32
+                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
+        image: feelpp/develop:insitu-ubuntu-16.04
         depends_on:
             - feelpp-dev-env-full
 
@@ -100,14 +121,14 @@ services:
             - feelpp-dev-env-full
               #
     # Build and install Feel++ and the CRB apps
-    feelpp-develop-crb-apps:
-        build:
-            context: ./dockerfiles/develop
-            dockerfile: Dockerfile.apps
-            args:
-                - BUILD_JOBS=32
-                - CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
-                - APP_INSTALL_CMD="install_feelpp_crb_apps"
-        image: feelpp/develop:crb
-        depends_on: 
-            - feelpp-dev-env-full
+    #feelpp-develop-crb-apps:
+        #build:
+            #context: ./dockerfiles/develop
+            #dockerfile: Dockerfile.apps
+            #args:
+                #- BUILD_JOBS=32
+                #- CMAKE_FLAGS="-DFEELPP_ENABLE_VTK_INSITU=ON"
+                #- APP_INSTALL_CMD="install_feelpp_crb_apps"
+        #image: feelpp/develop:crb
+        #depends_on: 
+            #- feelpp-dev-env-full
