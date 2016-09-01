@@ -9,15 +9,18 @@ ARG INSTALL_SLEPC=1
 ARG INSTALL_GMSH=1
 ARG INSTALL_PARAVIEW=1
 
-# Install build environment
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 #RUN apt-add-repository 'deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main'
 
+# We don't have a command line available
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-         xauth cmake flex gcc-4.9 g++-4.9 clang-3.6 gfortran git ipython openmpi-bin pkg-config \
+         xauth cmake flex gcc-4.9 g++-4.9 gfortran git subversion ipython openmpi-bin pkg-config \
          wget bison sudo \
-         libbz2-dev \
+         libgmp-dev libmpfr-dev libmpc-dev \
+         libbz2-dev libncurses-dev \
          automake autoconf libtool \
          libopenblas-dev libcln-dev libcppunit-dev \
          libeigen3-dev liblapack-dev libmpfr-dev \
@@ -42,9 +45,77 @@ RUN apt-get -qq update && \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # C++
-ENV CXX clang++-3.6
-ENV CC clang-3.6
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+
+# Export environment variables for the whole dependencies
+ENV PATH ${FEELPP_DEP_INSTALL_PREFIX}/bin:${PATH}
+ENV LD_LIBRARY_PATH ${FEELPP_DEP_INSTALL_PREFIX}/lib:${FEELPP_DEP_INSTALL_PREFIX}/lib64:${LD_LIBRARY_PATH}
+ENV MANPATH ${FEELPP_DEP_INSTALL_PREFIX}/share/man:${MANPATH}
+ENV CMAKE_PREFIX_PATH ${FEELPP_DEP_INSTALL_PREFIX}:${CMAKE_PREFIX_PATH}
+
+# CMake (Version >= 3.5 needed for clang and ParaView)
+ENV CMAKE_VERSION 3.6.1
+RUN cd /tmp \
+    && wget https://cmake.org/files/v3.6/cmake-${CMAKE_VERSION}.tar.gz \
+    && tar zxvf cmake-${CMAKE_VERSION}.tar.gz \
+    && mkdir cmake-${CMAKE_VERSION}-build && cd cmake-${CMAKE_VERSION}-build \
+    && ../cmake-${CMAKE_VERSION}/configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+    && make -j ${BUILD_JOBS} \
+    && make install \
+    && rm -rf /tmp/*
+
+# GCC
+ENV GCC_VERSION 6.1.0
+RUN cd /tmp \
+    && wget http://fr.mirror.babylon.network/gcc/releases/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz \
+    && tar zxvf gcc-${GCC_VERSION}.tar.gz \
+    && mkdir gcc-${GCC_VERSION}-build && cd gcc-${GCC_VERSION}-build \
+    && ../gcc-${GCC_VERSION}/configure --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+         --enable-bootstrap \
+         --enable-shared \
+         --enable-threads=posix \
+         --enable-checking=release \
+         --with-system-zlib \
+         --enable-__cxa_atexit \
+         --disable-libunwind-exceptions \
+         --enable-gnu-unique-object \
+         --enable-languages=c,c++,fortran \
+         --disable-dssi \
+         --with-ppl \
+         --with-cloog \
+         --with-tune=generic \
+         --disable-multilib \
+         --with-arch_32=i686
+RUN cd /tmp/gcc-${GCC_VERSION}-build && make -j ${BUILD_JOBS}
+RUN cd /tmp/gcc-${GCC_VERSION}-build && make install \
+    && rm -rf /tmp/* \
+
+RUN gcc --version
+
+# Clang
+RUN cd tmp \
+    && git clone http://llvm.org/git/llvm.git llvm && cd llvm && git checkout refs/remotes/origin/release_39 && cd .. \
+    && cd llvm/tools && git clone http://llvm.org/git/clang.git clang && cd clang && git checkout refs/remotes/origin/release_39 && cd .. \
+    && cd ../.. \
+    && cd llvm/projects && git clone http://llvm.org/git/compiler-rt.git && cd compiler-rt && git checkout refs/remotes/origin/release_39 && cd .. \
+    && git clone http://llvm.org/git/openmp.git && cd openmp && git checkout refs/remotes/origin/release_39 && cd .. \
+    && cd ../.. \
+    && mkdir llvm-svn-build && cd llvm-svn-build
+
+RUN cd /tmp/llvm-svn-build && cmake /tmp/llvm \
+ -DCMAKE_BUILD_TYPE=Release -DGCC_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
+ -DCMAKE_C_COMPILER=${FEELPP_DEP_INSTALL_PREFIX}/bin/gcc -DCMAKE_CXX_COMPILER=${FEELPP_DEP_INSTALL_PREFIX}/bin/g++ \
+ -DBUILD_SHARED_LIBS=ON -DLLVM_BUILD_TOOLS=OFF -DCLANG_INCLUDE_DOCS=OFF -DCLANG_INCLUDE_TESTS=OFF \
+ -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}
+RUN cd /tmp/llvm-svn-build && make -j 24
+RUN cd /tmp/llvm-svn-build && make install \
+    && rm -rf /tmp/*
+
+# Set main compiler to clang from now on
+ENV CC ${FEELPP_DEP_INSTALL_PREFIX}/bin/clang
+ENV CXX ${FEELPP_DEP_INSTALL_PREFIX}/bin/clang++
+
+RUN clang --version
 
 # Openturns
 RUN if [ x$INSTALL_OPENTURNS = x1 ]; then \
@@ -77,20 +148,22 @@ RUN if [ x$INSTALL_BOOST = x1 ]; then \
     && rm -rf /tmp/* \
     ; fi
 
+# Set BOOST ROOT
+ENV BOOSTROOT ${FEELPP_DEP_INSTALL_PREFIX}
+
 # Install PETSc from source
-ENV PETSC_VERSION 3.7.0
+ENV PETSC_VERSION 3.7.3
 RUN if [ x$INSTALL_PETSC = x1 ]; then \
     cd /tmp \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
     && tar -xf petsc-${PETSC_VERSION}.tar.gz \
     && cd petsc-${PETSC_VERSION} \
-    && ./configure --COPTFLAGS="-O2" \
-                --CXXOPTFLAGS="-O2" \
-                --FOPTFLAGS="-O2" \
+    && ./configure \
+                --COPTFLAGS="-O3" \ --CXXOPTFLAGS="-O3" \ --FOPTFLAGS="-O3" \
                 --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
                 --with-c-support \
                 --with-debugging=0 \
-                --with-shared-libraries \
+                --with-shared-libraries=1 \
                 --download-suitesparse \
                 --download-scalapack \
                 --download-metis \
@@ -101,14 +174,17 @@ RUN if [ x$INSTALL_PETSC = x1 ]; then \
                 --download-blacs \
                 --download-spai \
                 --download-ml \
+                --download-fftw=1 \
                 --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
      && make \
      && make install \
      && rm -rf /tmp/* \
      ; fi
 
+ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
+
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.7.0
+ENV SLEPC_VERSION 3.7.2
 RUN if [ x$INSTALL_SLEPC = x1 ]; then \
     cd /tmp \
     && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
@@ -121,13 +197,11 @@ RUN if [ x$INSTALL_SLEPC = x1 ]; then \
     && rm -rf /tmp/* \
     ; fi
 
-
 ENV SLEPC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
-ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
 
 # Gmsh
 # check to see if protobuf folder is empty
-ENV GMSH_VERSION 2.11.0
+ENV GMSH_VERSION 2.13.2
 RUN if [ x$INSTALL_GMSH = x1 ]; then \
     cd /tmp \
     && wget http://www.geuz.org/gmsh/src/gmsh-${GMSH_VERSION}-source.tgz \
@@ -139,7 +213,7 @@ RUN if [ x$INSTALL_GMSH = x1 ]; then \
         -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
-        -DCMAKE_BUILD_TYPE=release \
+        -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_BUILD_LIB=ON \
         -DENABLE_BUILD_SHARED=ON \
         -DENABLE_BUILD_DYNAMIC=ON \
@@ -153,13 +227,15 @@ RUN if [ x$INSTALL_GMSH = x1 ]; then \
     && rm -rf /tmp/* \
     ; fi
 
+ENV GMSH_DIR ${FEELPP_DEP_INSTALL_PREFIX}
+
 # ParaView
-ENV PARAVIEW_VERSION 5.0.1
+ENV PARAVIEW_VERSION 5.1.0
 RUN if [ x$INSTALL_PARAVIEW = x1 ]; then \
     cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.0&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}-source.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
-    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
-    && cd ParaView-v${PARAVIEW_VERSION}-source \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.1&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}.tar.gz \
+    && tar xvzf ParaView-v${PARAVIEW_VERSION}.tar.gz \
+    && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
     && cd build \
     && cmake \
@@ -179,6 +255,9 @@ RUN if [ x$INSTALL_PARAVIEW = x1 ]; then \
     && make install \
     && rm -rf /tmp/* \
     ; fi
+
+ENV LD_LIBRARY_PATH ${FEELPP_DEP_INSTALL_PREFIX}/lib/paraview-5.1
+ENV PYTHONPATH ${FEELPP_DEP_INSTALL_PREFIX}/lib/paraview-5.1/site-packages
 
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed
