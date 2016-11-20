@@ -31,7 +31,6 @@ pull_feelpp ()
 	 git clone --depth 1 --branch $1 https://www.github.com/feelpp/feelpp.git
      cd feelpp
      git submodule update --init --recursive contrib/nlopt
-     git submodule update --init --recursive quickstart
   fi
 }
 build_feelpp()
@@ -51,6 +50,11 @@ build_feelpp()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
+clean_feelpp()
+{
+    rm -rf ${FEELPP_BUILD_DIR}
+}
+
 install_feelpp_quickstart()
 {
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]
@@ -63,6 +67,7 @@ install_feelpp_quickstart()
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
+  clean_feelpp
 }
 install_feelpp_models_fluid()
 {
@@ -102,6 +107,35 @@ install_feelpp_models_fsi()
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
 }
+install_feelpp_models()
+{
+#    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    #    then
+    if [[ $# -ge 1 ]]; then
+        pull_feelpp $1
+        shift 
+    else
+        pull_feelpp develop
+    fi
+
+    if [[ $# -ge 1 ]]; then
+        # Get the number of jobs to be used
+        NJOBS=$1
+        cd ${FEELPP_BUILD_DIR}/
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"        
+        sudo make -j $NJOBS install-feelpp-apps
+    else
+        cd ${FEELPP_BUILD_DIR}/
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"        
+        sudo make -j 20 install-feelpp-apps
+    fi
+        
+#    else
+#	echo "Feel++ source cannot be found. Please run pull_feelpp first."
+    #    fi
+    clean_feelpp
+}
+
 install_feelpp_crb_apps()
 {
   if [ -d ${FEELPP_SRC_DIR}/feelpp ]
@@ -113,10 +147,6 @@ install_feelpp_crb_apps()
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
-}
-clean_feelpp()
-{
-   rm -rf ${FEELPP_BUILD_DIR}
 }
 install_feelpp()
 {
