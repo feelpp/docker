@@ -122,13 +122,16 @@ install_feelpp_models()
         # Get the number of jobs to be used
         NJOBS=$1
         cd ${FEELPP_BUILD_DIR}/
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"        
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"        
         sudo make -j $NJOBS install-feelpp-apps
     else
         cd ${FEELPP_BUILD_DIR}/
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"        
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"        
         sudo make -j 20 install-feelpp-apps
     fi
+    sudo mkdir -p /usr/local/share/feel/testcases
+    sudo make install-testcase
+    
         
 #    else
 #	echo "Feel++ source cannot be found. Please run pull_feelpp first."

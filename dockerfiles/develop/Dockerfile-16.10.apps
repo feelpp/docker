@@ -20,6 +20,13 @@ RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.con
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_models ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
+# link $HOME/testcases to installed testcases
+RUN bash -c "ln -sf /usr/local/share/feel/testcases $HOME/Testcases"
+
+COPY WELCOME $HOME/WELCOME
+
+ENV FEELPP_REPOSITORY /feel
+
 # COPY WELCOME $HOME/WELCOME
 USER feelpp
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
