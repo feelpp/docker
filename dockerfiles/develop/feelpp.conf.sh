@@ -126,7 +126,8 @@ install_feelpp_models()
         sudo make -j $NJOBS install-feelpp-apps
     else
         cd ${FEELPP_BUILD_DIR}/
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"        
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"
+        sudo make -j 20 install-feelpp-base
         sudo make -j 20 install-feelpp-apps
     fi
     sudo mkdir -p /usr/local/share/feel/testcases
