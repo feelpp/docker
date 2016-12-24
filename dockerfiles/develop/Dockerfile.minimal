@@ -4,6 +4,7 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 ARG BRANCH=develop
 ARG BUILD_JOBS=1
 ARG CMAKE_FLAGS=""
+ARG CXXFLAGS=""
 
 USER feelpp
 ENV HOME /home/feelpp
