@@ -1,6 +1,6 @@
 ## -*- docker-image-name: "feelpp/develop" -*-
 
-FROM feelpp/dev-env:2.0
+FROM feelpp/dev-env:16.10
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
