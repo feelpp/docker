@@ -25,13 +25,22 @@ pull_feelpp ()
   cd ${FEELPP_SRC_DIR}
   if [ -d feelpp ]
   then
-	 cd feelpp
-     git pull --depth 1 origin $1
+      cd feelpp
+      git pull --depth 1 origin $1
   else
-	 git clone --depth 1 --branch $1 https://www.github.com/feelpp/feelpp.git
-     cd feelpp
-     git submodule update --init --recursive contrib/nlopt
+      git clone --depth 1 --branch $1 https://www.github.com/feelpp/feelpp.git
+      cd feelpp
+      git submodule update --init --recursive contrib/nlopt
   fi
+}
+configure_feelpp()
+{
+    cd ${FEELPP_BUILD_DIR}/
+    if [[ $CXXFLAGS ]]; then
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
+    else
+        ${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
+    fi
 }
 build_feelpp()
 {
@@ -42,9 +51,7 @@ build_feelpp()
         NJOBS=$1
         shift
         # $* now contains possible additional cmake flags
-
-        cd ${FEELPP_BUILD_DIR}
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*"
+        configure_feelpp $*
         sudo make -j $NJOBS install-feelpp-lib
   else
 	   echo "Feel++ source cannot be found. Please run pull_feelpp first."
@@ -113,7 +120,7 @@ install_feelpp_models()
     #    then
     if [[ $# -ge 1 ]]; then
         pull_feelpp $1
-        shift 
+        shift
     else
         pull_feelpp develop
     fi
@@ -121,19 +128,18 @@ install_feelpp_models()
     if [[ $# -ge 1 ]]; then
         # Get the number of jobs to be used
         NJOBS=$1
-        cd ${FEELPP_BUILD_DIR}/
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"        
+        shift
+        configure_feelpp $*
         sudo make -j $NJOBS install-feelpp-apps
     else
-        cd ${FEELPP_BUILD_DIR}/
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --cmakeflags="-DCMAKE_INSTALL_PREFIX=/usr/local $*"
+        configure_feelpp $*
         sudo make -j 20 install-feelpp-base
         sudo make -j 20 install-feelpp-apps
     fi
     sudo mkdir -p /usr/local/share/feel/testcases
     sudo make install-testcase
-    
-        
+
+
 #    else
 #	echo "Feel++ source cannot be found. Please run pull_feelpp first."
     #    fi
@@ -156,7 +162,7 @@ install_feelpp()
 {
   if [[ $# -ge 1 ]]; then
       pull_feelpp $1
-      shift 
+      shift
   else
       pull_feelpp develop
   fi
