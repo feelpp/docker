@@ -6,8 +6,9 @@ This image provides the Feel++ applications in
  . solid mechanics
  . fluid-structure interaction
  . thermodynamics
-The testcases are in $HOME/Testcases/ and the results are in
-$HOME/feel
+ . thermoelectric
+The testcases are in $HOME/Testcases/ and the results will be stored in
+/feel
 
 Follow the steps described in
 
