@@ -5,6 +5,8 @@ ARG BRANCH=develop
 ARG BUILD_JOBS=1
 ARG CMAKE_FLAGS=""
 ARG CXXFLAGS=""
+ARG CC="clang++-3.6"
+ARG CXX="clang++-3.6"
 
 USER feelpp
 ENV HOME /home/feelpp
