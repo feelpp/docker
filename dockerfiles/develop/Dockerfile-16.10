@@ -7,10 +7,9 @@ ARG BRANCH=develop
 ARG BUILD_JOBS=16
 ARG CMAKE_FLAGS=""
 ARG CXXFLAGS=""
-
-# C++
-ENV CXX clang++-3.9
-ENV CC clang-3.9
+# pass CXX and CC as arguments and defaults to default clang
+ARG CXX="clang++-3.9"
+ARG CC="clang-3.9"
 
 USER feelpp
 ENV HOME /home/feelpp
