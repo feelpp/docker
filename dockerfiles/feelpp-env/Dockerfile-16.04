@@ -4,14 +4,21 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 ARG BRANCH=develop
 ARG BUILD_JOBS=1
 ARG CMAKE_FLAGS=""
+ARG INSTALL_BOOST=1 
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-         xauth cmake flex gcc-5 g++-5 clang-3.8 clang++-3.8  git ipython openmpi-bin pkg-config \
+    software-properties-common python-software-properties
+    
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+         xauth cmake flex gcc-6 g++-6 clang-3.8 clang++-3.8  git ipython openmpi-bin pkg-config \
          bash-completion emacs24 \
          wget bison sudo \
          libbz2-dev \
-         automake autoconf libtool libboost-all-dev \
+         automake autoconf libtool  \
          libopenblas-dev libcln-dev libcppunit-dev \
          libpetsc3.6.2-dev libslepc3.6.1-dev liblapack-dev libmpfr-dev \
          libopenmpi-dev libann-dev libglpk-dev \
@@ -22,9 +29,38 @@ RUN apt-get -qq update && \
          gmsh libgmsh-dev libopenturns-dev \
          libproj-dev \
          paraview \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 60 \
+    && update-alternatives --set gcc "/usr/bin/gcc-6" \
+    && update-alternatives --set g++ "/usr/bin/g++-6" \
+    && update-alternatives --set cc /usr/bin/gcc \
+    && update-alternatives --set c++ /usr/bin/g++ \         
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+
+# Boost
+ENV BOOST_VERSION 1.63.0
+ENV BOOST_DIR boost_1_63_0
+RUN if [ x$INSTALL_BOOST = x1 ]; then \
+    cd /tmp \
+    && wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
+    && tar xjf ${BOOST_DIR}.tar.bz2 \
+    && cd ${BOOST_DIR} \
+    && echo "using mpi ;" >> user-config.jam \
+    && echo "" >> user-config.jam \
+    && ./bootstrap.sh \
+    && ./bjam -j${BUILD_JOBS} install \
+      --layout=tagged \
+      --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+      --user-config=user-config.jam \
+      variant=release \
+      threading=multi \
+      link=shared \
+    && rm -rf /tmp/* \
+    ; fi
 
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed

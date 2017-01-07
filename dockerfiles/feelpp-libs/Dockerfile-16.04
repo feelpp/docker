@@ -7,7 +7,7 @@ ARG BRANCH=develop
 ARG BUILD_JOBS=16
 ARG CMAKE_FLAGS=""
 ARG CXXFLAGS=""
-ARG CC="clang++-3.8"
+ARG CC="clang-3.8"
 ARG CXX="clang++-3.8"
 
 USER feelpp
@@ -19,6 +19,7 @@ COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.conf.sh" >> ${HOME}/.bashrc'
 
 # Install Feel++
+RUN bash -c 'echo CXX=${CXX} - CC=${CC}'
 RUN bash -c 'echo CMAKE_FLAGS=${CMAKE_FLAGS}'
 RUN bash -c 'echo CXXFLAGS=${CXXFLAGS}'
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
