@@ -1,6 +1,6 @@
 ## -*- docker-image-name: "feelpp/develop" -*-
 
-FROM feelpp/dev-env:16.10
+FROM feelpp/feelpp-env:16.10
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
@@ -14,17 +14,16 @@ ARG CC="clang-3.9"
 USER feelpp
 ENV HOME /home/feelpp
 
-COPY feelpp.conf.sh $HOME/feelpp.conf.sh
-
 # Source config for further use
 RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.conf.sh" >> ${HOME}/.bashrc'
 
 # Install Feel++
+RUN bash -c 'echo CC=${CC} -- CXX=${CXX}'
 RUN bash -c 'echo CMAKE_FLAGS=${CMAKE_FLAGS}'
 RUN bash -c 'echo CXXFLAGS=${CXXFLAGS}'
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_libs ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
-# COPY WELCOME $HOME/WELCOME
+COPY WELCOME.libs $HOME/WELCOME
 USER feelpp
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 CMD ["/bin/bash"]

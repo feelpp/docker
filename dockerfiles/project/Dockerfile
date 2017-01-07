@@ -1,4 +1,4 @@
-FROM feelpp/develop:latest
+FROM feelpp/feelpp-libs:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG PROJECT_NAME="project"
@@ -15,5 +15,5 @@ RUN bash -c "source $HOME/feelpp.conf.sh && source $HOME/feelpp.project.sh && bu
 
 # COPY WELCOME $HOME/WELCOME
 USER root
-ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
+#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 CMD ["/bin/bash"]

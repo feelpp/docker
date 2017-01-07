@@ -1,0 +1,24 @@
+FROM feelpp/feelpp-libs:16.10
+MAINTAINER Feel++ Support <support@feelpp.org>
+
+ARG BRANCH=develop
+ARG BUILD_JOBS=16
+ARG CMAKE_FLAGS=""
+
+USER feelpp
+ENV HOME /home/feelpp
+
+# Install Feel++
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_base ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+
+# link $HOME/testcases to installed testcases
+RUN bash -c "ln -sf /usr/local/share/feel/testcases $HOME/Testcases"
+
+COPY WELCOME.base $HOME/WELCOME
+
+ENV FEELPP_REPOSITORY /feel
+
+# COPY WELCOME $HOME/WELCOME
+USER feelpp
+#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
+CMD ["/bin/bash"]

@@ -1,0 +1,6 @@
+# Feel++ applications -*- mode: markdown -*-
+
+This image provides the Feel++ development environment
+ . libraries [/usr/local/lib]
+ . header files [/usr/local/include/]
+ . mesh partitioning application [/usr/local/bin]

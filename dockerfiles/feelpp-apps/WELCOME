@@ -1,0 +1,18 @@
+# Feel++ applications -*- mode: markdown -*-
+
+This image provides the Feel++ applications in
+ . advection
+ . fluid mechanics
+ . solid mechanics
+ . fluid-structure interaction
+ . thermodynamics
+ . thermoelectric
+The testcases are in $HOME/Testcases/ and the results will be stored in
+/feel
+
+Follow the steps described in
+
+http://book.feelpp.org/content/Applications/Models/readme.html
+
+to use the models.
+

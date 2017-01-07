@@ -33,14 +33,18 @@ RUN useradd -m -s /bin/bash -G sudo feelpp && \
 
 ENV HOME /home/feelpp
 
-# Our helper script
+# Our helper scripts
 COPY feelpp.env.sh $HOME/feelpp.env.sh
+COPY feelpp.conf.sh $HOME/feelpp.conf.sh
+
 # and the README
 COPY WELCOME $HOME/WELCOME
 RUN chown feelpp:feelpp $HOME/WELCOME && \
     chown feelpp:feelpp $HOME/feelpp.env.sh && \
+    chown feelpp:feelpp $HOME/feelpp.conf.sh && \
     chmod u+rw $HOME/WELCOME && \
-    chmod u+rw $HOME/feelpp.env.sh
+    chmod u+rw $HOME/feelpp.env.sh && \
+    chmod u+rw $HOME/feelpp.conf.sh 
 
 # OpenBLAS threads should be 1 to ensure performance
 RUN echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc && \
@@ -51,6 +55,7 @@ RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOM
     echo "export CC=$CC" >> $HOME/.bashrc && \
     echo "export CXX=$CXX" >> $HOME/.bashrc && \
     echo "source $HOME/feelpp.env.sh" >> $HOME/.bashrc && \
+    echo "source $HOME/feelpp.conf.sh" >> $HOME/.bashrc && \
     echo "cd $HOME" >> $HOME/.bashrc && \
     echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
