@@ -1,11 +1,3 @@
-FROM ubuntu:16.04
-MAINTAINER Feel++ Support <support@feelpp.org>
-
-ARG BRANCH=develop
-ARG BUILD_JOBS=1
-ARG CMAKE_FLAGS=""
-ARG INSTALL_BOOST=1 
-
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
     software-properties-common python-software-properties

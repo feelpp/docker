@@ -1,4 +1,6 @@
-FROM feelpp/dev-env:14.04
+## -*- docker-image-name: "feelpp/feelpp-libs" -*-
+
+FROM feelpp/feelpp-env:14.04
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop

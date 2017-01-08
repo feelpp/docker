@@ -1,0 +1,18 @@
+RUN apt-get -qq update && \
+    apt-get -y install \
+    autoconf automake bash-completion bison cmake emacs24 \
+    flex git gmsh ipython libann-dev libboost-all-dev \
+    libbz2-dev libcgal-dev libcln-dev libcppunit-dev \
+    libeigen3-dev libglpk-dev libgmsh-dev \
+    libhdf5-openmpi-dev libhwloc-dev liblapack-dev \
+    libmpfr-dev libopenblas-dev libopenmpi-dev \
+    libopenturns-dev libpcre3-dev libtool libvtk6-dev \
+    openmpi-bin paraview petsc-dev pkg-config python-dev \
+    python-h5py python-numpy python-ply python-six \
+    python-urllib3 python-vtk6 screen slepc-dev sudo \
+    tmux wget xauth xterm zsh \
+    && apt-get -y install ${CXX} \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+

@@ -8,7 +8,11 @@ ARG INSTALL_PETSC=1
 ARG INSTALL_SLEPC=1
 ARG INSTALL_GMSH=1
 ARG INSTALL_PARAVIEW=1
+ARG VERSION="1.0"
 
+LABEL org.feelpp.vendor="Cemosis" \
+      org.feelpp.version="${VERSION}"
+      
 # Install build environment
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 # this is required by feel++ environment to have cmake >= 3.

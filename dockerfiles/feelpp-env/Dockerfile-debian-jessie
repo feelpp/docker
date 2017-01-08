@@ -1,0 +1,29 @@
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+    software-properties-common python-software-properties
+    
+RUN add-apt-repository 'deb http://apt.llvm.org/jessie/ llvm-toolchain-jessie main'
+RUN add-apt-repository 'deb http://apt.llvm.org/jessie/ llvm-toolchain-jessie-3.8 main'
+RUN add-apt-repository 'deb http://apt.llvm.org/jessie/ llvm-toolchain-jessie-3.9 main'
+
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+         xauth cmake flex clang-3.8 clang++-3.8 clang++-3.9 clang++-3.9  git ipython openmpi-bin pkg-config \
+         bash-completion emacs24 \
+         wget bison sudo \
+         libbz2-dev \
+         automake autoconf libtool  \
+         libopenblas-dev libcln-dev libcppunit-dev \
+         libpetsc3.4.2-dev libslepc3.4.2-dev liblapack-dev libmpfr-dev \
+         libopenmpi-dev libann-dev libglpk-dev \
+         python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
+         libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
+         python-numpy python-vtk6 python-six python-ply \
+         python-h5py python-urllib3 xterm tmux screen \
+         gmsh libgmsh-dev libopenturns-dev \
+         libproj-dev \
+         paraview \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+

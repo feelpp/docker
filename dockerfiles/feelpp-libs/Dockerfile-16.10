@@ -1,4 +1,4 @@
-## -*- docker-image-name: "feelpp/develop" -*-
+## -*- docker-image-name: "feelpp/feelpp-libs" -*-
 
 FROM feelpp/feelpp-env:16.10
 MAINTAINER Feel++ Support <support@feelpp.org>
