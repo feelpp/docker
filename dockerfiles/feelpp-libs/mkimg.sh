@@ -29,7 +29,7 @@ fromos=
 fromtag=
 
 tag=
-while true; do
+while [ -n "$1" ]; do
     case "$1" in
         -f|--from) from="$2" ; shift 2 ;;
         -t|--tag) tag="$2" ; shift 2 ;;
