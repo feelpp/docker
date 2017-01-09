@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 mkimg="$(basename "$0")"
@@ -28,6 +29,7 @@ usage() {
 fromos=
 fromtag=
 usage
+exit
 tag=
 while [ -n "$1" ]; do
     case "$1" in
