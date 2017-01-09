@@ -12,6 +12,7 @@ cxxflags=""
 cmakeflags=""
 branch=develop
 version=1.0
+nocache=true
 
 usage() {
     echo >&2 "usage: $mkimg [-f os-version] [-t tag]"
@@ -22,6 +23,7 @@ usage() {
     echo >&2 "              [--cxx c++ compiler, default: g++]"
     echo >&2 "              [--cc c compiler, default: gcc]"
     echo >&2 "              [--cxxflags c++ flags]"
+    echo >&2 "              [--no-cache true|false]"
     echo >&2 "   ie: $mkimg -f debian:sid  -c clang++ "
     exit 1
 }
@@ -40,6 +42,7 @@ while [ -n "$1" ]; do
         --cxx) cxx="$2" ; shift 2 ;;
         --cc) cc="$2" ; shift 2 ;;
         --cxxflags) cxxflags="$2" ; shift 2 ;;
+        --no-cache) nocache="$2" ; shift 2 ;;
         -v|--version) version="$2" ; shift 2 ;;
         -h|--help) usage ;;
         --) shift ; break ;;
@@ -82,4 +85,4 @@ cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME.libs $dir
 
-( set -x; docker build -t $tag $dir )
+( set -x; docker build -t $tag --no-cache=$nocache $dir )
