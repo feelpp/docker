@@ -27,7 +27,7 @@ usage() {
 
 fromos=
 fromtag=
-
+usage
 tag=
 while [ -n "$1" ]; do
     case "$1" in
@@ -44,6 +44,7 @@ while [ -n "$1" ]; do
         --) shift ; break ;;
     esac
 done
+usage
 splitfrom=(`echo "$from" | tr ":" "\n"`)
 fromos=${splitfrom[0]}
 fromtag=${splitfrom[1]}
