@@ -13,6 +13,7 @@ cmakeflags=""
 branch=develop
 version=1.0
 nocache=true
+travis=false
 
 usage() {
     echo >&2 "usage: $mkimg [-f os-version] [-t tag]"
@@ -24,6 +25,7 @@ usage() {
     echo >&2 "              [--cc c compiler, default: gcc]"
     echo >&2 "              [--cxxflags c++ flags]"
     echo >&2 "              [--no-cache true|false]"
+    echo >&2 "              [--travis true|false, default=false]"
     echo >&2 "   ie: $mkimg -f debian:sid  -c clang++ "
     exit 1
 }
@@ -43,6 +45,7 @@ while [ -n "$1" ]; do
         --cc) cc="$2" ; shift 2 ;;
         --cxxflags) cxxflags="$2" ; shift 2 ;;
         --no-cache) nocache="$2" ; shift 2 ;;
+        --travis) travis="$2" ; shift 2 ;;
         -v|--version) version="$2" ; shift 2 ;;
         -h|--help) usage ;;
         --) shift ; break ;;
@@ -75,6 +78,7 @@ ARG CXXFLAGS="${cxxflags}"
 ARG VERSION="${version}"
 ARG CXX="${cxx}"
 ARG CC="${cc}"
+ARG TRAVIS="${travis}"
 
 LABEL org.feelpp.vendor="Cemosis" \
       org.feelpp.version="${VERSION}"
