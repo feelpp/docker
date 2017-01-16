@@ -57,11 +57,11 @@ fromos=${splitfrom[0]}
 fromtag=${splitfrom[1]}
 
 if [ -z $tag ]; then
-    tag=feelpp/feelpp-libs:${fromos}-${fromtag}
+    tag=feelpp/feelpp-libs:${branch}-${fromos}-${fromtag}
 fi
 
-echo >&2 "directory $fromos-$fromtag"
-dir=$fromos-$fromtag-$cxx
+echo >&2 "directory $branch-$fromos-$fromtag"
+dir=$branch-$fromos-$fromtag-$cxx
 if [ ! -d "$dir" ]; then
     (set -x; mkdir "$dir")
 fi
