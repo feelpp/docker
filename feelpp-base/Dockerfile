@@ -1,4 +1,4 @@
-FROM feelpp/feelpp-libs:16.10
+FROM feelpp/feelpp-libs:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
@@ -7,6 +7,9 @@ ARG CMAKE_FLAGS=""
 
 USER feelpp
 ENV HOME /home/feelpp
+COPY feelpp.conf.sh $HOME/feelpp.conf.sh
+RUN chown feelpp:feelpp $HOME/feelpp.conf.sh && \
+    chmod u+rw $HOME/feelpp.conf.sh 
 
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_base ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"

@@ -66,7 +66,7 @@ build_feelpp_libs()
 }
 clean_feelpp()
 {
-    rm -rf ${FEELPP_BUILD_DIR}
+    rm -rf ${FEELPP_BUILD_DIR}/*
 }
 
 # install Feel++ libs
@@ -82,12 +82,11 @@ install_feelpp_libs()
 configure_feelpp_base()
 {
     cd $HOME
-    mkdir -p ${FEELPP_BUILD_DIR} 
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
-        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXXFLAGS=${CXXFLAGS} -DCMAKE_INSTALL_PREFIX="${FEELPP_HOME}" $* ${FEELPP_SRC_DIR}/feelpp/quickstart
+    	${FEELPP_SRC_DIR}/feelpp/quickstart/configure -r --root="${FEELPP_SRC_DIR}/feelpp/quickstart" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
     else
-        cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $* {$FEELPP_SRC_DIR}/feelpp/quickstart
+        ${FEELPP_SRC_DIR}/feelpp/quickstart/configure -r --root="${FEELPP_SRC_DIR}/feelpp/quickstart" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
     fi
 }
 
