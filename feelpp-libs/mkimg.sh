@@ -57,7 +57,7 @@ fromos=${splitfrom[0]}
 fromtag=${splitfrom[1]}
 
 if [ -z $tag ]; then
-    tag=feelpp/feelpp-libs:$(echo "${branch}" | sed -e 's/feature\///g')-${fromos}-${fromtag}
+    tag=feelpp/feelpp-libs:$(echo "${branch}" | sed -e 's/\//-/g')-${fromos}-${fromtag}
 fi
 
 echo >&2 "directory $branch-$fromos-$fromtag"
