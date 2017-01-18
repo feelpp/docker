@@ -15,7 +15,7 @@ COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.conf.sh" >> ${HOME}/.bashrc'
 
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_models ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_toolboxes ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME $HOME/WELCOME
 
