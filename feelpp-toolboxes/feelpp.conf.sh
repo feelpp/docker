@@ -119,36 +119,46 @@ install_feelpp_base()
 }
 
 
-
-
-install_feelpp_models()
+#
+# Feel++ Toolboxes
+configure_feelpp_toolboxes()
 {
-    #    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
-    #    then
-    if [[ $# -ge 1 ]]; then
-        pull_feelpp $1
-        shift
+    echo "--- Configuring Feel++ Toolboxes..."
+    cd $HOME
+    cd ${FEELPP_BUILD_DIR}/
+    if [[ $CXXFLAGS ]]; then
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="${FEELPP_SRC_DIR}/feelpp/toolboxes" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
     else
-        pull_feelpp develop
+        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="${FEELPP_SRC_DIR}/feelpp/toolboxes" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
     fi
-
-    if [[ $# -ge 1 ]]; then
-        # Get the number of jobs to be used
-        NJOBS=$1
-        shift
-        configure_feelpp $*
-        sudo make -j $NJOBS install-feelpp-apps
-    else
-        configure_feelpp $*
-        sudo make -j 20 install-feelpp-base
-        sudo make -j 20 install-feelpp-apps
-    fi
-    sudo mkdir -p /usr/local/share/feel/testcases
-    sudo make install-testcase
-
-
-    #    else
-    #	echo "Feel++ source cannot be found. Please run pull_feelpp first."
-    #    fi
-    clean_feelpp
+    echo -e "\033[33;32m--- Configuring Feel++ Base done. \033[0m"
 }
+
+build_feelpp_toolboxes()
+{
+    echo "--- Building Feel++ Toolboxes..."
+    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    then
+        # Get the number of jobs to be used
+        NJOBS=${2:-${DEFAULT_NJOBS}}
+        echo $NJOBS
+        #shift
+        # $* now contains possible additional cmake flags
+        configure_feelpp_toolboxes ${@:3}
+        sudo make -j $NJOBS install
+    else
+        echo "Feel++ source cannot be found. Please run pull_feelpp first."
+    fi
+    echo -e "\033[33;32m--- Build Feel++ Toolboxes done. \033[0m"
+}
+
+# install_feelpp_toolboxes <NJOBS:1>
+install_feelpp_toolboxes()
+{
+  build_feelpp_toolboxes ${1:-${DEFAULT_NJOBS}} ${*:2}
+  clean_feelpp
+}
+
+
+
+

@@ -1,13 +1,11 @@
-FROM feelpp/dev-env:2.0
+FROM feelpp/feelpp-base:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
 ARG BUILD_JOBS=16
 ARG CMAKE_FLAGS=""
-
-# C++
-ENV CXX clang++-3.9
-ENV CC clang-3.9
+ARG CXX=g++
+ARG CC=gcc
 
 USER feelpp
 ENV HOME /home/feelpp
@@ -19,9 +17,6 @@ RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.con
 
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_models ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
-
-# link $HOME/testcases to installed testcases
-RUN bash -c "ln -sf /usr/local/share/feel/testcases $HOME/Testcases"
 
 COPY WELCOME $HOME/WELCOME
 
