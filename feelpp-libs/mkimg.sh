@@ -63,7 +63,7 @@ fi
 echo >&2 "directory $branch-$fromos-$fromtag"
 dir=$branch-$fromos-$fromtag-$cxx
 if [ ! -d "$dir" ]; then
-    (set -x; mkdir "$dir")
+    (set -x; mkdir -p "$dir")
 fi
 
 echo >&2 "+ cat > '$dir/Dockerfile'"
