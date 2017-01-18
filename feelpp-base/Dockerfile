@@ -4,13 +4,14 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 ARG BRANCH=develop
 ARG BUILD_JOBS=16
 ARG CMAKE_FLAGS=""
+ARG CXX=g++
+ARG CC=gcc
 
+COPY feelpp.conf.sh $HOME/feelpp.conf.sh
+#RUN chown feelpp:feelpp $HOME/feelpp.conf.sh && \
+#    chmod u+rw $HOME/feelpp.conf.sh 
 USER feelpp
 ENV HOME /home/feelpp
-COPY feelpp.conf.sh $HOME/feelpp.conf.sh
-RUN chown feelpp:feelpp $HOME/feelpp.conf.sh && \
-    chmod u+rw $HOME/feelpp.conf.sh 
-
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_base ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
