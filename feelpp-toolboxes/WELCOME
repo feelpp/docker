@@ -7,12 +7,12 @@ This image provides the Feel++ applications in
  . fluid-structure interaction
  . thermodynamics
  . thermoelectric
+
 The testcases are in $HOME/Testcases/ and the results will be stored in
-/feel
+/feel.
 
 Follow the steps described in
 
-http://book.feelpp.org/content/Applications/Models/readme.html
+https://book.feelpp.org/content/en/03-modeling/
 
-to use the models.
-
+to use our toolboxes.
