@@ -1,4 +1,3 @@
-FROM feelpp/feelpp-base:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
