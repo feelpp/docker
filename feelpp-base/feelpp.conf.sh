@@ -104,7 +104,7 @@ build_feelpp_base()
         #shift
         # $* now contains possible additional cmake flags
         configure_feelpp_base ${@:3}
-        sudo make -j $NJOBS install-feelpp-base
+        sudo make -j $NJOBS install
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
