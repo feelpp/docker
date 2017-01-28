@@ -1,0 +1,4 @@
+# Feel++ CRB applications
+
+This image provides the Feel++ CRB applications.  The testcases are in
+$HOME/Testcases/ and the results will be stored in /feel
