@@ -1,0 +1,21 @@
+MAINTAINER Feel++ Support <support@feelpp.org>
+
+ARG PROJECT_NAME="project"
+ARG GIT_URL=""
+ARG BRANCH="master"
+ARG BUILD_JOBS=1
+ARG CXX=clang++-3.9
+ARG CC=clang-3.9
+
+USER feelpp
+ENV HOME /home/feelpp
+
+COPY feelpp.project.sh $HOME/feelpp.project.sh
+
+# Install Feel++
+RUN bash -c "source $HOME/feelpp.conf.sh && source $HOME/feelpp.project.sh && build_project ${PROJECT_NAME} ${GIT_URL} ${BRANCH} ${BUILD_JOBS} && clean_project ${PROJECT_NAME}"
+
+# COPY WELCOME $HOME/WELCOME
+USER feelpp
+#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
+CMD ["/bin/bash"]
