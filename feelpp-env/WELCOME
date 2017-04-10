@@ -1,6 +1,10 @@
-# Feel++ development environment image -*- markdown -*-
+= Feel++ development environment image
 
 This image provides a development environment for building the Feel++
 libraries. It does not provide an installation of Feel++. It is
 intended for developers and users who want to build their own version
 of Feel++.
+
+Editors: [ Emacs, Vim, Nano ]
+Programming: [ clang, cmake, {Feel++ dependencies} ]
+Tools: [ asciidoctor{-latex,-bibtex}, jekyll{-asciidoc} ]
