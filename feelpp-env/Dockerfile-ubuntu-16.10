@@ -16,6 +16,7 @@ RUN apt-get -qq update && \
          wget bison sudo \
          libbz2-dev \
          automake autoconf libtool libboost-all-dev \
+         doxygen \
          libopenblas-dev libcln-dev libcppunit-dev \
          libpetsc3.7-dev libslepc3.7-dev liblapack-dev libmpfr-dev \
          libopenmpi-dev libann-dev libglpk-dev \

@@ -145,8 +145,7 @@ build_feelpp_toolboxes()
         #shift
         # $* now contains possible additional cmake flags
         configure_feelpp_toolboxes ${@:3}
-        make -j $NJOBS
-        sudo make install
+        sudo make -j $NJOBS install
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
@@ -157,6 +156,47 @@ build_feelpp_toolboxes()
 install_feelpp_toolboxes()
 {
   build_feelpp_toolboxes ${1:-${DEFAULT_NJOBS}} ${*:2}
+  clean_feelpp
+}
+
+
+#
+# Feel++ CRB
+configure_feelpp_crb()
+{
+    echo "--- Configuring Feel++ CRB..."
+    cd $HOME
+    cd ${FEELPP_BUILD_DIR}/
+    if [[ $CXXFLAGS ]]; then
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="${FEELPP_SRC_DIR}/feelpp/applications/crb" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
+    else
+        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="${FEELPP_SRC_DIR}/feelpp/applications/crb" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
+    fi
+    echo -e "\033[33;32m--- Configuring Feel++ CRB done. \033[0m"
+}
+
+build_feelpp_crb()
+{
+    echo "--- Building Feel++ CRB..."
+    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    then
+        # Get the number of jobs to be used
+        NJOBS=${2:-${DEFAULT_NJOBS}}
+        echo $NJOBS
+        #shift
+        # $* now contains possible additional cmake flags
+        configure_feelpp_crb ${@:3}
+        sudo make -j $NJOBS install
+    else
+        echo "Feel++ source cannot be found. Please run pull_feelpp first."
+    fi
+    echo -e "\033[33;32m--- Build Feel++ CRB done. \033[0m"
+}
+
+# install_feelpp_crb <NJOBS:1>
+install_feelpp_crb()
+{
+  build_feelpp_crb ${1:-${DEFAULT_NJOBS}} ${*:2}
   clean_feelpp
 }
 

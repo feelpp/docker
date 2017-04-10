@@ -10,6 +10,9 @@ ENV HOME /home/feelpp
 COPY feelpp.env.sh $HOME/feelpp.env.sh
 COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 
+# add docker
+RUN apt-get -yqq update && apt-get -yqq install docker.io && usermod -g docker feelpp
+
 # and the README
 COPY WELCOME $HOME/WELCOME
 RUN chown feelpp:feelpp $HOME/WELCOME && \
