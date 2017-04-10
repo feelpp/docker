@@ -1,1 +1,6 @@
 = Feel++ development environment images
+
+generate images for ubuntu-16.10 with clang++ 3.9
+----
+bash mkimg.sh  -f ubuntu:16.10 -t feelpp/feelpp-env:ubuntu-16.10 -c clang++-3.9   --
+----

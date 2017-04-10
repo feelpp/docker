@@ -20,6 +20,7 @@ RUN apt-get -qq update && \
          libopenblas-dev libcln-dev libcppunit-dev \
          libpetsc3.7-dev libslepc3.7-dev liblapack-dev libmpfr-dev \
          libopenmpi-dev libann-dev libglpk-dev \
+         jq curl ruby ruby-dev \
          python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
          libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
          python-numpy python-vtk6 python-six python-ply \
@@ -31,4 +32,5 @@ RUN apt-get -qq update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
+RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
+ && gem install asciidoctor-latex --pre
