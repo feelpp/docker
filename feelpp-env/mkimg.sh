@@ -14,10 +14,12 @@ usage() {
 
 fromos=
 fromtag=
+install_altair=
 
 tag=
 while true; do
     case "$1" in
+        -a|--altair) install_altair="$2" ; shift 2 ;;
         -f|--from) from="$2" ; shift 2 ;;
         -t|--tag) tag="$2" ; shift 2 ;;
         -c|--cxx) cxx="$2" ; shift 2 ;;
@@ -53,6 +55,10 @@ LABEL org.feelpp.vendor="Cemosis" \
 EOF
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
+
+if [ "x$install_altair" = "x1" ]; then
+   cat Dockerfile-altair >> "$dir/Dockerfile"
+fi
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 

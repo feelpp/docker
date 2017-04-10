@@ -1,4 +1,4 @@
-FROM feelpp/feelpp-libs:latest
+FROM feelpp/feelpp-base:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG PROJECT_NAME="project"
