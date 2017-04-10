@@ -12,7 +12,8 @@ RUN add-apt-repository 'deb http://ubuntu.openturns.org yakkety main'
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
          xauth cmake flex gcc-6 g++-6 clang-3.9 clang++-3.9  git ipython openmpi-bin pkg-config \
-         bash-completion emacs24 \      
+         bash-completion \
+         emacs24 emacs vim nano \      
          wget bison sudo \
          libbz2-dev \
          automake autoconf libtool libboost-all-dev \
