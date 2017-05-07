@@ -10,7 +10,7 @@ USER feelpp
 ENV HOME /home/feelpp
 
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_modules ${BRANCH} toolboxes $HOME/src/feelpp/toolboxes ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} toolboxes $HOME/src/feelpp/toolboxes ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME $HOME/WELCOME
 
