@@ -131,19 +131,19 @@ configure_feelpp_module()
 
 build_feelpp_module()
 {
-    echo "--- Building Feel++ Module ${1}..."
+    echo "--- Building Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
-        MODULE=${1}
+        MODULE=${2}
         echo $MODULE
-        MODULEPATH=${2}
+        MODULEPATH=${3}
         echo $MODULEPATH
         # Get the number of jobs to be used
-        NJOBS=${3:-${DEFAULT_NJOBS}}
+        NJOBS=${4:-${DEFAULT_NJOBS}}
         echo $NJOBS
         #shift
         # $* now contains possible additional cmake flags
-        configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:4}
+        configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:5}
         sudo make -j $NJOBS install
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
@@ -154,6 +154,6 @@ build_feelpp_module()
 # install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
 install_feelpp_module()
 {
-  build_feelpp_module ${1} ${2} ${3:-${DEFAULT_NJOBS}} ${*:4}
+  build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
   clean_feelpp
 }
