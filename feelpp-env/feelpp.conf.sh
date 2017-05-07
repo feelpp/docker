@@ -114,36 +114,46 @@ install_feelpp_base()
 }
 
 
-
-
-install_feelpp_models()
+#
+# Feel++ module
+configure_feelpp_module()
 {
-    #    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
-    #    then
-    if [[ $# -ge 1 ]]; then
-        pull_feelpp $1
-        shift
+    echo "--- Configuring Feel++ $1 ..."
+    cd $HOME
+    cd ${FEELPP_BUILD_DIR}/
+    if [[ $CXXFLAGS ]]; then
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
     else
-        pull_feelpp develop
+        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
     fi
+    echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
+}
 
-    if [[ $# -ge 1 ]]; then
+build_feelpp_module()
+{
+    echo "--- Building Feel++ Module ${1}..."
+    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    then
+        MODULE=${1}
+        echo $MODULE
+        MODULEPATH=${2}
+        echo $MODULEPATH
         # Get the number of jobs to be used
-        NJOBS=$1
-        shift
-        configure_feelpp $*
-        sudo make -j $NJOBS install-feelpp-apps
+        NJOBS=${3:-${DEFAULT_NJOBS}}
+        echo $NJOBS
+        #shift
+        # $* now contains possible additional cmake flags
+        configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:4}
+        sudo make -j $NJOBS install
     else
-        configure_feelpp $*
-        sudo make -j 20 install-feelpp-base
-        sudo make -j 20 install-feelpp-apps
+        echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
-    sudo mkdir -p /usr/local/share/feel/testcases
-    sudo make install-testcase
+    echo -e "\033[33;32m--- Build Feel++ ${MODULE} done. \033[0m"
+}
 
-
-    #    else
-    #	echo "Feel++ source cannot be found. Please run pull_feelpp first."
-    #    fi
-    clean_feelpp
+# install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
+install_feelpp_module()
+{
+  build_feelpp_module ${1} ${2} ${3:-${DEFAULT_NJOBS}} ${*:4}
+  clean_feelpp
 }

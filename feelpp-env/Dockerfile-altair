@@ -1,1 +1,11 @@
+RUN cd /tmp \
+    && wget http://4fastsim.feelpp.org:8000/squash-altair \
+    && wget http://4fastsim.feelpp.org:8000/resp-altair \
+    && wget http://4fastsim.feelpp.org:8000/hwAcuSolve2017_linux64.bin \
+    && ls -l /tmp \ 
+    && mkdir /opt/altair \
+    && bash /tmp/hwAcuSolve2017_linux64.bin < /tmp/resp-altair \
+    && rm /tmp/hwAcuSolve2017_linux64.bin resp-altair \
+    && bash squash-altair /opt/altair
 
+ENV ACUSIM_DIR /opt/altair

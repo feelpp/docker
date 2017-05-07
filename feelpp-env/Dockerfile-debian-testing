@@ -11,7 +11,9 @@ RUN apt-get -qq update && \
     python-h5py python-numpy python-ply python-six \
     python-urllib3 python-vtk6 screen slepc-dev sudo \
     tmux wget xauth xterm zsh \
-    && apt-get -y install ${CXX} \
+    && apt-get -y install ${CXX} ${CC}\
+    && update-alternatives --set clang "/usr/bin/${CC}" \
+    && update-alternatives --set clang++ "/usr/bin/${CXX}" \    
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

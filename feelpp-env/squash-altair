@@ -1,0 +1,17 @@
+#!/bin/bash
+
+prefix=${1:-/opt/altair}
+cd $prefix
+
+du -d 2 -h 
+echo "squashing $prefix..."
+pushd .
+rm -rf jre uninstall uninstalls
+cd altair
+rm -rf LinuxMenu   hw  hw_copyright.txt  logs  mpi  scripts  security  updates
+cd acusolve/linux64
+rm -rf MANIFEST.txt  abaqus-odb  base  ct  doc  fv  help   make  model_files  plugins  script  tools
+cd bin && find .  -not -name 'libh3d*' -not -name 'libintlc*' -print | xargs  rm 
+popd
+echo "squashing $prefix done."
+du -d 2 -h 

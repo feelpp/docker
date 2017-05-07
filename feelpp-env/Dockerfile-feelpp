@@ -10,8 +10,19 @@ ENV HOME /home/feelpp
 COPY feelpp.env.sh $HOME/feelpp.env.sh
 COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 
-# add docker
-RUN apt-get -yqq update && apt-get -yqq install docker.io && usermod -g docker feelpp
+# install docker and asciidoctor related tool
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+            docker.io \
+            man jq curl ruby ruby-dev \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*\
+    && usermod -g docker feelpp
+
+
+RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
+ && gem install asciidoctor-latex --pre
 
 # and the README
 COPY WELCOME $HOME/WELCOME

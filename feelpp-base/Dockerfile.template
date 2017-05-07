@@ -6,16 +6,14 @@ ARG CMAKE_FLAGS=""
 ARG CXX=g++
 ARG CC=gcc
 
-COPY feelpp.conf.sh $HOME/feelpp.conf.sh
-#RUN chown feelpp:feelpp $HOME/feelpp.conf.sh && \
-#    chmod u+rw $HOME/feelpp.conf.sh 
 USER feelpp
 ENV HOME /home/feelpp
+
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_base ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} quickstart $HOME/src/feelpp/quickstart ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 # link $HOME/testcases to installed testcases
-RUN bash -c "ln -sf /usr/local/share/feel/testcases $HOME/Testcases"
+RUN bash -c "ln -sf /usr/local/share/feelpp/testcases $HOME/Testcases"
 
 COPY WELCOME.base $HOME/WELCOME
 

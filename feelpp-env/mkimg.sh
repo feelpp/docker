@@ -56,9 +56,9 @@ EOF
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
-if [ "x$install_altair" = "x1" ]; then
-   cat Dockerfile-altair >> "$dir/Dockerfile"
-fi
+#if [ "x$install_altair" = "x1" ]; then
+cat Dockerfile-altair >> "$dir/Dockerfile"
+#fi
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 

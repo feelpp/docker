@@ -9,13 +9,8 @@ ARG CC=gcc
 USER feelpp
 ENV HOME /home/feelpp
 
-COPY feelpp.conf.sh $HOME/feelpp.conf.sh
-
-# Source config for further use
-RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.conf.sh" >> ${HOME}/.bashrc'
-
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_toolboxes ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_modules ${BRANCH} toolboxes $HOME/src/feelpp/toolboxes ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME $HOME/WELCOME
 
