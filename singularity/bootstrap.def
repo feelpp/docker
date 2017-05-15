@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: feelpp/feelpp-toolboxes:latest
+
+%setup
+    echo "Looking in directory '$SINGULARITY_ROOTFS' for /bin/sh"
+    if [ ! -x "$SINGULARITY_ROOTFS/bin/sh" ]; then
+        echo "Hrmm, this container does not have /bin/sh installed..."
+        exit 1
+    fi
+    cp includes/environment $SINGULARITY_ROOTFS/
+    exit 0
+
+%post
+    export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+    echo "Post install"
+    cat /etc/bash.bashrc | sed 's/\(PS1=.*$\)/#\1/g' > /etc/bash.bashrc
+    mv /home/feelpp /opt/feelpp
+    echo "alias ls='ls --color=auto'" >> /etc/profile
+    echo "alias ll='ls -ls'" >> /etc/profile
+    echo "alias grep='grep --color'" >> /etc/profile
+
+%runscript
+    cd /opt/feelpp
+    export WELCOME=`cat WELCOME`
+    echo -e "${WELCOME}"
+    echo "Arguments received: $*"
+    exec /usr/bin/python "$@"
