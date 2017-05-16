@@ -15,13 +15,12 @@ From: feelpp/feelpp-toolboxes:latest
     echo "Post install"
     cat /etc/bash.bashrc | sed 's/\(PS1=.*$\)/#\1/g' > /etc/bash.bashrc
     mv /home/feelpp /opt/feelpp
-    echo "alias ls='ls --color=auto'" >> /etc/profile
-    echo "alias ll='ls -ls'" >> /etc/profile
-    echo "alias grep='grep --color'" >> /etc/profile
+    echo "alias ls='ls --color=auto'" >> /etc/bash.bashrc
+    echo "alias ll='ls -ls'" >> /etc/bash.bashrc
+    echo "alias grep='grep --color'" >> /etc/bash.bashrc
+    exit 0
 
 %runscript
     cd /opt/feelpp
-    export WELCOME=`cat WELCOME`
-    echo -e "${WELCOME}"
     echo "Arguments received: $*"
     exec /usr/bin/python "$@"
