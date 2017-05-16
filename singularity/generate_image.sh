@@ -32,6 +32,6 @@ if ! [[ "$(docker images -q feelpp/${DOCKERIMAGE})" == "" ]]; then
     # MUST BE SUDO HERE!
     sudo singularity bootstrap "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
 else
-    echo -e "error: $0:\nImage image feelpp/${DOCKERIMAGE} does not exist!"
+    echo -e "error: $0:\nLocal docker image feelpp/${DOCKERIMAGE} does not exist! You might want to do 'docker pull feelpp/${DOCKERIMAGE}' first"
     exit 1
 fi

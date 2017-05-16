@@ -19,7 +19,7 @@ if ! [[ "$(docker images -q feelpp/${DOCKERIMAGE})" == "" ]]; then
         exit 1
     fi
 else
-    echo -e "error: $0:\nImage feelpp/${DOCKERIMAGE} does not exist!"
+    echo -e "error: $0:\nLocal docker image feelpp/${DOCKERIMAGE} does not exist! You might want to do 'docker pull feelpp/${DOCKERIMAGE}' first"
     exit 1
 fi
 
