@@ -11,8 +11,13 @@ if [ -z "$LSHOME" ]; then
 (Use a bind directory '-B <src>:<dest>')"
 else
     # users do not use '-c' singularity shell option
-    cp -r /opt/feelpp/ ${HOME}/feelpp-tutorial
-    echo -e "Modifications are saved in ${HOME}/feelpp-tutorial"
+    if ! [ -d ${HOME}/feelpp-tutorial ]; then
+        cp -r /opt/feelpp/ ${HOME}/feelpp-tutorial
+        echo -e "Modifications are saved in ${HOME}/feelpp-tutorial"
+    else
+        echo -e "Use existing ${HOME}/feelpp-tutorial (remove this directory and 
+rerun the container to reset the tutorial)"
+    fi
     cd ~/feelpp-tutorial
 fi
 echo -e "\e[0m"
