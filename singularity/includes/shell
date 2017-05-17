@@ -14,6 +14,8 @@ else
     echo -e "\e[1;34m"
     echo -e "$(cat feelpp-tutorial/WELCOME)"
     echo -e "Your are now in the singularity container!"
+    echo -e "\e[1;31m"
+    echo -e "Modifications are saved in ${HOME}/feelpp-tutorial"
     echo -e "\e[0m"
     cd ~/feelpp-tutorial
 fi

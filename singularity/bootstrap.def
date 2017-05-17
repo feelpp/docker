@@ -16,6 +16,7 @@ From: feelpp/feelpp-toolboxes:latest
     echo "Post install"
     cat /etc/bash.bashrc | sed 's/\(PS1=.*$\)/#\1/g' > /etc/bash.bashrc
     mv /home/feelpp /opt/feelpp
+    rm -rf /opt/feelpp/.*
     echo "alias ls='ls --color=auto'" >> /etc/bash.bashrc
     echo "alias ll='ls -ls'" >> /etc/bash.bashrc
     echo "alias grep='grep --color'" >> /etc/bash.bashrc
