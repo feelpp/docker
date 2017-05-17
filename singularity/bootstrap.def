@@ -23,6 +23,5 @@ From: feelpp/feelpp-toolboxes:latest
     exit 0
 
 %runscript
-    echo "SUPER TOTO"
     echo "Arguments received: $*"
     exec /usr/bin/python "$@"
