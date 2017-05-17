@@ -8,6 +8,7 @@ From: feelpp/feelpp-toolboxes:latest
         exit 1
     fi
     cp includes/environment $SINGULARITY_ROOTFS/
+    cp includes/shell $SINGULARITY_ROOTFS/.shell
     exit 0
 
 %post
@@ -21,6 +22,6 @@ From: feelpp/feelpp-toolboxes:latest
     exit 0
 
 %runscript
-    cd /opt/feelpp
+    echo "SUPER TOTO"
     echo "Arguments received: $*"
     exec /usr/bin/python "$@"

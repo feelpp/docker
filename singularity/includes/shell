@@ -1,0 +1,34 @@
+#!/bin/bash
+. /environment
+LSHOME=`ls -A ${HOME}`
+if [ -z "$LSHOME" ]; then
+    cp -r /opt/feelpp/* ${HOME}/
+    echo -e "\e[1;34m"
+    echo -e "$(cat WELCOME)"
+    echo -e "\e[1;31m"
+    echo -e "Modifications in ${HOME} are not saved once you quit the container! 
+(Use a bind directory '-B <src>:<dest>')"
+    echo -e "\e[0m"
+else
+    cp -r /opt/feelpp/ ${HOME}/feelpp-tutorial
+    echo -e "\e[1;34m"
+    echo -e "$(cat feelpp-tutorial/WELCOME)"
+    echo -e "Your are now in the singularity container!"
+    echo -e "\e[0m"
+    cd ~/feelpp-tutorial
+fi
+
+if test -n "$SHELL" -a -x "$SHELL"; then
+    exec "$SHELL" "$@"
+else
+    echo "ERROR: Shell does not exist in container: $SHELL" 1>&2
+    echo "ERROR: Using /bin/sh instead..." 1>&2
+fi
+if test -x /bin/sh; then
+    SHELL=/bin/sh
+    export SHELL
+    exec /bin/sh "$@"
+else
+    echo "ERROR: /bin/sh does not exist in container" 1>&2
+fi
+exit 1

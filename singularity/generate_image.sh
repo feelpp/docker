@@ -26,11 +26,10 @@ if ! [[ "$(docker images -q feelpp/${DOCKERIMAGE})" == "" ]]; then
         exit 1
     fi
 
-    mkdir work
     # MUST BE SUDO HERE!
     sudo singularity create --force --size "${IMAGESIZE}" "${IMAGEDIR}/${SINGULARITYIMAGE}"
     # MUST BE SUDO HERE!
-    sudo singularity bootstrap "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
+    sudo singularity bootstrap --force "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
 else
     echo -e "error: $0:\nLocal docker image feelpp/${DOCKERIMAGE} does not exist! You might want to do 'docker pull feelpp/${DOCKERIMAGE}' first"
     exit 1
