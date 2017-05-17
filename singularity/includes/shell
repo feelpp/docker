@@ -1,24 +1,21 @@
 #!/bin/bash
 . /environment
 LSHOME=`ls -A ${HOME}`
+echo -e "\e[1;34m"
+echo -e "$(cat /opt/feelpp/WELCOME)"
+echo -e "\e[1;31m"
 if [ -z "$LSHOME" ]; then
+    # users use '-c' singularity shell option
     cp -r /opt/feelpp/* ${HOME}/
-    echo -e "\e[1;34m"
-    echo -e "$(cat WELCOME)"
-    echo -e "\e[1;31m"
     echo -e "Modifications in ${HOME} are not saved once you quit the container! 
 (Use a bind directory '-B <src>:<dest>')"
-    echo -e "\e[0m"
 else
+    # users do not use '-c' singularity shell option
     cp -r /opt/feelpp/ ${HOME}/feelpp-tutorial
-    echo -e "\e[1;34m"
-    echo -e "$(cat feelpp-tutorial/WELCOME)"
-    echo -e "Your are now in the singularity container!"
-    echo -e "\e[1;31m"
     echo -e "Modifications are saved in ${HOME}/feelpp-tutorial"
-    echo -e "\e[0m"
     cd ~/feelpp-tutorial
 fi
+echo -e "\e[0m"
 
 if test -n "$SHELL" -a -x "$SHELL"; then
     exec "$SHELL" "$@"
