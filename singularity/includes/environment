@@ -4,8 +4,7 @@ if test -z "$SINGULARITY_INIT"; then
     SHELL=/bin/bash
     FEELPP_WORKDIR=/feel
     PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-    PS1="\[\e[1;36m\]\u@\h\[\e[0m\]:\w> "
-    PROMPT_COMMAND="\[\e[1;37m\][singularity]:\[\e[0m\] "
+    PS1="\[\e[1;37m\][singularity]: \[\e[1;36m\]\u@\h\[\e[0m\]:\w> "
     SINGULARITY_INIT=1
     export PATH PS1 SINGULARITY_INIT
 fi
