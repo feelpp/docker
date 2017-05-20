@@ -1,0 +1,30 @@
+= Singularity container
+
+You will find two scripts to generate the bootstrap files for feel++ container
+images and to generate the singularity image.
+
+```
+./generate_bootstrap.sh <dochub>
+./generate_image.sh <dochub>
+```
+
+For example to generate `feelpp/feelpp-toolboxes`, just do
+
+```
+./generate_bootstrap.sh feelpp/feelpp-toolboxes
+./generate_image.sh feelpp/feelpp-toolboxes
+```
+
+TIP: Bootstrap and image are generated in the corresponding container folder at
+the root of the reposity. For example `/feelpp-toolboxes`
+
+
+
+= Singularity version changes
+
+
+For singularity version 2.3, run script and shell script will be located
+at 
+
+- /singularity.d/actions/run
+- /singularity.d/actions/shell
