@@ -1,11 +1,9 @@
-FROM ubuntu:16.10
-MAINTAINER Feel++ Support <support@feelpp.org>
-
-
-
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-    software-properties-common python-software-properties
+    software-properties-common python-software-properties lsb-release \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     
 RUN add-apt-repository 'deb http://ubuntu.openturns.org yakkety main'
 
@@ -19,6 +17,7 @@ RUN apt-get -qq update && \
          automake autoconf libtool libboost-all-dev \
          doxygen \
          libopenblas-dev libcln-dev libcppunit-dev \
+         libgsl-dev \
          libpetsc3.7-dev libslepc3.7-dev liblapack-dev libmpfr-dev \
          libopenmpi-dev libann-dev libglpk-dev \
          python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
@@ -27,7 +26,6 @@ RUN apt-get -qq update && \
          python-h5py python-urllib3 xterm tmux screen \
          gmsh libgmsh-dev \
          libopenturns-dev python-openturns openturns-validation openturns-examples r-other-rot\
-         paraview \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
