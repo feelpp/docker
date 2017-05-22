@@ -1,0 +1,15 @@
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+    sudo software-properties-common python-software-properties lsb-release wget \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN (for deb in deb deb-src; do echo "$deb http://build.openmodelica.org/apt `lsb_release -cs` release"; done | sudo tee /etc/apt/sources.list.d/openmodelica.list)
+RUN (wget -q http://build.openmodelica.org/apt/openmodelica.asc -O- | sudo apt-key add - )
+RUN    sudo apt -qq update \
+    && sudo apt  -y --force-yes install openmodelica \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
