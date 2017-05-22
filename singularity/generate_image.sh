@@ -9,7 +9,7 @@ source include_path.sh
 if ! [[ "$(docker images -q feelpp/${DOCKERIMAGE})" == "" ]]; then
 
     # Get human readable image size from docker.
-    imagesizeh=`docker images --format "{{ .Size }}" "feelpp/${DOCKERIMAGE}" | sed "s/B//g"`;
+    imagesizeh=`docker images --format "{{ .Size }}" "feelpp/${DOCKERIMAGE}" | sed "s/B//g" | sed "s/\ *//g"`;
     echo "Docker image size ${imagesizeh}"
     ## Convert to MB real size.
     export LC_ALL=C
