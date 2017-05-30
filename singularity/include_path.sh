@@ -11,19 +11,20 @@ fi
 
 ################################################################################
 # DOCKER INSTALL IS REQUIRED
-DOCKERPULL="$1"
 SINGULARITYPADDING=500
-BASEIMAGETAG=`basename ${DOCKERPULL}`
-BASEIMAGE=`echo "${BASEIMAGETAG}" | sed 's/:.*//'`
-TAG=latest
-if [[ "${BASEIMAGETAG}" == *":"* ]]; then
-    TAG=`echo "${BASEIMAGETAG}" | sed "s/.*://"`
+DOCKERIMAGE=$1
+BASEIMAGE=`echo "${DOCKERIMAGE}" | sed 's/:.*//'`
+BASE=`echo "${BASEIMAGE}" | sed 's/\/.*//'`
+IMAGE=`echo "${BASEIMAGE}" | sed 's/.*\///'`
+TAG=`echo "${DOCKERIMAGE}" | sed "s/.*://"`
+if [ ! -n "$TAG" ]; then
+    TAG=latest
 fi
+BASEIMAGETAG=${BASE}/${IMAGE}:${TAG}
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
-BOOTSTRAPDIR=${ROOTDIR}/${BASEIMAGE}/
-BOOTSTRAP=singularity-${TAG}.def
+BOOTSTRAPDIR=${ROOTDIR}/singularity/images/${BASE}/${IMAGE}/${TAG}/
+BOOTSTRAP=singularity_${BASE}_${IMAGE}-${TAG}.def
 IMAGEDIR=$BOOTSTRAPDIR
 
-DOCKERIMAGE=${BASEIMAGE}:${TAG}
-SINGULARITYIMAGE=singularity_${BASEIMAGE}-${TAG}.img
+SINGULARITYIMAGE=singularity_${BASE}_${IMAGE}-${TAG}.img
 ################################################################################

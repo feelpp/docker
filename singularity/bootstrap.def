@@ -7,20 +7,27 @@ From: feelpp/feelpp-toolboxes:latest
         echo "Hrmm, this container does not have /bin/sh installed..."
         exit 1
     fi
-    cp includes/environment $SINGULARITY_ROOTFS/
-    cp includes/shell $SINGULARITY_ROOTFS/.shell
+
+    cp singularity.d/env/99-feelenv.sh $SINGULARITY_ROOTFS/.singularity.d/env/
+
     exit 0
 
 %post
-    export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
     echo "Post install"
-    cat /etc/bash.bashrc | sed 's/\(PS1=.*$\)/#\1/g' > /etc/bash.bashrc
+    sed -i 's/.*PS1 *=.*//g' /etc/bash.bashrc
+    sed -i 's/.*PS1 *=.*//g' /.singularity.d/actions/shell
+    sed -i 's/.*PS1 *=.*//g' /.singularity.d/env/99-base.sh
+    sed -i 's/.*HOME *=.*//g' /.singularity.d/env/10-docker.sh
     mkdir /feel
     mv /home/feelpp /opt/feelpp
+    
+    # Clean temporary files. 
     rm -rf `find /opt/feelpp -name ".*" ! -path .`
+
     echo "alias ls='ls --color=auto'" >> /etc/bash.bashrc
     echo "alias ll='ls -ls'" >> /etc/bash.bashrc
     echo "alias grep='grep --color'" >> /etc/bash.bashrc
+
     exit 0
 
 %runscript
