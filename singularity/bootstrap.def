@@ -1,15 +1,19 @@
 Bootstrap: docker
 From: feelpp/feelpp-toolboxes:latest
 
+%labels
+Maintainer guillaume.dolle@cemosis.fr
+Version 1.0
+
+%files
+    singularity.d/env/99-feelenv.sh .singularity.d/env/
+
 %setup
     echo "Looking in directory '$SINGULARITY_ROOTFS' for /bin/sh"
     if [ ! -x "$SINGULARITY_ROOTFS/bin/sh" ]; then
         echo "Hrmm, this container does not have /bin/sh installed..."
         exit 1
     fi
-
-    cp singularity.d/env/99-feelenv.sh $SINGULARITY_ROOTFS/.singularity.d/env/
-
     exit 0
 
 %post
@@ -20,6 +24,9 @@ From: feelpp/feelpp-toolboxes:latest
     sed -i 's/.*HOME *=.*//g' /.singularity.d/env/10-docker.sh
     mkdir /feel
     mv /home/feelpp /opt/feelpp
+    userdel feelpp
+    chown -R root:root /opt/feelpp
+    chmod -R 777 /opt/feelpp
     
     # Clean temporary files. 
     rm -rf `find /opt/feelpp -name ".*" ! -path .`
@@ -33,3 +40,18 @@ From: feelpp/feelpp-toolboxes:latest
 %runscript
     echo "Arguments received: $*"
     exec /usr/bin/python "$@"
+
+%environment
+white=`tput setaf 7`
+cyan=`tput setaf 6`
+reset=`tput sgr0`
+bold=`tput bold`
+escleft="\[" # `if [ "${SHELL##*/}" == "bash" ]; then echo '\['; fi`
+escright="\]" #`if [ "${SHELL##*/}" == "bash" ]; then echo '\]'; fi`
+USER=`id -un`
+HOSTNAME=`hostname`
+
+export SINGULARITY_SHELL=bash
+export FEELPP_TUTORIAL=/opt/feelpp
+export PS1="${escleft}${bold}${white}${escright}[singularity]:${escleft}${cyan}${escright} ${USER}@${HOSTNAME}${escleft}${reset}${escright}:\w> "
+

@@ -7,7 +7,8 @@
 source include_path.sh
 
 if ! [[ "$(docker images -q ${BASEIMAGETAG})" == "" ]]; then
-    if [ ! -f ${BOOTSTRAPDIR}/${BOOTSTRAP} ]; then
+    if [ ! -f "${BOOTSTRAPDIR}/${BOOTSTRAP}" ]; then
+        echo "Bootstrap: ${BOOTSTRAPDIR}/${BOOTSTRAP} not found!"
         echo "You should run './generate_bootstrap.sh ${BASEIMAGETAG}' first!"
         exit 1
     fi
@@ -24,7 +25,7 @@ if ! [[ "$(docker images -q ${BASEIMAGETAG})" == "" ]]; then
     echo "Docker generate image  ${IMAGESIZE} MiB"
     
     # MUST BE SUDO HERE!
-    sudo singularity create --force --size "${IMAGESIZE}" "${IMAGEDIR}/${SINGULARITYIMAGE}"
+    singularity create --force --size "${IMAGESIZE}" "${IMAGEDIR}/${SINGULARITYIMAGE}"
     # MUST BE SUDO HERE!
     sudo singularity bootstrap --force "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
 else

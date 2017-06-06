@@ -17,13 +17,14 @@ BASEIMAGE=`echo "${DOCKERIMAGE}" | sed 's/:.*//'`
 BASE=`echo "${BASEIMAGE}" | sed 's/\/.*//'`
 IMAGE=`echo "${BASEIMAGE}" | sed 's/.*\///'`
 TAG=`echo "${DOCKERIMAGE}" | sed "s/.*://"`
-if [ ! -n "$TAG" ]; then
+if [ ! -n "$TAG" ] || [ "$TAG" ==  "$DOCKERIMAGE" ]; then
     TAG=latest
 fi
 BASEIMAGETAG=${BASE}/${IMAGE}:${TAG}
+echo $BASEIMAGETAG
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 BOOTSTRAPDIR=${ROOTDIR}/singularity/images/${BASE}/${IMAGE}/${TAG}/
-BOOTSTRAP=singularity_${BASE}_${IMAGE}-${TAG}.def
+BOOTSTRAP=Singularity
 IMAGEDIR=$BOOTSTRAPDIR
 
 SINGULARITYIMAGE=singularity_${BASE}_${IMAGE}-${TAG}.img
