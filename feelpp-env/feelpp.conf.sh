@@ -72,8 +72,11 @@ clean_feelpp()
 # install Feel++ libs
 install_feelpp_libs()
 {
-    pull_feelpp ${1:-${DEFAULT_BRANCH}}
-    build_feelpp_libs ${2:-${DEFAULT_NJOBS}}
+    BRANCH=${1:-${DEFAULT_BRANCH}}
+    NJOBS=${2:-${DEFAULT_NJOBS}}
+    pull_feelpp ${BRANCH}
+    build_feelpp_libs ${NJOBS}
+    install_feelpp_module ${BRANCH} pyfeelpp $HOME/src/feelpp/pyfeelpp ${NJOBS} 
     clean_feelpp
 }
 
