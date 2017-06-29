@@ -26,7 +26,7 @@ if ! [[ "$(docker images -q ${BASEIMAGETAG})" == "" ]]; then
     
     singularity create --force --size "${IMAGESIZE}" "${IMAGEDIR}/${SINGULARITYIMAGE}"
     # MUST BE SUDO HERE!
-    singularity bootstrap --force "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
+    sudo singularity bootstrap --force "${IMAGEDIR}/${SINGULARITYIMAGE}" "${BOOTSTRAPDIR}/${BOOTSTRAP}"
 else
     echo -e "error: $0:\nLocal docker image ${DOCKERIMAGE} does not exist! You might want to do 'docker pull ${DOCKERIMAGE}' first"
     exit 1
