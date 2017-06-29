@@ -6,6 +6,11 @@
 
 source include_path.sh
 
+if [[ "${SINGULARITY_BIN}" == "" ]]; then
+    echo "singularity binary not found!"
+    exit 1
+fi
+
 if ! [[ "$(docker images -q ${BASEIMAGETAG})" == "" ]]; then
     if [ ! -f "${BOOTSTRAPDIR}/${BOOTSTRAP}" ]; then
         echo "Bootstrap: ${BOOTSTRAPDIR}/${BOOTSTRAP} not found!"
