@@ -67,16 +67,14 @@ build_feelpp_libs()
 clean_feelpp()
 {
     rm -rf ${FEELPP_BUILD_DIR}/*
+    echo -e "\033[33;32m--- Cleaning done. \033[0m"
 }
 
 # install Feel++ libs
 install_feelpp_libs()
 {
-    BRANCH=${1:-${DEFAULT_BRANCH}}
-    NJOBS=${2:-${DEFAULT_NJOBS}}
-    pull_feelpp ${BRANCH}
-    build_feelpp_libs ${NJOBS}
-    install_feelpp_module ${BRANCH} pyfeelpp $HOME/src/feelpp/pyfeelpp ${NJOBS} 
+    pull_feelpp ${1:-${DEFAULT_BRANCH}}
+    build_feelpp_libs ${2:-${DEFAULT_NJOBS}}
     clean_feelpp
 }
 
@@ -84,6 +82,7 @@ install_feelpp_libs()
 # Feel++ Base
 configure_feelpp_base()
 {
+    echo "--- Configuring Feel++ Base..."
     cd $HOME
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
@@ -91,22 +90,27 @@ configure_feelpp_base()
     else
         ${FEELPP_SRC_DIR}/feelpp/quickstart/configure -r --root="${FEELPP_SRC_DIR}/feelpp/quickstart" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
     fi
+    echo -e "\033[33;32m--- Configuring Feel++ Base done. \033[0m"
 }
 
 build_feelpp_base()
 {
-    echo "Building Feel++ Libs..."
+    echo "--- Building Feel++ Base..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
         # Get the number of jobs to be used
-        NJOBS=${1:-${DEFAULT_NJOBS}}
-        shift
+        NJOBS=${2:-${DEFAULT_NJOBS}}
+        echo $NJOBS
+        #shift
         # $* now contains possible additional cmake flags
-        configure_feelpp_base ${@:2}
-        sudo make -j $NJOBS install-feelpp-base
+        configure_feelpp_base ${@:3}
+        make -j $NJOBS
+        make test
+        sudo make install
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
+    echo -e "\033[33;32m--- Build Feel++ Base done. \033[0m"
 }
 
 # install_feelpp_base <NJOBS:1>
@@ -117,46 +121,36 @@ install_feelpp_base()
 }
 
 
-#
-# Feel++ module
-configure_feelpp_module()
-{
-    echo "--- Configuring Feel++ $1 ..."
-    cd $HOME
-    cd ${FEELPP_BUILD_DIR}/
-    if [[ $CXXFLAGS ]]; then
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
-    else
-        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
-    fi
-    echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
-}
 
-build_feelpp_module()
+
+install_feelpp_models()
 {
-    echo "--- Building Feel++ Module ${2}..."
-    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
-    then
-        MODULE=${2}
-        echo $MODULE
-        MODULEPATH=${3}
-        echo $MODULEPATH
+    #    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    #    then
+    if [[ $# -ge 1 ]]; then
+        pull_feelpp $1
+        shift
+    else
+        pull_feelpp develop
+    fi
+
+    if [[ $# -ge 1 ]]; then
         # Get the number of jobs to be used
-        NJOBS=${4:-${DEFAULT_NJOBS}}
-        echo $NJOBS
-        #shift
-        # $* now contains possible additional cmake flags
-        configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:5}
-        sudo make -j $NJOBS install
+        NJOBS=$1
+        shift
+        configure_feelpp $*
+        sudo make -j $NJOBS install-feelpp-apps
     else
-        echo "Feel++ source cannot be found. Please run pull_feelpp first."
+        configure_feelpp $*
+        sudo make -j 20 install-feelpp-base
+        sudo make -j 20 install-feelpp-apps
     fi
-    echo -e "\033[33;32m--- Build Feel++ ${MODULE} done. \033[0m"
-}
+    sudo mkdir -p /usr/local/share/feel/testcases
+    sudo make install-testcase
 
-# install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
-install_feelpp_module()
-{
-  build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
-  clean_feelpp
+
+    #    else
+    #	echo "Feel++ source cannot be found. Please run pull_feelpp first."
+    #    fi
+    clean_feelpp
 }

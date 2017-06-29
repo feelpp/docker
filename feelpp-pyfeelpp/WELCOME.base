@@ -1,0 +1,12 @@
+Feel++ Base Application
+=======================
+
+This image provides the Feel++ base application
+ * feelpp_qs_laplacian* [/usr/local/bin]
+ * feelpp_qs_stokes* [/usr/local/bin]
+
+ Testcases are in Testcases/quickstart
+
+ More information about these basic applications in
+ 
+ https://book.feelpp.org/content/en/04-learning
