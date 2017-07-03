@@ -17,9 +17,10 @@ DOCKERIMAGE=$1
 BASEIMAGE=`echo "${DOCKERIMAGE}" | sed 's/:.*//'`
 BASE=`echo "${BASEIMAGE}" | sed 's/\/.*//'`
 IMAGE=`echo "${BASEIMAGE}" | sed 's/.*\///'`
-TAG=`echo "${DOCKERIMAGE}" | sed "s/.*://"`
+TAG_FROM_DOCKER_IMAGE=`echo "${DOCKERIMAGE}" | sed "s/.*://"`
+TAG=${FEELPP_DOCKER_TAG:-${TAG_FROM_DOCKER_IMAGE}}
 if [ ! -n "$TAG" ] || [ "$TAG" ==  "$DOCKERIMAGE" ]; then
-    TAG=latest
+    TAG=${latest}
 fi
 BASEIMAGETAG=${BASE}/${IMAGE}:${TAG}
 echo $BASEIMAGETAG
