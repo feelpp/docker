@@ -12,7 +12,7 @@ fi
 ################################################################################
 # DOCKER INSTALL IS REQUIRED
 SINGULARITY_BIN=`which singularity`
-SINGULARITYPADDING=500
+SINGULARITYPADDING=800
 DOCKERIMAGE=$1
 BASEIMAGE=`echo "${DOCKERIMAGE}" | sed 's/:.*//'`
 BASE=`echo "${BASEIMAGE}" | sed 's/\/.*//'`
