@@ -55,11 +55,9 @@ build_feelpp_libs()
       shift
       # $* now contains possible additional cmake flags
       configure_feelpp $*
-      echo "Travis: ${TRAVIS}"
-      if [ ${TRAVIS} ]; then
-          sudo make -j 4 contrib
-      fi
-      sudo make -j $NJOBS install-feelpp-lib
+      (cd cmake && make -j $NJOBS && sudo make install)
+      (cd contrib && make -j $NJOBS && sudo make install)
+      (cd feelpp && make -j $NJOBS && sudo make -j $NJOBS install-feelpp-lib)
   else
       echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi

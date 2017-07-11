@@ -26,6 +26,8 @@ RUN apt-get -qq update && \
          python-h5py python-urllib3 xterm tmux screen \
          gmsh libgmsh-dev \
          libopenturns-dev python-openturns openturns-validation openturns-examples r-other-rot\
+         mongodb-server mongodb-clients libmongoc-dev libbson-dev \
+         libsundials-serial-dev \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

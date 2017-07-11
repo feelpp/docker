@@ -70,6 +70,8 @@ cat Dockerfile-altair >> "$dir/Dockerfile"
 
 cat Dockerfile-paraview >> "$dir/Dockerfile"
 
+cat Dockerfile-deb-mongodb >> "$dir/Dockerfile"
+
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME feelpp.* $dir
