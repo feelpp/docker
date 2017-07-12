@@ -33,7 +33,7 @@ pull_feelpp ()
   else
       git clone --depth 1 --branch ${1:-${DEFAULT_BRANCH}} https://www.github.com/feelpp/feelpp.git
       cd feelpp
-      git submodule update --init --recursive contrib/nlopt
+      git submodule update --init --recursive 
   fi
 }
 configure_feelpp()
@@ -57,7 +57,8 @@ build_feelpp_libs()
       configure_feelpp $*
       (cd cmake && make -j $NJOBS && sudo make install)
       (cd contrib && make -j $NJOBS && sudo make install)
-      (cd feelpp && make -j $NJOBS && sudo make -j $NJOBS install-feelpp-lib)
+      (cd feel && make -j $NJOBS && sudo make install )
+      sudo make -j $NJOBS install-feelpp-lib
   else
       echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
@@ -70,12 +71,18 @@ clean_feelpp()
 # install Feel++ libs
 install_feelpp_libs()
 {
+    exit_status=0
     BRANCH=${1:-${DEFAULT_BRANCH}}
     NJOBS=${2:-${DEFAULT_NJOBS}}
     pull_feelpp ${BRANCH}
+    ((exit_status= $exit_status || $?))
     build_feelpp_libs ${NJOBS}
-    install_feelpp_module ${BRANCH} pyfeelpp $HOME/src/feelpp/pyfeelpp ${NJOBS} 
+    ((exit_status= $exit_status || $?))
+    install_feelpp_module ${BRANCH} pyfeelpp $HOME/src/feelpp/pyfeelpp ${NJOBS}
+    ((exit_status= $exit_status || $?))
     clean_feelpp
+    ((exit_status= $exit_status || $?))
+    return $exit_status
 }
 
 #
@@ -125,10 +132,10 @@ configure_feelpp_module()
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
     	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
-        ((exit_status= exit_status || $?));
+        ((exit_status= $exit_status || $?));
     else
         ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
-        ((exit_status= exit_status || $?));
+        ((exit_status= $exit_status || $?));
     fi
     echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
     return $exit_status
@@ -150,9 +157,9 @@ build_feelpp_module()
         #shift
         # $* now contains possible additional cmake flags
         configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:5}
-        ((exit_status= exit_status || $?));
+        ((exit_status= $exit_status || $?));
         sudo make -j $NJOBS install
-        ((exit_status= exit_status || $?));
+        ((exit_status= $exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
@@ -163,10 +170,10 @@ build_feelpp_module()
 # install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
 install_feelpp_module()
 {
-    exit_status = 0
+    exit_status= 0
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
-    ((exit_status= exit_status || $?));
+    ((exit_status= $exit_status || $?));
     clean_feelpp
-    ((exit_status= exit_status || $?));
+    ((exit_status= $exit_status || $?));
     return $exit_status
 }
