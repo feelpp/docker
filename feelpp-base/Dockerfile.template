@@ -16,8 +16,6 @@ RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} quic
 RUN bash -c "ln -sf /usr/local/share/feelpp/testcases $HOME/Testcases"
 
 COPY WELCOME.base $HOME/WELCOME.base
-RUN chown feelpp:feelpp $HOME/WELCOME* 
-RUN bash -c 'cat WELCOME.base >> WELCOME'
 
 ENV FEELPP_REPOSITORY /feel
 

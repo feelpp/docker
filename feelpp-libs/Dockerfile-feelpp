@@ -11,8 +11,7 @@ RUN bash -c 'echo CXXFLAGS=${CXXFLAGS}'
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_libs ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME.libs $HOME/WELCOME.libs
-RUN chown feelpp:feelpp $HOME/WELCOME* 
-RUN bash -c 'cat WELCOME.libs >> WELCOME'
+
 USER feelpp
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 CMD ["/bin/bash"]
