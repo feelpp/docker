@@ -157,9 +157,9 @@ build_feelpp_module()
         #shift
         # $* now contains possible additional cmake flags
         configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:5}
-        ((exit_status= $exit_status || $?));
+        ((exit_status=$exit_status || $?));
         sudo make -j $NJOBS install
-        ((exit_status= $exit_status || $?));
+        ((exit_status=$exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
     fi
@@ -170,10 +170,10 @@ build_feelpp_module()
 # install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
 install_feelpp_module()
 {
-    exit_status= 0
+    exit_status=0
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
-    ((exit_status= $exit_status || $?));
+    ((exit_status=$exit_status || $?));
     clean_feelpp
-    ((exit_status= $exit_status || $?));
+    ((exit_status=$exit_status || $?));
     return $exit_status
 }
