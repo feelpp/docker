@@ -1,4 +1,4 @@
-# Feel++ applications -*- mode: markdown -*-
+== feelpp-toolboxes
 
 This image provides the Feel++ applications in
  . advection
@@ -8,11 +8,6 @@ This image provides the Feel++ applications in
  . thermodynamics
  . thermoelectric
 
-The testcases are in $HOME/Testcases/ and the results will be stored in
-/feel.
+The testcases are in $HOME/Testcases/ and the results will be stored in /feel.
 
-Follow the steps described in
-
-https://book.feelpp.org/content/en/03-modeling/
-
-to use our toolboxes.
+Follow the steps described https://book.feelpp.org/toolboxes/
