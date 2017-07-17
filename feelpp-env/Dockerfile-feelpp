@@ -25,8 +25,10 @@ RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex 
  && gem install asciidoctor-latex --pre
 
 # and the README
+COPY start.sh $HOME/start.sh
 COPY WELCOME $HOME/WELCOME
 RUN chown feelpp:feelpp $HOME/WELCOME && \
+    chown feelpp:feelpp $HOME/start.sh && \
     chown feelpp:feelpp $HOME/feelpp.env.sh && \
     chown feelpp:feelpp $HOME/feelpp.conf.sh && \
     chmod u+rw $HOME/WELCOME && \
@@ -46,8 +48,8 @@ RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOM
     echo "cd $HOME" >> $HOME/.bashrc && \
     echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
-COPY start.sh $HOME/start.sh
 USER feelpp
+
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 CMD ["/home/feelpp/start.sh"]
