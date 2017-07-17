@@ -1,4 +1,5 @@
-# Feel++ CRB applications
+== feelpp-crb
+This image provides the Feel++ CRB applications.
+The testcases are in $HOME/Testcases/ and the results will be stored in /feel.
+MongoDB tools have have installed to load CRB databases
 
-This image provides the Feel++ CRB applications.  The testcases are in
-$HOME/Testcases/ and the results will be stored in /feel

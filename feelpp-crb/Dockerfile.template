@@ -12,11 +12,12 @@ ENV HOME /home/feelpp
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} crb $HOME/src/feelpp/applications/crb ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
-COPY WELCOME $HOME/WELCOME
+COPY WELCOME $HOME/WELCOME.crb
+RUN bash -c 'cat WELCOME.crb >> WELCOME'
 
 ENV FEELPP_REPOSITORY /feel
 
 # COPY WELCOME $HOME/WELCOME
 USER feelpp
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/bin/bash"]
+CMD ["/home/feelpp/start.sh"]

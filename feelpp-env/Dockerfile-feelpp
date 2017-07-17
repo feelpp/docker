@@ -46,7 +46,8 @@ RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOM
     echo "cd $HOME" >> $HOME/.bashrc && \
     echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
+COPY start.sh $HOME/start.sh
 USER feelpp
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/bin/bash"]
+CMD ["/home/feelpp/start.sh"]

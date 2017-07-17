@@ -74,6 +74,6 @@ cat Dockerfile-deb-mongodb >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
-cp WELCOME feelpp.* $dir
+cp WELCOME feelpp.* start.sh $dir
 
 ( set -x; echo "docker build -t $tag \"$dir\"" )

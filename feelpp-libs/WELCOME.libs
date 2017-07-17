@@ -1,5 +1,4 @@
-# Feel++ applications -*- mode: markdown -*-
-
+== feelpp-libs
 This image provides the Feel++ development environment
  . libraries [/usr/local/lib]
  . header files [/usr/local/include/]
