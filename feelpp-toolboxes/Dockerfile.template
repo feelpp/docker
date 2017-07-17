@@ -13,6 +13,7 @@ ENV HOME /home/feelpp
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} toolboxes $HOME/src/feelpp/toolboxes ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME $HOME/WELCOME.toolboxes
+RUN chown feelpp:feelpp $HOME/WELCOME* 
 RUN bash -c "cat WELCOME.toolboxes >> WELCOME"
 
 ENV FEELPP_REPOSITORY /feel

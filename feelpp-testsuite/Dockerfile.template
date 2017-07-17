@@ -12,7 +12,9 @@ ENV HOME /home/feelpp
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} testsuite $HOME/src/feelpp/testsuite ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
-COPY WELCOME $HOME/WELCOME
+COPY WELCOME $HOME/WELCOME.testsuite
+RUN chown feelpp:feelpp $HOME/WELCOME*
+RUN bash -c "cat WELCOME.testsuite >> WELCOME"
 
 ENV FEELPP_REPOSITORY /feel
 
