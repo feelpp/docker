@@ -86,43 +86,6 @@ install_feelpp_libs()
 }
 
 #
-# Feel++ Base
-configure_feelpp_base()
-{
-    cd $HOME
-    cd ${FEELPP_BUILD_DIR}/
-    if [[ $CXXFLAGS ]]; then
-    	${FEELPP_SRC_DIR}/feelpp/quickstart/configure -r --root="${FEELPP_SRC_DIR}/feelpp/quickstart" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
-    else
-        ${FEELPP_SRC_DIR}/feelpp/quickstart/configure -r --root="${FEELPP_SRC_DIR}/feelpp/quickstart" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} $*";
-    fi
-}
-
-build_feelpp_base()
-{
-    echo "Building Feel++ Libs..."
-    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
-    then
-        # Get the number of jobs to be used
-        NJOBS=${1:-${DEFAULT_NJOBS}}
-        shift
-        # $* now contains possible additional cmake flags
-        configure_feelpp_base ${@:2}
-        sudo make -j $NJOBS install-feelpp-base
-    else
-        echo "Feel++ source cannot be found. Please run pull_feelpp first."
-    fi
-}
-
-# install_feelpp_base <NJOBS:1>
-install_feelpp_base()
-{
-  build_feelpp_base ${1:-${DEFAULT_NJOBS}} ${*:2}
-  clean_feelpp
-}
-
-
-#
 # Feel++ module
 configure_feelpp_module()
 {
@@ -167,11 +130,38 @@ build_feelpp_module()
     return $exit_status
 }
 
+# <module name> <module path> <jobs>
+ctest_feelpp_module()
+{
+    exit_status=0
+    echo "--- CTesting Feel++ Module ${2}..."
+    if [ -d ${FEELPP_SRC_DIR}/feelpp ]
+    then
+        ctest -R . -j ${3}
+        ((exit_status=$exit_status || $?));
+    else
+        echo "Feel++ source cannot be found. Please run pull_feelpp first then build_feelpp_module"
+    fi
+    echo -e "\033[33;32m--- CTesting Feel++ ${MODULE} done. \033[0m"
+    return $exit_status
+}
+
 # install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
 install_feelpp_module()
 {
     exit_status=0
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    ((exit_status=$exit_status || $?));
+    clean_feelpp
+    ((exit_status=$exit_status || $?));
+    return $exit_status
+}
+install_test_feelpp_module()
+{
+    exit_status=0
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    ((exit_status=$exit_status || $?));
+    ctest_feelpp_module ${1} ${2} 4
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
