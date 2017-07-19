@@ -158,10 +158,11 @@ install_feelpp_module()
 }
 install_test_feelpp_module()
 {
+    NJOBS_TESTS=4
     exit_status=0
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
     ((exit_status=$exit_status || $?));
-    ctest_feelpp_module ${1} ${2} 4
+    ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
