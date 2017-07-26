@@ -19,6 +19,13 @@ export PKG_CONFIG_PATH=${FEELPP_HOME}/lib/pkgconfig:$PKG_CONFIG_PATH
 export PYTHONPATH=${FEELPP_HOME}/lib/python2.7/site-packages:$PYTHONPATH
 export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 
+MAKE_FLAGS=${-:${MAKE_FLAGS}}
+echo "--- MAKE_FLAGS=${MAKE_FLAGS}"
+CMAKE_FLAGS=${-:${CMAKE_FLAGS}}
+echo "--- CMAKE_FLAGS=${CMAKE_FLAGS}"
+CTEST_FLAGS=${-:${CTEST_FLAGS}}
+echo "--- CTEST_FLAGS=${CTEST_FLAGS}"
+
 # bash functions
 pull_feelpp ()
 {
@@ -137,7 +144,7 @@ ctest_feelpp_module()
     echo "--- CTesting Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
-        ctest -R . -j ${3}
+        ctest -R . ${CTEST_FLAGS}
         ((exit_status=$exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first then build_feelpp_module"
@@ -166,5 +173,19 @@ install_test_feelpp_module()
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
+    return $exit_status
+}
+clean_feelpp_cpp_o()
+{
+    sudo find ${FEELPP_BUILD_DIR}/* -name "*.cpp.o" | xargs rm -f
+}
+
+install_test_feelpp_module_nofail()
+{
+    NJOBS_TESTS=4
+    exit_status=0
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
+    clean_feelpp_cpp_o
     return $exit_status
 }
