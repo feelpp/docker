@@ -1,5 +1,5 @@
 # ParaView
-ENV PARAVIEW_VERSION 5.3.0
+ENV PARAVIEW_VERSION 5.4.1-RC2
 RUN sudo apt-get -qq update \
     && sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
     && apt-get autoremove \
@@ -23,6 +23,7 @@ RUN cd /tmp \
         -DPARAVIEW_ENABLE_PYTHON=ON \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
         -DPARAVIEW_USE_MPI=ON \
+        -DPARAVIEW_USE_OPENTURNS=ON \
         -DVTK_RENDERING_BACKEND=OpenGL2 \
         .. \
     && make -j 30 \

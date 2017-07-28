@@ -19,13 +19,6 @@ export PKG_CONFIG_PATH=${FEELPP_HOME}/lib/pkgconfig:$PKG_CONFIG_PATH
 export PYTHONPATH=${FEELPP_HOME}/lib/python2.7/site-packages:$PYTHONPATH
 export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 
-MAKE_FLAGS=${-:${MAKE_FLAGS}}
-echo "--- MAKE_FLAGS=${MAKE_FLAGS}"
-CMAKE_FLAGS=${-:${CMAKE_FLAGS}}
-echo "--- CMAKE_FLAGS=${CMAKE_FLAGS}"
-CTEST_FLAGS=${-:${CTEST_FLAGS}}
-echo "--- CTEST_FLAGS=${CTEST_FLAGS}"
-
 # bash functions
 pull_feelpp ()
 {

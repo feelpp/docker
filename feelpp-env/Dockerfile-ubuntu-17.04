@@ -5,11 +5,12 @@ RUN apt-get -qq update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     
-#RUN add-apt-repository 'deb http://ubuntu.openturns.org yakkety main'
+#RUN add-apt-repository "deb http://ubuntu.openturns.org $(lsb_release -cs) main"
 RUN (for deb in deb; do echo "$deb http://ubuntu.openturns.org `lsb_release -cs` main"; done | sudo tee /etc/apt/sources.list.d/openturns.list)
+
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-         xauth cmake flex gcc-6 g++-6 clang-3.9 clang++-3.9  git ipython openmpi-bin pkg-config \
+         xauth cmake flex gcc-6 g++-6 clang-4.0 clang++-4.0  git ipython openmpi-bin pkg-config \
          bash-completion \
          emacs24 emacs vim nano \      
          wget bison sudo \

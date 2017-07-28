@@ -1,7 +1,7 @@
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed
 # echo "feelpp:docker" | chpasswd && \
-RUN useradd -m -s /bin/bash -G sudo feelpp && \
+RUN useradd -m -s /bin/bash -G sudo,video feelpp && \
     echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 ENV HOME /home/feelpp
