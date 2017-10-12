@@ -8,7 +8,7 @@ RUN bash -c 'echo -e "# Source configuration for Feel++\nsource $HOME/feelpp.con
 RUN bash -c 'echo CC=${CC} -- CXX=${CXX}'
 RUN bash -c 'echo CMAKE_FLAGS=${CMAKE_FLAGS}'
 RUN bash -c 'echo CXXFLAGS=${CXXFLAGS}'
-#RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_libs ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_libs ${BRANCH} ${BUILD_JOBS} ${CMAKE_FLAGS}"
 
 COPY WELCOME.libs $HOME/WELCOME.libs
 
