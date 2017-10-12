@@ -20,6 +20,6 @@ COPY WELCOME.base $HOME/WELCOME.base
 ENV FEELPP_REPOSITORY /feel
 
 # COPY WELCOME $HOME/WELCOME
-USER feelpp
+USER root
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/bin/bash"]
+CMD ["/usr/local/bin/start.sh"]
