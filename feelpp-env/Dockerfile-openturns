@@ -1,0 +1,15 @@
+RUN apt-get -qq update  \
+    && apt-get -y --force-yes upgrade  \
+    && apt-get -y --force-yes install swig libnlopt-dev libmuparser-dev libhmat-oss-dev libtbb-dev  libxml2-dev r-base-core libpython3-dev swig3.0\
+    && apt-get -y --force-yes autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    
+RUN git clone https://github.com/openturns/openturns.git \
+&& cd openturns\
+&& cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/usr/local . \
+&& make -j30 \
+&& make install \
+&& if [ -d /usr/local/lib/python3/dist-packages/openturns ]; then mv /usr/local/lib/python3/dist-packages/openturns /usr/local/lib/python3.5/dist-packages/; fi \
+&& cd ..\
+&& rm -rf openturns

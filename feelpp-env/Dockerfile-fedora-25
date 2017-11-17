@@ -1,0 +1,7 @@
+RUN    dnf install -y sudo emacs-nox clang cmake git \
+       automake autoconf libtool \
+       cln-devel \
+       openmpi-devel \
+       boost-devel boost-openmpi-devel \
+       petsc-devel  petsc-openmpi-devel gmsh-devel \
+    && dnf clean all
