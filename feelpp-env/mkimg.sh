@@ -70,7 +70,13 @@ cat Dockerfile-altair >> "$dir/Dockerfile"
 
 cat Dockerfile-paraview >> "$dir/Dockerfile"
 
-cat Dockerfile-deb-mongodb >> "$dir/Dockerfile"
+cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
+
+cat Dockerfile-openturns >> "$dir/Dockerfile"
+
+cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
+
+
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 

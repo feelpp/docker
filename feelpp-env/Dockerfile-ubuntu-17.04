@@ -6,7 +6,8 @@ RUN apt-get -qq update && \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     
 #RUN add-apt-repository "deb http://ubuntu.openturns.org $(lsb_release -cs) main"
-RUN (for deb in deb; do echo "$deb http://ubuntu.openturns.org `lsb_release -cs` main"; done | sudo tee /etc/apt/sources.list.d/openturns.list)
+#RUN (for deb in deb; do echo "$deb http://ubuntu.openturns.org `lsb_release -cs` main"; done | sudo tee /etc/apt/sources.list.d/openturns.list)
+RUN (for deb in deb; do echo "$deb http://ubuntu.openturns.org yakkety main"; done | sudo tee /etc/apt/sources.list.d/openturns.list)
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
