@@ -4,23 +4,29 @@ RUN apt-get -qq update && \
     
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
+RUN (for deb in deb deb-src; do echo "$deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-4.0 main"; done | sudo tee /etc/apt/sources.list.d/llvm-toolchain.list)
+
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-         xauth cmake flex gcc-6 g++-6 clang-3.8 clang++-3.8  git ipython openmpi-bin pkg-config \
-         bash-completion emacs24 \
+         xauth cmake flex gcc-6 g++-6 gcc-7 g++-7 clang-4.0 clang++-4.0  git ipython3 openmpi-bin pkg-config \
+         bash-completion \
+         emacs24 emacs vim nano \      
          wget bison sudo \
          libbz2-dev \
-         automake autoconf libtool  \
+         automake autoconf libtool libboost-all-dev \
+         doxygen \
          libopenblas-dev libcln-dev libcppunit-dev \
-         libpetsc3.6.2-dev libslepc3.6.1-dev liblapack-dev libmpfr-dev \
+         libgsl-dev \
+         liblapack-dev libmpfr-dev \
          libopenmpi-dev libann-dev libglpk-dev \
-         python-dev libhwloc-dev libvtk6-dev libpcre3-dev \
+         python3-dev libhwloc-dev libvtk6-dev libpcre3-dev \
          libhdf5-openmpi-dev libeigen3-dev libcgal-dev \
-         python-numpy python-vtk6 python-six python-ply \
-         python-h5py python-urllib3 xterm tmux screen \
-         gmsh libgmsh-dev libopenturns-dev \
-         libproj-dev \
-         paraview \
+         python3-numpy python3-six python3-ply \
+         python3-h5py python3-urllib3 xterm tmux screen \
+         python3-pip \
+         gmsh libgmsh-dev \
+         mongodb-server mongodb-clients libmongoc-dev libbson-dev \
+         libsundials-serial-dev \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 60 \
     && update-alternatives --set gcc "/usr/bin/gcc-6" \
@@ -33,57 +39,3 @@ RUN apt-get -qq update && \
 
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
-# Boost
-ENV BOOST_VERSION 1.63.0
-ENV BOOST_DIR boost_1_63_0
-RUN if [ x$INSTALL_BOOST = x1 ]; then \
-    cd /tmp \
-    && wget http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download -O ${BOOST_DIR}.tar.bz2 \
-    && tar xjf ${BOOST_DIR}.tar.bz2 \
-    && cd ${BOOST_DIR} \
-    && echo "using mpi ;" >> user-config.jam \
-    && echo "" >> user-config.jam \
-    && ./bootstrap.sh \
-    && ./bjam -j${BUILD_JOBS} install \
-      --layout=tagged \
-      --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
-      --user-config=user-config.jam \
-      variant=release \
-      threading=multi \
-      link=shared \
-    && rm -rf /tmp/* \
-    ; fi
-
-# Set up user so that we do not run as root
-# Changing the password does not work on certain OS and is not needed
-# echo "feelpp:docker" | chpasswd && \
-RUN useradd -m -s /bin/bash -G sudo feelpp && \
-    echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-ENV HOME /home/feelpp
-
-# Our helper script
-COPY feelpp.env.sh $HOME/feelpp.env.sh
-# and the README
-COPY WELCOME $HOME/WELCOME
-RUN chown feelpp:feelpp $HOME/WELCOME && \
-    chown feelpp:feelpp $HOME/feelpp.env.sh && \
-    chmod u+rw $HOME/WELCOME && \
-    chmod u+rw $HOME/feelpp.env.sh
-
-# OpenBLAS threads should be 1 to ensure performance
-RUN echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc && \
-    echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
-
-# This makes sure we launch with ENTRYPOINT /bin/bash into the home directory
-RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOME/.bashrc && \
-    echo "export CC=$CC" >> $HOME/.bashrc && \
-    echo "export CXX=$CXX" >> $HOME/.bashrc && \
-    echo "source $HOME/feelpp.env.sh" >> $HOME/.bashrc && \
-    echo "cd $HOME" >> $HOME/.bashrc && \
-    echo "cat $HOME/WELCOME" >> $HOME/.bashrc
-
-USER feelpp
-#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/bin/bash"]

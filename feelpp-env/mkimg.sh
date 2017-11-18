@@ -62,7 +62,9 @@ cat Dockerfile-deb-om >> "$dir/Dockerfile"
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
+cat Dockerfile-boost >> "$dir/Dockerfile"
 
+cat Dockerfile-petsc-slepc >> "$dir/Dockerfile"
 
 #if [ "x$install_altair" = "x1" ]; then
 cat Dockerfile-altair >> "$dir/Dockerfile"
@@ -71,6 +73,8 @@ cat Dockerfile-altair >> "$dir/Dockerfile"
 cat Dockerfile-paraview >> "$dir/Dockerfile"
 
 cat Dockerfile-deb-mongodb >> "$dir/Dockerfile"
+
+cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 

@@ -49,6 +49,7 @@ RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOM
     echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
 USER feelpp
+RUN pip3 install sympy
 
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]

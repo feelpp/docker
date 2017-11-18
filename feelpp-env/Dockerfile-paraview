@@ -1,5 +1,5 @@
 # ParaView
-ENV PARAVIEW_VERSION 5.4.1-RC2
+ENV PARAVIEW_VERSION 5.4.1
 RUN sudo apt-get -qq update \
     && sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
     && apt-get autoremove \

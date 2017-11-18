@@ -51,7 +51,7 @@ RUN if [ x$INSTALL_OPENTURNS = x1 ]; then \
     curl http://ubuntu.openturns.org/openturns.org-repo.key | apt-key add - \
     && apt-add-repository 'deb http://ubuntu.openturns.org trusty main' \
     && apt-get -qq update \
-    && apt-get -y --force-yes install python-openturns \
+    && apt-get -y --force-yes install python3-openturns \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     ; fi
