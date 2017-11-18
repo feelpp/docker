@@ -1,14 +1,5 @@
 # Set up user so that we do not run as root
 # Changing the password does not work on certain OS and is not needed
-# echo "feelpp:docker" | chpasswd && \
-RUN useradd -m -s /bin/bash -G sudo,video feelpp && \
-    echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-ENV HOME /home/feelpp
-
-# Our helper scripts
-COPY feelpp.env.sh $HOME/feelpp.env.sh
-COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 
 # install docker and asciidoctor related tool
 RUN apt-get -qq update && \
@@ -17,40 +8,37 @@ RUN apt-get -qq update && \
             man jq curl ruby ruby-dev \
     && apt-get autoremove \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*\
-    && usermod -g docker feelpp
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install \
+            gosu \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
  && gem install asciidoctor-latex --pre
 
-# and the README
-COPY start.sh $HOME/start.sh
+# echo "feelpp:docker" | chpasswd && \
+RUN useradd -m -s /bin/bash -G sudo,video,docker -u 999 feelpp && \
+    echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+ENV HOME /home/feelpp
+
+# Our helper scripts
+COPY feelpp.env.sh $HOME/feelpp.env.sh
+COPY feelpp.conf.sh $HOME/feelpp.conf.sh
+COPY start.sh /usr/local/bin/start.sh
 COPY WELCOME $HOME/WELCOME
-RUN chown feelpp:feelpp $HOME/WELCOME && \
-    chown feelpp:feelpp $HOME/start.sh && \
-    chown feelpp:feelpp $HOME/feelpp.env.sh && \
-    chown feelpp:feelpp $HOME/feelpp.conf.sh && \
-    chmod u+rw $HOME/WELCOME && \
-    chmod u+rw $HOME/feelpp.env.sh && \
-    chmod u+rw $HOME/feelpp.conf.sh 
 
-# OpenBLAS threads should be 1 to ensure performance
-RUN echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc && \
-    echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
-
-# This makes sure we launch with ENTRYPOINT /bin/bash into the home directory
-RUN echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOME/.bashrc && \
-    echo "export CC=$CC" >> $HOME/.bashrc && \
-    echo "export CXX=$CXX" >> $HOME/.bashrc && \
-    echo "source $HOME/feelpp.env.sh" >> $HOME/.bashrc && \
-    echo "source $HOME/feelpp.conf.sh" >> $HOME/.bashrc && \
-    echo "cd $HOME" >> $HOME/.bashrc && \
-    echo "cat $HOME/WELCOME" >> $HOME/.bashrc
-
-USER feelpp
-RUN pip3 install sympy
+RUN chown -R feelpp.feelpp $HOME/WELCOME \
+ && chown -R feelpp.feelpp $HOME/feelpp.conf.sh \
+ && chown -R feelpp.feelpp $HOME/feelpp.env.sh 
 
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/home/feelpp/start.sh"]
+CMD ["/usr/local/bin/start.sh"]
+
+

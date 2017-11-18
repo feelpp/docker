@@ -1,13 +1,16 @@
 # ParaView
 ENV PARAVIEW_VERSION 5.4.1
+# Qt4
+#&& sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
+
 RUN sudo apt-get -qq update \
-    && sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
+    && sudo apt-get -y --force-yes install qtbase5-dev qt5-default qtbase5-dev-tools libqt5opengl5-dev libqt5x11extras5-dev libqt5help5 qttools5-dev qttools5-dev-tools mesa-common-dev \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.3&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
