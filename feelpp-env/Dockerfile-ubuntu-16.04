@@ -5,6 +5,7 @@ RUN apt-get -qq update && \
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
 RUN (for deb in deb deb-src; do echo "$deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-4.0 main"; done | sudo tee /etc/apt/sources.list.d/llvm-toolchain.list)
+RUN (for deb in deb deb-src; do echo "$deb http://ppa.launchpad.net/beineri/opt-qt562-xenial/ubuntu xenial main"; done | sudo tee /etc/apt/sources.list.d/qt56.list)
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
@@ -13,7 +14,7 @@ RUN apt-get -qq update && \
          emacs24 emacs vim nano \      
          wget bison sudo \
          libbz2-dev \
-         automake autoconf libtool libboost-all-dev \
+         automake autoconf libtool\
          doxygen \
          libopenblas-dev libcln-dev libcppunit-dev \
          libgsl-dev \
@@ -24,6 +25,7 @@ RUN apt-get -qq update && \
          python3-numpy python3-six python3-ply \
          python3-h5py python3-urllib3 xterm tmux screen \
          python3-pip \
+         qt56-meta-full \
          gmsh libgmsh-dev \
          mongodb-server mongodb-clients libmongoc-dev libbson-dev \
          libsundials-serial-dev \
@@ -38,4 +40,6 @@ RUN apt-get -qq update && \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+
+ENV Qt5_DIR /opt/qt56
 

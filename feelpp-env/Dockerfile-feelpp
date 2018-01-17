@@ -25,6 +25,10 @@ RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex 
 RUN useradd -m -s /bin/bash -G sudo,video,docker -u 999 feelpp && \
     echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+RUN echo /opt/qt56/bin/qt56-env.sh >> /etc/bash.bashrc \
+ && echo /opt/qt56/lib  > /etc/ld.so.conf.d/qt56.conf \
+ && ldconfig
+
 ENV HOME /home/feelpp
 
 # Our helper scripts

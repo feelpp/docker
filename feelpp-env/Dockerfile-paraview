@@ -3,6 +3,8 @@ ENV PARAVIEW_VERSION 5.4.1
 # Qt4
 #&& sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
 
+
+
 RUN sudo apt-get -qq update \
     && sudo apt-get -y --force-yes install qtbase5-dev qt5-default qtbase5-dev-tools libqt5opengl5-dev libqt5x11extras5-dev libqt5help5 qttools5-dev qttools5-dev-tools mesa-common-dev \
     && apt-get autoremove \

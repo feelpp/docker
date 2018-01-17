@@ -70,7 +70,7 @@ cat Dockerfile-petsc-slepc >> "$dir/Dockerfile"
 cat Dockerfile-altair >> "$dir/Dockerfile"
 #fi
 
-cat Dockerfile-paraview >> "$dir/Dockerfile"
+cat Dockerfile-paraview-$fromos-$fromtag >> "$dir/Dockerfile"
 
 cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
 
