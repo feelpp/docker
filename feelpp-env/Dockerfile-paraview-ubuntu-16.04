@@ -1,0 +1,28 @@
+# ParaView
+ENV PARAVIEW_VERSION 5.4.1
+
+
+RUN cd /tmp \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && cd ParaView-v${PARAVIEW_VERSION} \
+    && mkdir build \
+    && cd build \
+    && cmake \
+        -DBUILD_TESTING=OFF \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DPARAVIEW_BUILD_QT_GUI=ON \
+        -DPARAVIEW_ENABLE_CATALYST=ON \
+        -DPARAVIEW_ENABLE_PYTHON=ON \
+        -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
+        -DPARAVIEW_USE_MPI=ON \
+        -DPARAVIEW_USE_OPENTURNS=ON \
+        -DVTK_RENDERING_BACKEND=OpenGL2 \
+        .. \
+    && make -j 30 \
+    && make install \
+    && rm -rf /tmp/* 
+

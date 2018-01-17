@@ -1,0 +1,9 @@
+RUN add-apt-repository 'deb http://ppa.launchpad.net/brcha/mongodb-backports/ubuntu xenial main'
+RUN apt-get -qq update  \
+    && apt-get -y --force-yes upgrade  \
+    && apt-get -y --force-yes install python-pymongo juju-mongo-tools3.2\
+    && apt-get -y --force-yes autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+    
