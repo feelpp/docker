@@ -26,3 +26,48 @@ RUN cd /tmp \
     && make install \
     && rm -rf /tmp/* 
 
+RUN cd /tmp \
+    && wget "ftp://ftp.freedesktop.org/pub/mesa/mesa-17.3.2.tar.gz" -O mesa-17.3.2.tar.gz \
+    && tar zxf mesa-17.3.2.tar.gz \
+    && mkdir mesa-17.3.2.build && cd mesa-17.3.2.build \
+    && ../mesa-17.3.2/configure LLVM_CONFIG=llvm-config-4.0 \
+        --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+    	--enable-opengl --disable-gles1 --disable-gles2 \
+    	--disable-va --disable-xvmc --disable-vdpau       \
+    	--enable-shared-glapi                             \
+    	--disable-texture-float                           \
+    	--enable-llvm  --enable-llvm-shared-libs   \
+    	--with-gallium-drivers=swrast,swr                 \
+    	--disable-dri --with-dri-drivers=                 \
+    	--disable-egl --with-egl-platforms= --disable-gbm \
+    	--disable-glx                                     \
+    	--disable-osmesa --enable-gallium-osmesa \
+    && make -j 30 \
+    && make install \
+    && rm -rf /tmp/*
+
+RUN cd /tmp \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && cd ParaView-v${PARAVIEW_VERSION} \
+    && mkdir build \
+    && cd build \
+    && cmake \
+    -DBUILD_TESTING=OFF \
+    -DCMAKE_CXX_COMPILER=${CXX}  \
+    -DCMAKE_C_COMPILER=${CC}  \
+    -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}/paraview-server \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DPARAVIEW_BUILD_QT_GUI=OFF \
+    -DVTK_USE_X=OFF \
+    -DVTK_OPENGL_HAS_OSMESA=ON \
+    -DOSMESA_INCLUDE_DIR=${FEELPP_DEP_INSTALL_PREFIX}/include \
+    -DOSMESA_LIBRARY=${FEELPP_DEP_INSTALL_PREFIX}/lib/libOSMesa.so \
+    -DPARAVIEW_ENABLE_PYTHON=ON \
+    -DPARAVIEW_ENABLE_CATALYST=ON \
+    -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
+    -DPARAVIEW_USE_MPI=ON \
+    .. \
+    && make -j 30 \
+    && make install \
+    && rm -rf /tmp/*
