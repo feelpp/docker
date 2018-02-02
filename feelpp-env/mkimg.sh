@@ -82,6 +82,8 @@ cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
 
 cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
 
+cat Dockerfile-fmi >> "$dir/Dockerfile"
+
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME feelpp.* start.sh $dir

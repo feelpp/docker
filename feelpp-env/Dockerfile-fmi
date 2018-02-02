@@ -1,0 +1,9 @@
+RUN pip3  install cython lxml
+
+RUN cd /tmp && wget http://www.jmodelica.org/downloads/FMIL/FMILibrary-2.0.3-src.zip && \
+    mkdir build && cd build && cmake -DFMILIB_INSTALL_PREFIX=/usr/local ../FMILibrary-2.0.3 && make install
+    
+
+
+    
+
