@@ -1,7 +1,14 @@
 RUN pip3  install cython lxml
 
-RUN cd /tmp && wget http://www.jmodelica.org/downloads/FMIL/FMILibrary-2.0.3-src.zip && \
-    mkdir build && cd build && cmake -DFMILIB_INSTALL_PREFIX=/usr/local ../FMILibrary-2.0.3 && make install
+RUN cd /tmp && wget http://www.jmodelica.org/downloads/FMIL/FMILibrary-2.0.3-src.zip && unzip FMILibrary-2.0.3-src.zip \
+    && mkdir build && cd build && cmake -DFMILIB_INSTALL_PREFIX=/usr/local ../FMILibrary-2.0.3 && make install\
+    && pip3 install --upgrade six \
+    && pip3 install scipy matplotlib \
+    && wget https://pypi.python.org/packages/4c/c0/19a54949817204313efff9f83f1e4a247edebed0a1cc5a317a95d3f374ae/Assimulo-2.9.zip \
+    && unzip Assimulo-2.9.zip && cd Assimulo-2.9 \
+    && CC=gcc CXX=g++ python3 setup.py install --blas-home=/usr/lib --lapack-home=/usr --sundials-home=/usr --superlu-home=/usr/lib/x86_64-linux-gnu/ \
+    && cd /tmp && rm -rf FMIL* Assim* \
+    && CC=gcc CXX=g++ FMIL_HOME=/usr/local pip3  install pyfmi 
     
 
 

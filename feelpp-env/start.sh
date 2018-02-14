@@ -20,6 +20,7 @@ echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
 echo "export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}" >> $HOME/.bashrc 
 echo "export CC=$CC" >> $HOME/.bashrc 
 echo "export CXX=$CXX" >> $HOME/.bashrc
+echo "export USER=user" >> $HOME/.bashrc
 echo "source /opt/qt56/bin/qt56-env.sh" >> $HOME/.bashrc 
 echo "source $HOME/feelpp.env.sh" >> $HOME/.bashrc 
 echo "source $HOME/feelpp.conf.sh" >> $HOME/.bashrc 

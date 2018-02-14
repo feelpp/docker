@@ -4,7 +4,7 @@
 # install docker and asciidoctor related tool
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-            docker.io \
+            docker.io jsonlint \
             man jq curl ruby ruby-dev \
     && apt-get autoremove \
     && apt-get clean \
