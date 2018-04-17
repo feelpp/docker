@@ -34,4 +34,15 @@ if [ -d /feel/crbdb ]; then
     fi
 fi
 
+if [ -d /feel/ -a -w /feel/ -a -f  /usr/local/share/feelpp/testcases/ ]; then
+    cp -r  /usr/local/share/feelpp/testcases /feel/
+    chown -R user.user /feel/testcases
+    echo ""
+    echo "The Feel++ testcases have been copied on the host system in"
+    echo "/feel/testcases"
+    echo "ls /feel/testcases"
+    ls /feel/testcases/
+    echo "You can use and edit them as you which either within docker or on your system"
+    echo ""
+fi
 exec /usr/sbin/gosu user bash
