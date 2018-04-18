@@ -34,7 +34,7 @@ if [ -d /feel/crbdb ]; then
     fi
 fi
 
-if [ -d /feel/ -a -w /feel/ -a -f  /usr/local/share/feelpp/testcases/ ]; then
+if [ -d /feel/ -a -w /feel/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
     cp -r  /usr/local/share/feelpp/testcases /feel/
     chown -R user.user /feel/testcases
     echo ""
