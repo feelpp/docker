@@ -16,7 +16,8 @@ mkdir -p ${FEELPP_HOME}
 export PATH=${FEELPP_HOME}/bin:${PATH}
 export LD_LIBRARY_PATH=${FEELPP_HOME}/lib:$LD_LIBRARY_PATH
 export PKG_CONFIG_PATH=${FEELPP_HOME}/lib/pkgconfig:$PKG_CONFIG_PATH
-export PYTHONPATH=${FEELPP_HOME}/lib/python2.7/site-packages:$PYTHONPATH
+export PYTHONPATH=${FEELPP_HOME}/lib/python3.5/site-packages:$PYTHONPATH
+export PYTHONPATH=${FEELPP_HOME}/lib/python3.5/dist-packages:$PYTHONPATH
 export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 
 # bash functions

@@ -33,13 +33,20 @@ RUN echo /opt/qt56/bin/qt56-env.sh >> /etc/bash.bashrc \
  && echo /opt/qt56/lib  > /etc/ld.so.conf.d/qt56.conf \
  && ldconfig
 
+RUN git clone --depth=1 https://github.com/Bash-it/bash-it.git /usr/local/etc/bash_it
+
 ENV HOME /home/feelpp
 
 # Our helper scripts
 COPY feelpp.env.sh $HOME/feelpp.env.sh
 COPY feelpp.conf.sh $HOME/feelpp.conf.sh
+COPY feelpp.env.sh /usr/local/etc/feelpp.env.sh
+COPY feelpp.conf.sh /usr/local/etc/feelpp.conf.sh
 COPY start.sh /usr/local/bin/start.sh
+COPY start-user.sh /usr/local/bin/start-user.sh
+COPY bashrc.feelpp /usr/local/etc/bashrc.feelpp
 COPY WELCOME $HOME/WELCOME
+RUN ls /usr/local/etc/
 
 RUN chown -R feelpp.feelpp $HOME/WELCOME \
  && chown -R feelpp.feelpp $HOME/feelpp.conf.sh \

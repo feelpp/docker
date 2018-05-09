@@ -82,6 +82,6 @@ cat Dockerfile-fmi >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
-cp WELCOME feelpp.* start.sh $dir
+cp WELCOME feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
 ( set -x; echo "docker build -t $tag \"$dir\"" )
