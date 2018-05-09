@@ -1,0 +1,27 @@
+#! /bin/bash
+
+set -x
+
+# OpenBLAS threads should be 1 to ensure performance
+export OPENBLAS_NUM_THREADS=1
+export OPENBLAS_VERBOSE=0
+
+# This makes sure we launch with ENTRYPOINT /bin/bash into the home directory
+export FEELPP_DEP_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX}
+export CC=$CC
+export CXX=$CXX
+if [ -f /opt/qt56/bin/qt56-env.sh ]; then
+   source /opt/qt56/bin/qt56-env.sh
+fi
+if [ -f /usr/local/etc/feelpp.env.sh ]; then
+source /usr/local/etc/feelpp.env.sh
+fi
+if [ -f /usr/local/etc/feelpp.conf.sh ]; then
+   source /usr/local/etc//feelpp.conf.sh
+fi
+
+source /usr/local/etc/bash_it/install.sh
+
+if [ -f $HOME/.bashrc ]; then
+   source $HOME/.bashrc
+fi
