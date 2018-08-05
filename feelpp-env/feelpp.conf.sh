@@ -66,6 +66,8 @@ build_feelpp_libs()
 }
 clean_feelpp()
 {
+    for i in /usr/local/bin/feelpp*; do sudo strip $i; done
+    for i in /usr/local/lib/libfeel*; do sudo strip $i; done
     sudo rm -rf ${FEELPP_BUILD_DIR}/*
 }
 
@@ -78,8 +80,6 @@ install_feelpp_libs()
     pull_feelpp ${BRANCH}
     ((exit_status= $exit_status || $?))
     build_feelpp_libs ${NJOBS}
-    ((exit_status= $exit_status || $?))
-    install_feelpp_module ${BRANCH} pyfeelpp $HOME/src/feelpp/pyfeelpp ${NJOBS}
     ((exit_status= $exit_status || $?))
     clean_feelpp
     ((exit_status= $exit_status || $?))
