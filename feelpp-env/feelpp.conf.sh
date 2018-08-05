@@ -59,7 +59,10 @@ build_feelpp_libs()
       (cd cmake && make -j $NJOBS && sudo make install)
       (cd contrib && make -j $NJOBS && sudo make install)
       (cd feel && make -j $NJOBS && sudo make install )
-      sudo make -j $NJOBS install-feelpp-lib
+      (cd applications/mesh && make -j $NJOBS && sudo make install )
+      (cd applications/databases && make -j $NJOBS && sudo make install )
+      (cd tools && make -j $NJOBS && sudo make install )
+      #sudo make -j $NJOBS install-feelpp-lib
   else
       echo "Feel++ source cannot be found. Please run pull_feelpp first."
   fi
