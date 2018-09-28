@@ -1,9 +1,9 @@
 # ParaView
-ENV PARAVIEW_VERSION 5.4.1
+ENV PARAVIEW_VERSION 5.5.2
 
 
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.5&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
@@ -14,12 +14,13 @@ RUN cd /tmp \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
         -DCMAKE_BUILD_TYPE=Release \
+        -DPYTHON_EXECUTABLE=/usr/bin/python3 \
         -DPARAVIEW_BUILD_QT_GUI=ON \
         -DPARAVIEW_ENABLE_CATALYST=ON \
         -DPARAVIEW_ENABLE_PYTHON=ON \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
         -DPARAVIEW_USE_MPI=ON \
-        -DPARAVIEW_USE_OPENTURNS=ON \
+        -DPARAVIEW_USE_OPENTURNS=OFF \
         -DVTK_RENDERING_BACKEND=OpenGL2 \
         .. \
     && make -j 30 \
@@ -47,7 +48,7 @@ RUN cd /tmp \
     && rm -rf /tmp/*
 
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.4&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.5&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
     && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
@@ -63,6 +64,7 @@ RUN cd /tmp \
     -DVTK_OPENGL_HAS_OSMESA=ON \
     -DOSMESA_INCLUDE_DIR=${FEELPP_DEP_INSTALL_PREFIX}/include \
     -DOSMESA_LIBRARY=${FEELPP_DEP_INSTALL_PREFIX}/lib/libOSMesa.so \
+    -DPYTHON_EXECUTABLE=/usr/bin/python3 \
     -DPARAVIEW_ENABLE_PYTHON=ON \
     -DPARAVIEW_ENABLE_CATALYST=ON \
     -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
