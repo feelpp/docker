@@ -98,10 +98,10 @@ configure_feelpp_module()
     cd $HOME
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
+    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:3}";
         ((exit_status= $exit_status || $?));
     else
-        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cmakeflags="-DCMAKE_INSTALL_PREFIX=${FEELPP_HOME} ${@:3}";
+        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:3}";
         ((exit_status= $exit_status || $?));
     fi
     echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
@@ -153,6 +153,12 @@ ctest_feelpp_module()
 # install_feelpp_module <module name> <module path> options <NJOBS:1> <cmake flags>
 install_feelpp_module()
 {
+    exit_status=0
+    if [ ! -d ${FEELPP_SRC_DIR}/feelpp ]; then
+        BRANCH=${1:-${DEFAULT_BRANCH}}
+        pull_feelpp ${BRANCH}
+        ((exit_status= $exit_status || $?))
+    fi
     exit_status=0
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
     ((exit_status=$exit_status || $?));
