@@ -1,7 +1,7 @@
 RUN cd /tmp \
-    && wget http://4fastsim.feelpp.org:8000/squash-altair \
-    && wget http://4fastsim.feelpp.org:8000/resp-altair \
-    && wget http://4fastsim.feelpp.org:8000/hwAcuSolve2017_linux64.bin \
+    && wget http://cemosis.feelpp.org:8000/squash-altair \
+    && wget http://cemosis.feelpp.org:8000/resp-altair \
+    && wget http://cemosis.feelpp.org:8000/hwAcuSolve2017_linux64.bin \
     && ls -l /tmp \ 
     && mkdir /opt/altair \
     && bash /tmp/hwAcuSolve2017_linux64.bin < /tmp/resp-altair \
