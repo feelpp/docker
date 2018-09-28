@@ -25,6 +25,8 @@ RUN apt-get -qq update && \
 RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
  && gem install asciidoctor-latex --pre
 
+RUN echo "export FEELPP_GITHUB_TOKEN=${TOKEN}" >> /etc/bash.bashrc
+ 
 # echo "feelpp:docker" | chpasswd && \
 RUN useradd -m -s /bin/bash -G sudo,video,docker -u 999 feelpp && \
     echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

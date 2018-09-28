@@ -6,6 +6,7 @@ mkimg="$(basename "$0")"
 from=ubuntu:16.10
 cxx=clang++
 cc=clang
+token=
 
 usage() {
     echo >&2 "usage: $mkimg [-f fromos:fromtag] [-t tag] [-c c++ compiler] [-cc c compiler]"
@@ -24,6 +25,7 @@ while true; do
         -f|--from) from="$2" ; shift 2 ;;
         -t|--tag) tag="$2" ; shift 2 ;;
         -c|--cxx) cxx="$2" ; shift 2 ;;
+        -o|--token) token="$2" ; shift 2 ;;
         -cc) cc="$2" ; shift 2 ;;
         -h|--help) usage ;;
         --) shift ; break ;;
@@ -51,6 +53,7 @@ ARG CMAKE_FLAGS=""
 ARG VERSION="1.0"
 ARG CXX="${cxx}"
 ARG CC="${cc}"
+ARG TOKEN="${token}"
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
 
 LABEL org.feelpp.vendor="Cemosis" \
@@ -61,6 +64,10 @@ EOF
 cat Dockerfile-deb-om >> "$dir/Dockerfile"
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
+
+cat Dockerfile-cmake >> "$Dir/Dockerfile"
+
+#cat Dockerfile-openmpi >> "$dir/Dockerfile"
 
 cat Dockerfile-boost >> "$dir/Dockerfile"
 
@@ -77,6 +84,8 @@ cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
 cat Dockerfile-openturns >> "$dir/Dockerfile"
 
 cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
+
+cat Dockerfile-deb-mpi4py >> "$dir/Dockerfile"
 
 cat Dockerfile-fmi >> "$dir/Dockerfile"
 
