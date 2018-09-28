@@ -1,5 +1,5 @@
 # ParaView
-ENV PARAVIEW_VERSION 5.4.1
+ENV PARAVIEW_VERSION 5.5.2
 # Qt4
 #&& sudo apt-get -y --force-yes install libphonon-dev libphonon4 qt4-dev-tools libqt4-dev qt4-qmake libxt-dev libqt4-opengl-dev mesa-common-dev \
 
@@ -23,12 +23,13 @@ RUN cd /tmp \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_INSTALL_PREFIX=${FEELPP_DEP_INSTALL_PREFIX} \
         -DCMAKE_BUILD_TYPE=Release \
+        -DPYTHON_EXECUTABLE=/usr/bin/python3 \
         -DPARAVIEW_BUILD_QT_GUI=ON \
         -DPARAVIEW_ENABLE_CATALYST=ON \
         -DPARAVIEW_ENABLE_PYTHON=ON \
         -DPARAVIEW_INSTALL_DEVELOPMENT_FILES=ON \
         -DPARAVIEW_USE_MPI=ON \
-        -DPARAVIEW_USE_OPENTURNS=ON \
+        -DPARAVIEW_USE_OPENTURNS=OFF \
         -DVTK_RENDERING_BACKEND=OpenGL2 \
         .. \
     && make -j 30 \
