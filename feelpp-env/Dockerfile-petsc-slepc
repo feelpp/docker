@@ -1,13 +1,19 @@
 # Install PETSc from source
-ENV PETSC_VERSION 3.8.2
+ENV PETSC_VERSION 3.9.4
 RUN \
     cd /tmp \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
     && tar -xf petsc-${PETSC_VERSION}.tar.gz \
     && cd petsc-${PETSC_VERSION} \
-    && ./configure --COPTFLAGS="-O2" \
-                --CXXOPTFLAGS="-O2" \
+    && ./configure --with-cc=/usr/bin/mpicc \
+                --with-cc=/usr/bin/mpicc \
+                --with-fc=0 \
+                --with-cxx=/usr/bin/mpicxx\
+                --with-clanguage=c \
+                --COPTFLAGS="-O2" \
+                --CXXOPTFLAGS="-O2 -DMPICH_SKIP_MPICXX" \
                 --FOPTFLAGS="-O2" \
+                --with-mpi-dir=/usr/lib/mpich \
                 --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
                 --with-c-support \
                 --with-debugging=0 \
@@ -22,13 +28,15 @@ RUN \
                 --download-blacs \
                 --download-spai \
                 --download-ml \
-                --prefix=${FEELPP_DEP_INSTALL_PREFIX} \
+                --prefix=${FEELPP_DEP_INSTALL_PREFIX} || cat configure.log \ 
      && make \
      && make install \
      && rm -rf /tmp/* 
 
+ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
+     
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.8.1
+ENV SLEPC_VERSION 3.9.2
 RUN \
     cd /tmp \
     && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \
@@ -42,4 +50,4 @@ RUN \
 
 
 ENV SLEPC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
-ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
+
