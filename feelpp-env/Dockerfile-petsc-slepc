@@ -5,15 +5,12 @@ RUN \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
     && tar -xf petsc-${PETSC_VERSION}.tar.gz \
     && cd petsc-${PETSC_VERSION} \
-    && ./configure --with-cc=/usr/bin/mpicc \
-                --with-cc=/usr/bin/mpicc \
-                --with-fc=0 \
+    && ./configure --with-fc=/usr/bin/mpif90 \
+                --with-cc=/usr/bin/mpicc\
                 --with-cxx=/usr/bin/mpicxx\
-                --with-clanguage=c \
                 --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2 -DMPICH_SKIP_MPICXX" \
                 --FOPTFLAGS="-O2" \
-                --with-mpi-dir=/usr/lib/mpich \
                 --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
                 --with-c-support \
                 --with-debugging=0 \
