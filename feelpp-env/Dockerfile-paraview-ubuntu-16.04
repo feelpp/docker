@@ -1,10 +1,10 @@
 # ParaView
-ENV PARAVIEW_VERSION 5.5.2
+ENV PARAVIEW_VERSION 5.6.0-RC2
 
 
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.5&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
-    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.6&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.xz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.xz \
+    && tar xvf ParaView-v${PARAVIEW_VERSION}-source.tar.xz \
     && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
     && cd build \
@@ -48,8 +48,8 @@ RUN cd /tmp \
     && rm -rf /tmp/*
 
 RUN cd /tmp \
-    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.5&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.gz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
-    && tar xvzf ParaView-v${PARAVIEW_VERSION}-source.tar.gz \
+    && wget "http://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.6&type=source&os=all&downloadFile=ParaView-v${PARAVIEW_VERSION}.tar.xz" -O ParaView-v${PARAVIEW_VERSION}-source.tar.xz \
+    && tar xvf ParaView-v${PARAVIEW_VERSION}-source.tar.xz \
     && cd ParaView-v${PARAVIEW_VERSION} \
     && mkdir build \
     && cd build \
