@@ -1,7 +1,8 @@
 RUN wget https://cmake.org/files/v3.12/cmake-3.12.2.tar.gz \
     && tar xzf cmake-3.12.2.tar.gz \
-    && mkdir build \
-    && cd build \
+    && mkdir cmake-3.12.2/build \
+    && cd cmake-3.12.2/build \
     && ../configure \
     && make -j20 \
-    && make install
+    && make install \
+    && rm -rf ../../cmake*
