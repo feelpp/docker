@@ -8,7 +8,6 @@ RUN \
     && cd ${BOOST_DIR} \
     && echo "using mpi : /usr/bin/mpicxx : <include>/usr/include/mpi <define>MPICH_SKIP_MPICXX ;" >> user-config.jam \
     && echo "" >> user-config.jam \
-    && echo "using python : : /usr/bin/python3 ;" >> user-config.jam \
     && echo "" >> user-config.jam \
     && ./bootstrap.sh \
     && ./bjam -j20 install \
