@@ -65,7 +65,7 @@ cat Dockerfile-deb-om >> "$dir/Dockerfile"
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
-cat Dockerfile-cmake >> "$Dir/Dockerfile"
+cat Dockerfile-cmake >> "$dir/Dockerfile"
 
 #cat Dockerfile-openmpi >> "$dir/Dockerfile"
 
