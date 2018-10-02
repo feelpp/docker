@@ -187,6 +187,7 @@ install_test_feelpp_module_nofail()
 {
     NJOBS_TESTS=4
     exit_status=0
+    pull_feelpp ${1:-${DEFAULT_BRANCH}}
     build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
     ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
     clean_feelpp_cpp_o
