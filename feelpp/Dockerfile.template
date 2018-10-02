@@ -2,6 +2,7 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
 ARG BUILD_JOBS=16
+ARG CONFIGURE_FLAGS="-r"
 ARG CMAKE_FLAGS=""
 ARG CXX=g++
 ARG CC=gcc
@@ -10,7 +11,7 @@ USER feelpp
 ENV HOME /home/feelpp
 
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} ${CONFIGURE_FLAGS} ${CMAKE_FLAGS}"
 
 COPY WELCOME $HOME/WELCOME
 

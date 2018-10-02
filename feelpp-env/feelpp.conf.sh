@@ -94,14 +94,14 @@ install_feelpp_libs()
 configure_feelpp_module()
 {
     exit_status=0
-    echo "--- Configuring Feel++ $1 ..."
+    echo "--- Configuring ${3} Feel++ $1 ..."
     cd $HOME
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
-    	${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:3}";
+    	${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:4}";
         ((exit_status= $exit_status || $?));
     else
-        ${FEELPP_SRC_DIR}/feelpp/configure -r --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:3}";
+        ${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:4}";
         ((exit_status= $exit_status || $?));
     fi
     echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
@@ -123,7 +123,7 @@ build_feelpp_module()
         echo $NJOBS
         #shift
         # $* now contains possible additional cmake flags
-        configure_feelpp_module ${MODULE} ${MODULEPATH} ${@:5}
+        configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}
         ((exit_status=$exit_status || $?));
         sudo make -j $NJOBS install
         ((exit_status=$exit_status || $?));
@@ -160,7 +160,7 @@ install_feelpp_module()
         ((exit_status= $exit_status || $?))
     fi
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
@@ -170,7 +170,7 @@ install_test_feelpp_module()
 {
     NJOBS_TESTS=4
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
     ((exit_status=$exit_status || $?));
     ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
     ((exit_status=$exit_status || $?));
@@ -188,7 +188,7 @@ install_test_feelpp_module_nofail()
     NJOBS_TESTS=4
     exit_status=0
     pull_feelpp ${1:-${DEFAULT_BRANCH}}
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${*:5}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
     ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
     clean_feelpp_cpp_o
     return $exit_status

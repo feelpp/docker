@@ -3,6 +3,7 @@ MAINTAINER Feel++ Support <support@feelpp.org>
 ARG BRANCH=develop
 ARG BUILD_JOBS=16
 ARG MAKE_FLAGS=""
+ARG CONFIGURE_FLAGS="-r"
 ARG CMAKE_FLAGS=""
 ARG CTEST_FLAGS=""
 ARG CXX=g++
@@ -13,7 +14,7 @@ ENV HOME /home/feelpp
 
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && \
-             install_test_feelpp_module_nofail ${BRANCH} testsuite $HOME/src/feelpp/testsuite ${BUILD_JOBS} ${CMAKE_FLAGS} && \
+             install_test_feelpp_module_nofail ${BRANCH} testsuite $HOME/src/feelpp/testsuite ${BUILD_JOBS} ${CONFIGURE_FLAGS} ${CMAKE_FLAGS} && \
              clean_feelpp_cpp_o"
 
 COPY WELCOME $HOME/WELCOME.testsuite
