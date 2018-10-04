@@ -29,7 +29,7 @@ RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex 
 RUN echo "export FEELPP_GITHUB_TOKEN=${TOKEN}" >> /etc/bash.bashrc
  
 # echo "feelpp:docker" | chpasswd && \
-RUN useradd -m -s /bin/bash -G sudo,video,docker -u 999 feelpp && \
+RUN useradd -m -s /bin/bash -G sudo,video,docker -u 998 feelpp && \
     echo "feelpp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN echo /opt/qt59/bin/qt59-env.sh >> /etc/bash.bashrc 
@@ -42,6 +42,7 @@ RUN git clone --depth=1 https://github.com/Bash-it/bash-it.git /usr/local/etc/ba
 ENV HOME /home/feelpp
 
 # Our helper scripts
+COPY ctest-to-junit.xsl /usr/local/share/xsltproc/ctest-to-junit.xsl
 COPY feelpp.env.sh $HOME/feelpp.env.sh
 COPY feelpp.conf.sh $HOME/feelpp.conf.sh
 COPY feelpp.env.sh /usr/local/etc/feelpp.env.sh

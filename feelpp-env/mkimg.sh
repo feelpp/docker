@@ -89,8 +89,10 @@ cat Dockerfile-deb-mpi4py >> "$dir/Dockerfile"
 
 cat Dockerfile-fmi >> "$dir/Dockerfile"
 
+cat Dockerfile-buildkite >> "$dir/Dockerfile"
+
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
-cp WELCOME feelpp.* start.sh bashrc.feelpp start-user.sh $dir
+cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
 ( set -x; echo "docker build -t $tag \"$dir\"" )

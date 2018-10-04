@@ -30,7 +30,7 @@ pull_feelpp ()
   if [ -d feelpp ]
   then
       cd feelpp
-      git pull --depth 1 origin ${1:-${DEFAULT_BRANCH}}
+      git pull origin ${1:-${DEFAULT_BRANCH}}
   else
       git clone --depth 1 --branch ${1:-${DEFAULT_BRANCH}} https://www.github.com/feelpp/feelpp.git
       cd feelpp
@@ -141,12 +141,19 @@ ctest_feelpp_module()
     echo "--- CTesting Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
-        ctest -R . ${CTEST_FLAGS}
+        CTEST_FLAGS=${3}
+        ctest ${CTEST_FLAGS}
         ((exit_status=$exit_status || $?));
+
+        # if not empty then upload testsuite results
+        if ! test -z "${BUILDKITE_JOB_ID}"; then
+            xsltproc /usr/local/share/xsltproc/ctest-to-junit.xsl Testing/*/Test.xml > Testing/junit-${2}.xml
+            buildkite-agent artifact upload "Testing/junit-*.xml"
+        fi
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first then build_feelpp_module"
     fi
-    echo -e "\033[33;32m--- CTesting Feel++ ${MODULE} done. \033[0m"
+    echo -e "\033[33;32m--- CTesting Feel++ Module ${2} done. \033[0m"
     return $exit_status
 }
 
@@ -160,7 +167,9 @@ install_feelpp_module()
         ((exit_status= $exit_status || $?))
     fi
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
+    ((exit_status=$exit_status || $?));
+    ctest_feelpp_module ${1} ${2} ${6}
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
@@ -170,9 +179,9 @@ install_test_feelpp_module()
 {
     NJOBS_TESTS=4
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
     ((exit_status=$exit_status || $?));
-    ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
+    ctest_feelpp_module ${1} ${2} ${6}
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
@@ -188,8 +197,8 @@ install_test_feelpp_module_nofail()
     NJOBS_TESTS=4
     exit_status=0
     pull_feelpp ${1:-${DEFAULT_BRANCH}}
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:6}
-    ctest_feelpp_module ${1} ${2} ${NJOBS_TESTS}
+    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
+    ctest_feelpp_module ${1} ${2} ${6}
     clean_feelpp_cpp_o
     return $exit_status
 }
