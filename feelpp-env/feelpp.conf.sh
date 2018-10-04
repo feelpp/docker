@@ -123,6 +123,7 @@ build_feelpp_module()
         echo $NJOBS
         #shift
         # $* now contains possible additional cmake flags
+        test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}"
         configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}
         ((exit_status=$exit_status || $?));
         sudo make -j $NJOBS install
@@ -142,9 +143,10 @@ ctest_feelpp_module()
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
         CTEST_FLAGS=${3}
+        test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "running ctest ${CTEST_FLAGS}"
         ctest ${CTEST_FLAGS}
-        ((exit_status=$exit_status || $?));
-
+        #((exit_status=$exit_status || $?));
+        
         # if not empty then upload testsuite results
         if ! test -z "${BUILDKITE_JOB_ID}"; then
             xsltproc /usr/local/share/xsltproc/ctest-to-junit.xsl Testing/*/Test.xml > Testing/junit-${2}.xml
