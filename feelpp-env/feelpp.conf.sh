@@ -114,17 +114,17 @@ build_feelpp_module()
     echo "--- Building Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
-        MODULE=${2}
+        MODULE="${2}"
         echo $MODULE
-        MODULEPATH=${3}
+        MODULEPATH="${3}"
         echo $MODULEPATH
         # Get the number of jobs to be used
-        NJOBS=${4:-${DEFAULT_NJOBS}}
+        NJOBS="${4:-${DEFAULT_NJOBS}}"
         echo $NJOBS
         #shift
         # $* now contains possible additional cmake flags
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}"
-        configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}
+        configure_feelpp_module "${MODULE}" "${MODULEPATH}" "${5}" "${@:6}"
         ((exit_status=$exit_status || $?));
         sudo make -j $NJOBS install
         ((exit_status=$exit_status || $?));
@@ -142,7 +142,7 @@ ctest_feelpp_module()
     echo "--- CTesting Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
-        CTEST_FLAGS=${3}
+        CTEST_FLAGS="${3}"
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "running ctest ${CTEST_FLAGS}"
         ctest ${CTEST_FLAGS}
         #((exit_status=$exit_status || $?));
@@ -164,14 +164,14 @@ install_feelpp_module()
 {
     exit_status=0
     if [ ! -d ${FEELPP_SRC_DIR}/feelpp ]; then
-        BRANCH=${1:-${DEFAULT_BRANCH}}
-        pull_feelpp ${BRANCH}
+        BRANCH="${1:-${DEFAULT_BRANCH}}"
+        pull_feelpp "${BRANCH}"
         ((exit_status= $exit_status || $?))
     fi
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
+    build_feelpp_module "${1}" "${2}" "${3}" "${4:-${DEFAULT_NJOBS}}" "${5}" "${*:7}"
     ((exit_status=$exit_status || $?));
-    ctest_feelpp_module ${1} ${2} ${6}
+    ctest_feelpp_module "${1}" "${2}" "${6}"
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
@@ -181,9 +181,9 @@ install_test_feelpp_module()
 {
     NJOBS_TESTS=4
     exit_status=0
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
+    build_feelpp_module "${1}" "${2}" "${3}" "${4:-${DEFAULT_NJOBS}}" "${5}" "${*:7}"
     ((exit_status=$exit_status || $?));
-    ctest_feelpp_module ${1} ${2} ${6}
+    ctest_feelpp_module "${1}" "${2}" "${6}"
     ((exit_status=$exit_status || $?));
     clean_feelpp
     ((exit_status=$exit_status || $?));
@@ -199,8 +199,8 @@ install_test_feelpp_module_nofail()
     NJOBS_TESTS=4
     exit_status=0
     pull_feelpp ${1:-${DEFAULT_BRANCH}}
-    build_feelpp_module ${1} ${2} ${3} ${4:-${DEFAULT_NJOBS}} ${5} ${*:7}
-    ctest_feelpp_module ${1} ${2} ${6}
+    build_feelpp_module "${1}" "${2}" "${3}" "${4:-${DEFAULT_NJOBS}}" "${5}" "${*:7}"
+    ctest_feelpp_module "${1}" "${2}" "${6}"
     clean_feelpp_cpp_o
     return $exit_status
 }

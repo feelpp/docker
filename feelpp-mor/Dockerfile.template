@@ -15,7 +15,7 @@ USER feelpp
 ENV HOME /home/feelpp
 
 # Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} mor $HOME/src/feelpp/mor ${BUILD_JOBS} ${CONFIGURE_FLAGS} ${CTEST_FLAGS} ${CMAKE_FLAGS}"
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} mor $HOME/src/feelpp/mor \"${BUILD_JOBS}\" \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
 
 COPY WELCOME $HOME/WELCOME.crb
 
