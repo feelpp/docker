@@ -1,5 +1,5 @@
 # Install PETSc from source
-ENV PETSC_VERSION 3.9.4
+ENV PETSC_VERSION 3.12.2
 RUN \
     cd /tmp \
     && wget -nc http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-${PETSC_VERSION}.tar.gz \
@@ -33,7 +33,7 @@ RUN \
 ENV PETSC_DIR ${FEELPP_DEP_INSTALL_PREFIX}
      
 # Install SLEPc from source
-ENV SLEPC_VERSION 3.9.2
+ENV SLEPC_VERSION 3.12.1
 RUN \
     cd /tmp \
     && export PETSC_DIR=${FEELPP_DEP_INSTALL_PREFIX} \

@@ -3,14 +3,14 @@ set -e
 
 mkimg="$(basename "$0")"
 
-from=ubuntu:16.10
+from=ubuntu:19.10
 cxx=clang++
 cc=clang
 token=
 
 usage() {
     echo >&2 "usage: $mkimg [-f fromos:fromtag] [-t tag] [-c c++ compiler] [-cc c compiler]"
-    echo >&2 "   ie: $mkimg -f $from -t feelpp-env:16.10 -c clang++ -cc clang "
+    echo >&2 "   ie: $mkimg -f $from -t feelpp-env:19.10 -c clang++ -cc clang "
     exit 1
 }
 
@@ -61,38 +61,38 @@ LABEL org.feelpp.vendor="Cemosis" \
 
 EOF
 
-cat Dockerfile-deb-om >> "$dir/Dockerfile"
+#cat Dockerfile-deb-om >> "$dir/Dockerfile"
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
-cat Dockerfile-cmake >> "$dir/Dockerfile"
+#cat Dockerfile-cmake >> "$dir/Dockerfile"
 
 #cat Dockerfile-openmpi >> "$dir/Dockerfile"
 
-cat Dockerfile-boost >> "$dir/Dockerfile"
+#cat Dockerfile-boost >> "$dir/Dockerfile"
 
-cat Dockerfile-petsc-slepc >> "$dir/Dockerfile"
+#cat Dockerfile-petsc-slepc >> "$dir/Dockerfile"
 
 #if [ "x$install_altair" = "x1" ]; then
 #cat Dockerfile-altair >> "$dir/Dockerfile"
 #fi
 
-cat Dockerfile-paraview-$fromos-$fromtag >> "$dir/Dockerfile"
+#cat Dockerfile-paraview-$fromos-$fromtag >> "$dir/Dockerfile"
 
-cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
+#cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
 
-cat Dockerfile-openturns >> "$dir/Dockerfile"
+#cat Dockerfile-openturns >> "$dir/Dockerfile"
 
-cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
+#cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
 
-cat Dockerfile-deb-mpi4py >> "$dir/Dockerfile"
+#cat Dockerfile-deb-mpi4py >> "$dir/Dockerfile"
 
-cat Dockerfile-fmi >> "$dir/Dockerfile"
+#cat Dockerfile-fmi >> "$dir/Dockerfile"
 
-cat Dockerfile-buildkite >> "$dir/Dockerfile"
+#cat Dockerfile-buildkite >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
-( set -x; echo "docker bashrc.feelpp uild -t $tag \"$dir\"" )
+( set -x; echo "docker bashrc.feelpp build -t $tag \"$dir\"" )

@@ -1,8 +1,20 @@
-RUN wget https://cmake.org/files/v3.12/cmake-3.12.2.tar.gz \
-    && tar xzf cmake-3.12.2.tar.gz \
-    && mkdir cmake-3.12.2/build \
-    && cd cmake-3.12.2/build \
-    && ../configure \
-    && make -j20 \
-    && make install \
-    && rm -rf ../../cmake*
+RUN wget https://cmake.org/files/v3.16/cmake-3.16.0.tar.gz \
+     && tar xzf cmake-3.16.0.tar.gz \
+     && mkdir cmake-3.16.0/build \
+     && cd cmake-3.16.0/build \
+     && CXX=clang++-8 CC=clang-8 ../configure \
+     && make -j20 \
+     && make install \
+     && rm -rf ../../cmake*
+
+# RUN apt-get update &&\
+#  DEBIAN_FRONTEND=noninteractive\
+#  apt-get install -y fuse snapd snap-confine squashfuse sudo &&\
+#  apt-get clean &&\
+#  dpkg-divert --local --rename --add /sbin/udevadm &&\
+#  ln -s /bin/true /sbin/udevadm
+# RUN systemctl enable snapd
+# VOLUME ["/sys/fs/cgroup"]
+# STOPSIGNAL SIGRTMIN+3
+
+# RUN  snap install cmake --classic
