@@ -25,6 +25,10 @@ RUN useradd -m -s /bin/bash -G sudo,video,docker -u 998 feelpp && \
 
 RUN git clone --depth=1 https://github.com/Bash-it/bash-it.git /usr/local/etc/bash_it
 
+ENV LIBBSON_DIR=/usr
+ENV LIBMONGOC_DIR=/usr
+ENV OMPI_MCA_btl_btl_vader_single_copy_mechanism=none
+
 ENV HOME /home/feelpp
 
 # Our helper scripts
