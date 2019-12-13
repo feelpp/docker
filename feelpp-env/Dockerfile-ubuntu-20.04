@@ -43,7 +43,10 @@ RUN apt-get -qq update && \
            ruby-tilt                                                   \
            asciidoctor                                                 \
            libglew-dev                                                  \
-           libgmsh4 python3-sympy  python3-mpi4py python3-numpy      \
+           python3-sympy  python3-mpi4py python3-numpy      \
+           docker.io jsonlint \
+           man jq curl ruby ruby-dev \
+           gdb lldb-9\           
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60 \
     && update-alternatives --set gcc "/usr/bin/gcc-9" \

@@ -9,8 +9,8 @@ RUN apt-get -qq update && \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
-RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
- && gem install asciidoctor-latex --pre
+#RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
+# && gem install asciidoctor-latex --pre
 
 RUN echo "export FEELPP_GITHUB_TOKEN=${TOKEN}" >> /etc/bash.bashrc
  
