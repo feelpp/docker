@@ -1,4 +1,4 @@
-FROM phusion/baseimage:latest
+OBFROM phusion/baseimage:latest
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BUILD_JOBS=16
