@@ -95,4 +95,4 @@ cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
-( set -x; echo "docker bashrc.feelpp build -t $tag \"$dir\"" )
+( set -x; echo "docker build -t $tag \"$dir\"" )

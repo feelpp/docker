@@ -7,3 +7,15 @@ bash mkimg.sh  -f ubuntu:16.04 -t feelpp/feelpp-env:ubuntu-16.04 -c clang++-6.0 
 start http daemon in feelpp-env directory for acusim
 python -m SimpleHTTPServer 8000
 ----
+
+== Eoan
+
+----
+bash mkimg-eoan.sh  -f ubuntu:19.10 -t feelpp/feelpp-env:ubuntu-19.10 -c clang++-9 --
+----
+
+== Focal
+
+----
+bash mkimg-focal.sh  -f ubuntu:20.04 -t feelpp/feelpp-env:ubuntu-20.04 -c clang++-9 --
+----
