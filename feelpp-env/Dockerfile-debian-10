@@ -43,12 +43,6 @@ RUN apt-get -qq update && \
            ruby-tilt \
            asciidoctor \
            libglew-dev\
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60 \
-    && update-alternatives --set gcc "/usr/bin/gcc-9" \
-    && update-alternatives --set g++ "/usr/bin/g++-9" \
-    && update-alternatives --set cc /usr/bin/gcc \
-    && update-alternatives --set c++ /usr/bin/g++ \         
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

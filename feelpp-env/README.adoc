@@ -1,4 +1,7 @@
 = Feel++ development environment images
+:toc:
+
+== Ubuntu
 
 generate images for ubuntu-16.10 with clang++ 3.9
 ----
@@ -8,14 +11,23 @@ start http daemon in feelpp-env directory for acusim
 python -m SimpleHTTPServer 8000
 ----
 
-== Eoan
+=== Eoan
 
 ----
 bash mkimg-eoan.sh  -f ubuntu:19.10 -t feelpp/feelpp-env:ubuntu-19.10 -c clang++-9 --
 ----
 
-== Focal
+=== Focal
 
 ----
 bash mkimg-focal.sh  -f ubuntu:20.04 -t feelpp/feelpp-env:ubuntu-20.04 -c clang++-9 --
+----
+
+== Debian
+
+=== Buster or debian:10
+
+----
+bash mkimg-buster.sh  -f debian:10 -t feelpp/feelpp-env:debian-10 -c clang++-7 --
+docker build -t feelpp/feelpp-env:debian-10 "debian-10-clang++-7"
 ----
