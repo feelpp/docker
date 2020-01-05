@@ -43,10 +43,15 @@ RUN apt-get -qq update && \
            ruby-tilt \
            asciidoctor \
            libglew-dev\
+           python3-sympy  python3-mpi4py python3-numpy      \
+           docker.io jsonlint \
+           man jq curl ruby ruby-dev \
+           gdb lldb-7\           
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+
 
 
