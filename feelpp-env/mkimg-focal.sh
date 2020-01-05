@@ -89,7 +89,7 @@ cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
 #cat Dockerfile-fmi >> "$dir/Dockerfile"
 
-#cat Dockerfile-buildkite >> "$dir/Dockerfile"
+cat Dockerfile-buildkite >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
