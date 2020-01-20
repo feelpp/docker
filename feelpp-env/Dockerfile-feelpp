@@ -27,7 +27,7 @@ RUN git clone --depth=1 https://github.com/Bash-it/bash-it.git /usr/local/etc/ba
 
 ENV LIBBSON_DIR=/usr
 ENV LIBMONGOC_DIR=/usr
-ENV OMPI_MCA_btl_btl_vader_single_copy_mechanism=none
+ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
 
 ENV HOME /home/feelpp
 
