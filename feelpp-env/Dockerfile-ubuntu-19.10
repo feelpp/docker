@@ -9,10 +9,11 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install tzdata
 RUN apt-get -qq update && \
-  apt-get -y --force-yes install \
+  apt-get --no-install-recommends -y --force-yes install \
            quilt debhelper                                    \
            cmake                                            \
-           clang++-8  sudo                                      \
+           ssh git-lfs  \           
+           clang++-9   sudo                                      \
            dh-python                                                   \
            python3 python3-dev python3-setuptools python3-sympy     \
 	       chrpath                                                 \
@@ -43,6 +44,9 @@ RUN apt-get -qq update && \
            ruby-tilt                                                   \
            asciidoctor                                                 \
            libglew-dev                                                  \
+           docker.io jsonlint \
+           man jq curl ruby ruby-dev \
+           gdb lldb-9\           
            libgmsh4 python3-sympy  python3-mpi4py python3-numpy      \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60 \
