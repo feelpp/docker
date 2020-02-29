@@ -20,8 +20,8 @@ RUN apt-get -qq update && \
 	       chrpath                                                 \
 	       libboost1.67-all-dev                                    \
            libcln-dev                                                  \
-           libpetsc-real3.11-dev                                       \
-           libslepc-real3.11-dev                                       \           
+           petsc-dev                                       \
+           slepc-dev                                       \           
            libhdf5-openmpi-dev                                         \
            libnlopt-dev                                                \
            libgsl-dev                                                  \
@@ -43,13 +43,14 @@ RUN apt-get -qq update && \
            python-pymongo                                              \
            ruby-progressbar                                            \
            ruby-tilt                                                   \
-           asciidoctor                                                 \
+           asciidoctor ruby-asciidoctor-pdf                                                 \
            libglew-dev                                                  \
            python3-sympy  python3-mpi4py python3-numpy      \
            docker.io jsonlint \
            man jq curl ruby ruby-dev \
            gdb lldb-9\
-    && apt-get -y --force-yes install clang-8 clang++-8 \                      
+    && apt-get -y --force-yes install clang-8 clang++-8 \
+    && apt-get -y --force-yes install clang-10 clang++-10 \                                 
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60 \
     && update-alternatives --set gcc "/usr/bin/gcc-9" \
