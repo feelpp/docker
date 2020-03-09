@@ -93,6 +93,8 @@ install_feelpp_libs()
 # Feel++ module
 configure_feelpp_module()
 {
+    [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
+
     exit_status=0
     echo "--- Configuring ${3} Feel++ $1 ..."
     cd $HOME
@@ -110,6 +112,8 @@ configure_feelpp_module()
 
 build_feelpp_module()
 {
+    [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
+
     exit_status=0
     echo "--- Building Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
@@ -126,6 +130,8 @@ build_feelpp_module()
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}"
         configure_feelpp_module "${MODULE}" "${MODULEPATH}" "${5}" "${@:6}"
         ((exit_status=$exit_status || $?));
+
+        [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
         sudo make -j $NJOBS install
         ((exit_status=$exit_status || $?));
     else
@@ -138,6 +144,8 @@ build_feelpp_module()
 # <module name> <module path> <jobs>
 ctest_feelpp_module()
 {
+    [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
+
     exit_status=0
     echo "--- CTesting Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
@@ -145,7 +153,7 @@ ctest_feelpp_module()
         CTEST_FLAGS="${3}"
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "running ctest ${CTEST_FLAGS}"
         ctest ${CTEST_FLAGS}
-        #((exit_status=$exit_status || $?));
+        ((exit_status=$exit_status || $?));
         
         # if not empty then upload testsuite results
         if ! test -z "${BUILDKITE_JOB_ID}"; then
