@@ -14,12 +14,18 @@ RUN apt-get update \
 RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
         echo "foam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-        
 
+ENV DEBIAN_FRONTEND=noninteractive        
+RUN echo "deb http://archive.ubuntu.com/ubuntu focal-proposed main restricted" |  tee -a /etc/apt/sources.list; \ 
+    echo "deb http://archive.ubuntu.com/ubuntu focal-proposed universe" |  tee -a /etc/apt/sources.list; \
+    echo "deb http://archive.ubuntu.com/ubuntu focal-proposed multiverse" |  tee -a /etc/apt/sources.list; \
+    apt-get -qq update; \
+    apt-get -y install tzdata    
+        
 RUN sh -c "wget -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -" ;\
-        echo "deb https://dl.bintray.com/feelpp/ubuntu eoan latest" | tee -a /etc/apt/sources.list;\
+        echo "deb https://dl.bintray.com/feelpp/ubuntu focal latest" | tee -a /etc/apt/sources.list;\
         apt-get update ;\
-        apt-get install -y --no-install-recommends man-db feelpp-quickstart feelpp-data libfeelpp-dev feelpp-tools;\
+        apt-get install -y --no-install-recommends man-db libboost-regex1.67.0-icu66 feelpp-quickstart feelpp-data libfeelpp-dev feelpp-tools;\
         rm -rf /var/lib/apt/lists/* ;
 
 RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
