@@ -12,7 +12,7 @@ RUN apt-get update \
         rm -rf /var/lib/apt/lists/*
 
 RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
-        echo "foam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+        echo "feelpp ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 
 ENV DEBIAN_FRONTEND=noninteractive        
