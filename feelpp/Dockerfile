@@ -2,6 +2,7 @@
 
 FROM ubuntu:focal
 
+ARG CHANNEL
 ENV CHANNEL=${CHANNEL:-latest}
 RUN apt-get update \
         && apt-get install -y \
