@@ -2,6 +2,7 @@
 
 FROM ubuntu:focal
 
+ENV CHANNEL=${CHANNEL:-latest}
 RUN apt-get update \
         && apt-get install -y \
         vim \
@@ -23,7 +24,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu focal-proposed main restricted" |
     apt-get -y install tzdata    
         
 RUN sh -c "wget -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -" ;\
-        echo "deb https://dl.bintray.com/feelpp/ubuntu focal latest" | tee -a /etc/apt/sources.list;\
+        echo "deb https://dl.bintray.com/feelpp/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list;\
         apt-get update ;\
         apt-get install -y --no-install-recommends g++ clang-9 man-db libboost-regex1.67.0-icu66 feelpp-quickstart feelpp-data libfeelpp-dev feelpp-tools;\
         rm -rf /var/lib/apt/lists/* ;
