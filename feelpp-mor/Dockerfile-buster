@@ -24,7 +24,7 @@ RUN wget -qO - https://bintray.com/user/downloadSubjectPublicKey?username=bintra
         apt-get update ;\
         apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data feelpp-tools \
                         python3-feelpp-toolboxes python3-mpi4py python3-sympy python3-pip python3-feelpp-mor \
-                        python3-setuptools git cmake;\
+                        python3-setuptools git cmake; \
         rm -rf /var/lib/apt/lists/* ;
 
 RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
