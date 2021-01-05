@@ -23,6 +23,13 @@ bash mkimg.sh  -f ubuntu:19.10 -t feelpp/feelpp-env:ubuntu-19.10 -c clang++-9 --
 bash mkimg.sh  -f ubuntu:20.04 -t feelpp/feelpp-env:ubuntu-20.04 -c clang++-9 --
 ----
 
+=== Groovy  - Ubuntu 20.10
+
+----
+bash mkimg.sh  -f ubuntu:20.10 -t feelpp/feelpp-env:ubuntu-20.10 -c clang++ --
+----
+
+
 == Debian
 
 === Buster or debian:10
