@@ -24,8 +24,8 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu focal-proposed main restricted" |
     apt-get -qq update; \
     apt-get -y install tzdata dos2unix
         
-RUN sh -c "wget -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -" ;\
-        echo "deb https://dl.bintray.com/feelpp/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list;\
+RUN sh -c "wget -qO  - https://feelpp.jfrog.io/artifactory/api/security/keypair/debian/public | sudo apt-key add -"
+        echo "deb https://feelpp.jfrog.io/artifactory/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list;\
         apt-get update ;\
         apt-get install -y --no-install-recommends g++ clang-9 man-db libboost-regex1.67.0-icu66 feelpp-quickstart feelpp-data libfeelpp-dev feelpp-tools make rsync;\
         rm -rf /var/lib/apt/lists/* ;

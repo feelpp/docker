@@ -18,8 +18,8 @@ RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
 
         
 
-RUN sh -c "wget -O - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -" ;\
-        echo "deb https://dl.bintray.com/feelpp/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list;\
+RUN sh -c "wget -qO  - https://feelpp.jfrog.io/artifactory/api/security/keypair/debian/public | sudo apt-key add -"
+        echo "deb https://feelpp.jfrog.io/artifactory/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list;\
         apt-get update ;\
         apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev feelpp-tools python3-feelpp-toolboxes make rsync;\
         rm -rf /var/lib/apt/lists/* ;

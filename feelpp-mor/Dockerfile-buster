@@ -19,8 +19,8 @@ RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
 
         
 
-RUN wget -qO - https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -;\
-        echo "deb https://dl.bintray.com/feelpp/debian buster ${CHANNEL}" | tee -a /etc/apt/sources.list;\
+RUN wget -qO  - https://feelpp.jfrog.io/artifactory/api/security/keypair/debian/public | sudo apt-key add -; \
+        echo "deb https://feelpp.jfrog.io/artifactory/buster buster ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list;
         apt-get update ;\
         apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data feelpp-tools \
                         python3-feelpp-toolboxes python3-mpi4py python3-sympy python3-pip python3-feelpp-mor \
