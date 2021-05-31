@@ -14,11 +14,11 @@ RUN apt-get update \
         rm -rf /var/lib/apt/lists/*
 
 RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
-        echo "foam ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+        echo "feelpp ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
         
 
-RUN sh -c "wget -qO  - https://feelpp.jfrog.io/artifactory/api/security/keypair/debian/public | sudo apt-key add -"
+RUN wget -qO - https://feelpp.jfrog.io/artifactory/api/security/keypair/gpg-debian/public | apt-key add -; \
         echo "deb https://feelpp.jfrog.io/artifactory/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list;\
         apt-get update ;\
         apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev feelpp-tools python3-feelpp-toolboxes make rsync;\
