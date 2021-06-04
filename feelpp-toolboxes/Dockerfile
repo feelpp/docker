@@ -9,7 +9,7 @@ RUN apt-get update \
         vim \
         ssh \
         sudo \
-        wget \
+        wget gpg \
         software-properties-common ;\
         rm -rf /var/lib/apt/lists/*
 
@@ -18,10 +18,14 @@ RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
 
         
 
-RUN wget -qO - https://feelpp.jfrog.io/artifactory/api/security/keypair/gpg-debian/public | apt-key add -; \
-        echo "deb https://feelpp.jfrog.io/artifactory/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list;\
+RUN wget -qO - https://feelpp.jfrog.io/artifactory/api/security/keypair/gpg-debian/public | gpg --dearmor > feelpp.gpg; \
+        install -o root -g root -m 644 feelpp.gpg /etc/apt/trusted.gpg.d; \
+        echo "deb [signed-by=/etc/apt/trusted.gpg.d/feelpp.gpg] https://feelpp.jfrog.io/artifactory/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list; \
+	rm -f feelpp.gpg; \
         apt-get update ;\
-        apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev feelpp-tools python3-feelpp-toolboxes make rsync;\
+        apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev; \
+	apt-get install -y --no-install-recommends python3-feelpp-toolboxes;\
+	apt-get install -y --no-install-recommends make rsync;\
         rm -rf /var/lib/apt/lists/* ;
 
 RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
