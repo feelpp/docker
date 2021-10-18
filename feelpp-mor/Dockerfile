@@ -24,7 +24,7 @@ RUN wget -qO - http://apt.feelpp.org/apt.gpg | gpg --dearmor > feelpp.gpg; \
 	rm -f feelpp.gpg; \
         apt-get update ;\
         apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev; \
-        apt-get install -y --no-install-recommends python3-feelpp-toolboxes-core python3-feelpp-toolboxes-heat; \
+        apt-get install -y --no-install-recommends python3-feelpp-toolboxes-core python3-feelpp-toolboxes-heat python3-feelpp-toolboxes-cfpdes; \
         apt-get install -y --no-install-recommends feelpp-mor python3-feelpp-mor;\
 	apt-get install -y --no-install-recommends make rsync;\
         rm -rf /var/lib/apt/lists/* ;
