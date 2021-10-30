@@ -37,7 +37,8 @@ jobs:
         submodules: recursive
     - name: generate
       run: |
-        echo "::set-output name=context::$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)\n"
+        bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --
+        echo "::set-output name=context::$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)"
         ls -lrt
       id: generate
       working-directory: feelpp-env
