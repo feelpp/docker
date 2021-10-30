@@ -61,7 +61,7 @@ LABEL org.feelpp.vendor="Cemosis" \
 
 EOF
 
-#cat Dockerfile-deb-om >> "$dir/Dockerfile"
+cat Dockerfile-deb-om >> "$dir/Dockerfile"
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
