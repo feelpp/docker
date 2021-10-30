@@ -59,7 +59,7 @@ jobs:
       name: Build ${{ matrix.service }}:${{ matrix.tag }}
       uses: docker/build-push-action@v2
       with: 
-        context: ${{ steps.generate.outputs.context }}
+        context: "${{ steps.generate.outputs.context }}"
         tags: ghcr.io/feelpp/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ${{ matrix.dockerfile }}
         load: true
