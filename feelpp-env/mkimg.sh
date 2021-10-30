@@ -36,13 +36,14 @@ splitfrom=(`echo "$from" | tr ":" "\n"`)
 fromos=${splitfrom[0]}
 fromtag=${splitfrom[1]}
 
-echo >&2 "directory $fromos-$fromtag"
+#echo >&2 "directory $fromos-$fromtag"
 dir=$fromos-$fromtag-$cxx
 if [ ! -d "$dir" ]; then
-    (set -x; mkdir "$dir")
+    #(set -x; mkdir "$dir")
+    mkdir "$dir"
 fi
 
-echo >&2 "+ cat > '$dir/Dockerfile'"
+#echo >&2 "+ cat > '$dir/Dockerfile'"
 cat > "$dir/Dockerfile" <<EOF
 FROM $from
 MAINTAINER Feel++ Support <support@feelpp.org>
@@ -95,4 +96,5 @@ cat Dockerfile-feelpp >> "$dir/Dockerfile"
 
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
-( set -x; echo "docker build -t $tag \"$dir\"" )
+#( set -x; echo "docker build -t $tag \"$dir\"" )
+echo $dir
