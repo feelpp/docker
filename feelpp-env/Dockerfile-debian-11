@@ -37,9 +37,8 @@ RUN apt-get -qq update && \
     libbz2-dev \
     libbson-dev \
     libmongoc-dev \
-    mongo-tools \
     libmongoclient-dev            \
-    python-pymongo \
+    python3-pymongo \
     ruby-progressbar \
     ruby-tilt \
     asciidoctor \
