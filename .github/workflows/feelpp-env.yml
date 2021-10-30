@@ -62,10 +62,10 @@ jobs:
       uses: docker/build-push-action@v2
       with: 
         context: ./${{ steps.generate.outputs.context }}
-        tags: ghcr.io/feelpp/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+        tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ matrix.dockerfile }}
         load: true
     -
       name: Push ${{ matrix.service }}:${{ matrix.tag }}
       run: |
-        docker push ghcr.io/feelpp/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+        docker push ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
