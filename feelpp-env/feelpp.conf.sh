@@ -153,7 +153,11 @@ ctest_feelpp_module()
         CTEST_FLAGS="${3}"
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "running ctest ${CTEST_FLAGS}"
         ctest ${CTEST_FLAGS}
-        ((exit_status=$exit_status || $?));
+        status=$?
+        if (( status != 0 )); then
+          ctest --rerun-failed --output-on-failure 
+        fi
+        ((exit_status=$exit_status || $status));
         
         # if not empty then upload testsuite results
         if ! test -z "${BUILDKITE_JOB_ID}"; then
