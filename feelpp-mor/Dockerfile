@@ -23,8 +23,9 @@ RUN wget -qO - http://apt.feelpp.org/apt.gpg | gpg --dearmor > feelpp.gpg; \
         echo "deb [signed-by=/etc/apt/trusted.gpg.d/feelpp.gpg] http://apt.feelpp.org/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list; \
 	rm -f feelpp.gpg; \
         apt-get update ;\
-        apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data; \
-	apt-get install -y --no-install-recommends 'python3-feelpp-toolboxes*';\
+        apt-get install -y --no-install-recommends feelpp-toolboxes feelpp-toolboxes-data libfeelpp-toolboxes1-all-dev; \
+        apt-get install -y --no-install-recommends 'python3-feelpp-toolboxes*'; \
+        apt-get install -y --no-install-recommends feelpp-mor python3-feelpp-mor;\
 	apt-get install -y --no-install-recommends make rsync;\
         rm -rf /var/lib/apt/lists/* ;
 
