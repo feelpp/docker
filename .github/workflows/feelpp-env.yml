@@ -38,6 +38,7 @@ jobs:
     - name: generate
       run: |
         echo "::set-output name=context::$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)\n"
+        ls -lrt
       id: generate
       working-directory: feelpp-env
     -
