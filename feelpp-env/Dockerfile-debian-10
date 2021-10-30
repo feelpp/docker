@@ -1,6 +1,6 @@
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
-    software-properties-common 
+    software-properties-common gnupg
     
 # RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
