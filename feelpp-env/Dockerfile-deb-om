@@ -8,7 +8,7 @@ RUN apt-get -qq update && \
 RUN (for deb in deb deb-src; do echo "$deb http://build.openmodelica.org/apt `lsb_release -cs` release"; done | sudo tee /etc/apt/sources.list.d/openmodelica.list)
 RUN (wget -q http://build.openmodelica.org/apt/openmodelica.asc -O- | sudo apt-key add - )
 RUN    sudo apt -qq update \
-    && sudo apt  -y --force-yes install openmodelica \
+    && sudo apt  -y --force-yes install openmodelica omlib-modelica-3.2.3 \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
