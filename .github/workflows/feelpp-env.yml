@@ -36,7 +36,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
       with:
-        lfs: true  
+#        lfs: true  
         token: ${{ secrets.CR_PAT }}
         submodules: recursive
     - name: generate
