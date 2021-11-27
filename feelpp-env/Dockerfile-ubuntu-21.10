@@ -38,8 +38,6 @@ RUN apt-get -qq update && \
            libbz2-dev                                                  \
            libbson-dev                                                 \
            libmongoc-dev                                               \
-           mongodb-clients                                             \
-           mongodb-server                                              \
            libmongoclient-dev                                          \
            python3-pymongo                                              \
            ruby-progressbar                                            \
