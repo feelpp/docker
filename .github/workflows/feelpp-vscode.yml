@@ -3,7 +3,7 @@ name: Feelpp VSCode Container
 on: 
   push: 
     paths:
-      - 'vscode/**'
+      - 'feelpp-vscode/**'
       - '.github/workflows/vscode.yml'
 
 jobs:
