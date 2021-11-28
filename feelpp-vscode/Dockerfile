@@ -30,10 +30,10 @@ RUN wget -qO - http://apt.feelpp.org/apt.gpg | gpg --dearmor > feelpp.gpg; \
         echo "deb [signed-by=/etc/apt/trusted.gpg.d/feelpp.gpg] http://apt.feelpp.org/ubuntu focal ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list; \
         rm -f feelpp.gpg; \
         apt-get update ;\
-        apt-get install -y --no-install-recommends g++ clang-9 man-db libboost-regex1.67.0-icu66 feelpp-quickstart feelpp-data feelpp-tools python3-feelpp make rsync; \
+        apt-get install -y --no-install-recommends g++ clang-9 man-db libboost-regex1.71.0-icu66 feelpp-quickstart feelpp-data feelpp-tools python3-feelpp libfeelpp-dev make rsync; \
         rm -rf /var/lib/apt/lists/* ;
 
-RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
-        echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> ~feelpp/.bashrc
+#RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
+#        echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> ~feelpp/.bashrc
 
 USER vscode
