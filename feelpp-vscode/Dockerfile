@@ -6,6 +6,7 @@
 ARG VARIANT="focal"
 FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 
+USER root
 ARG CHANNEL
 ENV CHANNEL=${CHANNEL:-latest}
 RUN apt-get update \
@@ -16,9 +17,6 @@ RUN apt-get update \
         wget gpg \
         software-properties-common ;\
         rm -rf /var/lib/apt/lists/*
-
-RUN useradd --user-group --create-home --shell /bin/bash feelpp ;\
-        echo "feelpp ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ENV DEBIAN_FRONTEND=noninteractive        
 RUN echo "deb http://archive.ubuntu.com/ubuntu focal-proposed main restricted" |  tee -a /etc/apt/sources.list; \ 
@@ -38,4 +36,4 @@ RUN wget -qO - http://apt.feelpp.org/apt.gpg | gpg --dearmor > feelpp.gpg; \
 RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
         echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> ~feelpp/.bashrc
 
-USER feelpp
+USER vscode
