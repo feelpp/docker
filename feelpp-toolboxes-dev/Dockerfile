@@ -4,7 +4,7 @@ FROM ghcr.io/feelpp/feelpp-toolboxes:latest
 
 USER root
 RUN apt-get update;\
-        apt-get install -y --no-install-recommends git git-lfs jq curl; \
+        apt-get install -y --no-install-recommends git git-lfs jq curl pybind11-dev python3-pybind11; \
         apt-get install -y --no-install-recommends 'libfeelpp-toolboxes*-dev';\
         rm -rf /var/lib/apt/lists/* ;
 
