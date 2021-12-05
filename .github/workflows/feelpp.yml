@@ -5,7 +5,7 @@ on:
     types: [pkg-feelpp-published]
   push: 
     paths:
-      - 'feelpp/**'
+      - 'feelpp/Docketfile'
       - '.github/workflows/feelpp.yml'
 
 jobs:
