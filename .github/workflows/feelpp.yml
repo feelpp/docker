@@ -1,0 +1,20 @@
+name: Feel++ Env
+
+on: 
+  repository_dispatch:
+    types: [pkg-feelpp-published]
+  push: 
+    paths:
+      - 'feelpp/**'
+      - '.github/workflows/feelpp.yml'
+
+jobs:
+
+  activate:
+    runs-on: self-docker
+    if: |
+      github.repository == 'feelpp/docker' &&
+      !startsWith(github.event.head_commit.message, 'Release ') &&
+      !contains(github.event.head_commit.message, 'ci skip')
+    steps:
+    - run: echo ok go
