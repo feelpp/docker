@@ -1,4 +1,4 @@
-name: Feel++ Env
+name: Feelpp Docker
 
 on: 
   repository_dispatch:
@@ -21,14 +21,14 @@ jobs:
 
   deliver:
     if: "!contains(github.event.head_commit.message, 'deliver skip')"
+    runs-on: self-docker
+    needs: activate
     strategy:
       fail-fast: false
       matrix: 
         include:
           - {service: feelpp, dist: ${{ github.event.client_payload.dist }}, dockerfile: Dockerfile }
-    runs-on: self-docker
-    needs: activate
-    name: ${{ matrix.dist }} Build and Push Docker
+    name: Build and Push feelpp/feelpp:${{ matrix.dist }}
 
     steps:
     - uses: actions/checkout@v2.3.4
