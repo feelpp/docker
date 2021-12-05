@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix: 
         include:
-          - {service: feelpp, dist: ${{ github.event.client_payload.dist }}, dockerfile: Dockerfile }
+          - {service: feelpp, dist: "${{ github.event.client_payload.dist }}", dockerfile: Dockerfile }
     name: Build and Push feelpp/feelpp:${{ matrix.dist }}
 
     steps:
