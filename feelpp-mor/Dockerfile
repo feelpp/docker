@@ -1,6 +1,7 @@
 # -*- mode: Dockerfile -*-
 
-FROM ghcr.io/feelpp/feelpp-toolboxes:latest
+ARG TAG
+FROM ghcr.io/feelpp/feelpp-toolboxes:$TAG
 
 USER root
 RUN apt-get update;\
