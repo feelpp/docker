@@ -84,7 +84,7 @@ jobs:
       with: 
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
-        file: ${{ matrix.service }}/${{ matrix.dockerfile }}
+        file: ${{ matrix.service }}/Dockerfile
         build-args: TAG=${{ matrix.tag }}
         load: true
     -
