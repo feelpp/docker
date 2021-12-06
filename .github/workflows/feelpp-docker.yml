@@ -31,7 +31,7 @@ jobs:
               service: "${{ github.event.client_payload.component }}", 
               dist: "${{ github.event.client_payload.dist }}", 
               version: "${{ github.event.client_payload.version }}", 
-              tag: "v${{ matrix.version }}-${{ matrix.dist }}", 
+              tag: "v${{ github.event.client_payload.version }}-${{ github.event.client_payload.dist }}", 
               dockerfile: "Dockerfile-${{ github.event.client_payload.dist }}" 
             }
     name: Build and Push feelpp/${{ matrix.service }}:${{ matrix.dist }}
