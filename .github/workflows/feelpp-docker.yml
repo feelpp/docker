@@ -1,12 +1,12 @@
-name: Feelpp Toolboxes Docker
+name: Feelpp Docker
 
 on: 
   repository_dispatch:
-    types: [pkg-feelpp-toolboxes-published]
-  push: 
-    paths:
-      - 'feelpp-toolboxes/Docketfile'
-      - '.github/workflows/feelpp-toolboxes.yml'
+    types: [pkg-feelpp-published]
+#  push: 
+#    paths:
+#      - 'feelpp/Dockerfile'
+#      - '.github/workflows/feelpp.yml'
 
 jobs:
 
@@ -27,7 +27,13 @@ jobs:
       fail-fast: false
       matrix: 
         include:
-          - {service: feelpp-toolboxes, dist: "${{ github.event.client_payload.dist }}", tag: "${{ github.event.client_payload.dist }}", dockerfile: "Dockerfile" }
+          - { 
+              service: "${{ github.event.client_payload.component }}", 
+              dist: "${{ github.event.client_payload.dist }}", 
+              version: "${{ github.event.client_payload.version }}", 
+              tag: "v${{ matrix.version }}-${{ matrix.dist }}", 
+              dockerfile: "Dockerfile-${{ github.event.client_payload.dist }}" 
+            }
     name: Build and Push feelpp/${{ matrix.service }}:${{ matrix.dist }}
 
     steps:
@@ -56,9 +62,21 @@ jobs:
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
-        build-args: VARIANT=${{ matrix.tag }}
         load: true
     -
       name: Push ${{ matrix.service }}:${{ matrix.tag }}
       run: |
         docker push ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+    - 
+      name: Build ${{ matrix.service }}-dev:${{ matrix.tag }}
+      uses: docker/build-push-action@v2
+      with: 
+        context: ./${{ matrix.service }}/
+        tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
+        file: ${{ matrix.service }}/${{ matrix.dockerfile }}
+        build-args: TAG="${{ matrix.tag }}"
+        load: true
+    -
+      name: Push ${{ matrix.service }}-dev:${{ matrix.tag }}
+      run: |
+        docker push ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}

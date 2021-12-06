@@ -1,7 +1,7 @@
 # -*- mode: Dockerfile -*-
 
-ARG VARIANT=focal
-FROM ghcr.io/feelpp/feelpp:$VARIANT
+ARG TAG
+FROM ghcr.io/feelpp/feelpp:$TAG
 
 USER root
 RUN apt-get update;\
