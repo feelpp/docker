@@ -34,7 +34,7 @@ jobs:
               tag: "v${{ github.event.client_payload.version }}-${{ github.event.client_payload.dist }}", 
               dockerfile: "Dockerfile-${{ github.event.client_payload.dist }}" 
             }
-    name: Build and Push feelpp/${{ matrix.service }}:${{ matrix.dist }}
+    name: Build and Push feelpp/${{ matrix.service }}:${{ matrix.tag }}
 
     steps:
     - uses: actions/checkout@v2.3.4
@@ -58,10 +58,20 @@ jobs:
     - 
       name: Build ${{ matrix.service }}:${{ matrix.tag }}
       uses: docker/build-push-action@v2
+      if: ${{ matrix.service == 'feelpp' }}
       with: 
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
+        load: true
+    - 
+      name: Build ${{ matrix.service }}:${{ matrix.tag }}
+      uses: docker/build-push-action@v2
+      if: ${{ matrix.service != 'feelpp' }}
+      with: 
+        context: ./${{ matrix.service }}/
+        tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+        file: ${{ matrix.service }}/Docketfile
         load: true
     -
       name: Push ${{ matrix.service }}:${{ matrix.tag }}
