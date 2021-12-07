@@ -82,9 +82,9 @@ jobs:
       name: Build ${{ matrix.service }}-dev:${{ matrix.tag }}
       uses: docker/build-push-action@v2
       with: 
-        context: ./${{ matrix.service }}/
+        context: ./${{ matrix.service }}-dev/
         tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
-        file: ${{ matrix.service }}/Dockerfile
+        file: ${{ matrix.service }}-dev/Dockerfile
         build-args: TAG=${{ matrix.tag }}
         load: true
     -
