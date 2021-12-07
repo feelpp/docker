@@ -18,4 +18,4 @@ RUN json=$(curl -s "https://api.github.com/repos/Kitware/CMake/releases"); \
 	&& ./cmakeinstall.sh --prefix=/usr/local --exclude-subdir \
 	&& rm cmakeinstall.sh
 
-USER feelpp
+#USER feelpp
