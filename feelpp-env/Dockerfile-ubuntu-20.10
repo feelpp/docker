@@ -36,8 +36,6 @@ RUN apt-get -qq update && \
            libbz2-dev                                                  \
            libbson-dev                                                 \
            libmongoc-dev                                               \
-           mongodb-clients                                             \
-           mongodb-server                                              \
            libmongoclient-dev                                          \
            python3-pymongo                                              \
            ruby-progressbar                                            \
@@ -48,14 +46,6 @@ RUN apt-get -qq update && \
            docker.io jsonlint \
            man jq curl ruby ruby-dev \
            gdb lldb-9\
-    && apt-get -y --force-yes install clang-8 clang++-8 \
-    && apt-get -y --force-yes install clang-10 clang++-10 \                                 
-    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 \
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60 \
-    && update-alternatives --set gcc "/usr/bin/gcc-9" \
-    && update-alternatives --set g++ "/usr/bin/g++-9" \
-    && update-alternatives --set cc /usr/bin/gcc \
-    && update-alternatives --set c++ /usr/bin/g++ \         
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -34,7 +34,7 @@ RUN apt-get -qq update && \
     transfig imagemagick \
     libtbb-dev \
     libann-dev  libglpk-dev \
-    libbz2-dev \
+    libbz2-dev libzip-dev\
     libbson-dev \
     libmongoc-dev \
     libmongoclient-dev            \
