@@ -12,6 +12,22 @@ sudo cp /home/feelpp/WELCOME $HOME
 
 chown -R user.user $HOME
 
+cat > $HOME/.feelppconfig << EOF
+{
+ "append_date": false,
+ "append_np": true,
+ "feelppdb": "feelppdb",
+ "exprs": "exprs",
+ "geos": "geo",
+ "location": "global",
+ "logs": "logs",
+ "owner": {
+  "email": "",
+  "name": "$USER_ID"
+ },
+ "global_root":"/feelppdb"
+}
+EOF
 # OpenBLAS threads should be 1 to ensure performance
 echo "export OPENBLAS_NUM_THREADS=1" >> $HOME/.bashrc 
 echo "export OPENBLAS_VERBOSE=0" >> $HOME/.bashrc
@@ -26,21 +42,21 @@ echo "source $HOME/feelpp.conf.sh" >> $HOME/.bashrc
 echo "cd $HOME" >> $HOME/.bashrc 
 echo "cat $HOME/WELCOME" >> $HOME/.bashrc
 
-if [ -d /feel/crbdb ]; then
+if [ -d /feelppdb/crbdb ]; then
     sudo service mongodb start
-    if [ -d /feel/crbdb/mongodb ]; then
-        /usr/lib/juju/mongo3.2/bin/mongorestore /feel/crbdb/mongodb
+    if [ -d /feelppdb/crbdb/mongodb ]; then
+        /usr/lib/juju/mongo3.2/bin/mongorestore /feelppdb/crbdb/mongodb
     fi
 fi
 
-if [ -d /feel/ -a -w /feel/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
-    cp -r  /usr/local/share/feelpp/testcases /feel/
-    chown -R user.user /feel/testcases
+if [ -d /feelppdb/ -a -w /feelppdb/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
+    cp -r  /usr/local/share/feelpp/testcases /feelppdb/
+    chown -R user.user /feelppdb/testcases
     echo ""
     echo "The Feel++ testcases have been copied on the host system in"
-    echo "/feel/testcases"
-    echo "ls /feel/testcases"
-    ls /feel/testcases/
+    echo "/feelppdb/testcases"
+    echo "ls /feelppdb/testcases"
+    ls /feelppdb/testcases/
     echo "You can use and edit them as you which either within docker or on your system"
     echo ""
 fi
