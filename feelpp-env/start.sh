@@ -49,11 +49,13 @@ if [ -d /feelppdb/crbdb ]; then
     fi
 fi
 
-if ! [ -d /feelppdb/ -a -w /feelppdb/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
+if ! [ -d /feelppdb/ -a -w /feelppdb/ ]; then
     mkdir -p /feelppdb
 fi
-cp -r  /usr/local/share/feelpp/testcases /feelppdb/
-chown -R user.user /feelppdb/testcases
+if [ -d  /usr/local/share/feelpp/testcases/ ]; then
+    cp -r  /usr/local/share/feelpp/testcases /feelppdb/
+fi
+chown -R user.user /feelppdb
 echo ""
 echo "The Feel++ testcases have been copied on the host system in"
 echo "/feelppdb/testcases"
