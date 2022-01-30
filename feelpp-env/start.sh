@@ -50,14 +50,17 @@ if [ -d /feelppdb/crbdb ]; then
 fi
 
 if [ -d /feelppdb/ -a -w /feelppdb/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
-    cp -r  /usr/local/share/feelpp/testcases /feelppdb/
-    chown -R user.user /feelppdb/testcases
-    echo ""
-    echo "The Feel++ testcases have been copied on the host system in"
-    echo "/feelppdb/testcases"
-    echo "ls /feelppdb/testcases"
-    ls /feelppdb/testcases/
-    echo "You can use and edit them as you which either within docker or on your system"
-    echo ""
+else
+    mkdir -p /feelppdb
 fi
+cp -r  /usr/local/share/feelpp/testcases /feelppdb/
+chown -R user.user /feelppdb/testcases
+echo ""
+echo "The Feel++ testcases have been copied on the host system in"
+echo "/feelppdb/testcases"
+echo "ls /feelppdb/testcases"
+ls /feelppdb/testcases/
+echo "You can use and edit them as you which either within docker or on your system"
+echo ""
+
 exec /usr/sbin/gosu user bash
