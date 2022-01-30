@@ -23,7 +23,7 @@ cat > $HOME/.feelppconfig << EOF
  "logs": "logs",
  "owner": {
   "email": "",
-  "name": "$USER_ID"
+  "name": "user"
  },
  "global_root":"/feelppdb"
 }
