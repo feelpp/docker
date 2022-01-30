@@ -27,8 +27,8 @@ jobs:
           - {service: feelpp-env, dist: focal, flavor: ubuntu, version: 20.04, tag: ubuntu-20.04, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: impish, flavor: ubuntu, version: 21.10, tag: ubuntu-21.10, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: jammy, flavor: ubuntu, version: 22.04, tag: ubuntu-22.04, dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: buster, flavor: debian, version: 10, tag: debian-10, dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: bullseye, flavor: debian, version: 11, tag: debian-11, dockerfile: Dockerfile }
+#          - {service: feelpp-env, dist: buster, flavor: debian, version: 10, tag: debian-10, dockerfile: Dockerfile }
+#          - {service: feelpp-env, dist: bullseye, flavor: debian, version: 11, tag: debian-11, dockerfile: Dockerfile }
     runs-on: self-docker
     needs: activate
     name: ${{ matrix.dist }} Build and Push Docker
