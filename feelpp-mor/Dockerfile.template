@@ -19,8 +19,6 @@ RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} mor 
 
 COPY WELCOME $HOME/WELCOME.crb
 
-ENV FEELPP_REPOSITORY /feel
-
 # COPY WELCOME $HOME/WELCOME
 USER root
 #ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
