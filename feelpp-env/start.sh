@@ -49,8 +49,7 @@ if [ -d /feelppdb/crbdb ]; then
     fi
 fi
 
-if [ -d /feelppdb/ -a -w /feelppdb/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
-else
+if ! [ -d /feelppdb/ -a -w /feelppdb/ -a -d  /usr/local/share/feelpp/testcases/ ]; then
     mkdir -p /feelppdb
 fi
 cp -r  /usr/local/share/feelpp/testcases /feelppdb/
