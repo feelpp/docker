@@ -10,7 +10,7 @@ export HOME=/home/user
 sudo cp /home/feelpp/feelpp*.sh $HOME 
 sudo cp /home/feelpp/WELCOME $HOME
 
-chown -R user.user $HOME
+
 
 cat > $HOME/.feelppconfig << EOF
 {
@@ -25,7 +25,7 @@ cat > $HOME/.feelppconfig << EOF
   "email": "",
   "name": "user"
  },
- "global_root":"/feelppdb"
+ "global_root":"/home/user/feelppdb"
 }
 EOF
 # OpenBLAS threads should be 1 to ensure performance
@@ -54,14 +54,14 @@ if ! [ -d /feelppdb/ -a -w /feelppdb/ ]; then
 fi
 if [ -d  /usr/local/share/feelpp/testcases/ ]; then
     cp -r  /usr/local/share/feelpp/testcases /feelppdb/
+    echo ""
+    echo "The Feel++ testcases have been copied on the host system in"
+    echo "/feelppdb/testcases"
+    echo "ls /feelppdb/testcases"
+    ls /feelppdb/testcases/
+    echo "You can use and edit them as you which either within docker or on your system"
+    echo ""
 fi
-chown -R user.user /feelppdb
-echo ""
-echo "The Feel++ testcases have been copied on the host system in"
-echo "/feelppdb/testcases"
-echo "ls /feelppdb/testcases"
-ls /feelppdb/testcases/
-echo "You can use and edit them as you which either within docker or on your system"
-echo ""
+chown -R user.user $HOME
 
 exec /usr/sbin/gosu user bash
