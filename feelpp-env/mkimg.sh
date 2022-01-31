@@ -70,7 +70,7 @@ fi
 
 cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
-#cat Dockerfile-cmake >> "$dir/Dockerfile"
+cat Dockerfile-cmake >> "$dir/Dockerfile"
 
 #cat Dockerfile-openmpi >> "$dir/Dockerfile"
 
@@ -97,6 +97,10 @@ cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 cat Dockerfile-buildkite >> "$dir/Dockerfile"
 
 cat Dockerfile-feelpp >> "$dir/Dockerfile"
+
+cat >> "$dir/Dockerfile" <<EOF
+ENV PATH=/usr/local/bin:$PATH
+EOF
 
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 
