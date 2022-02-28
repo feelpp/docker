@@ -1,0 +1,14 @@
+{
+ "append_date": false,
+ "append_np": true,
+ "feelppdb": "feelppdb",
+ "exprs": "exprs",
+ "geos": "geo",
+ "location": "global",
+ "logs": "logs",
+ "owner": {
+  "email": "",
+  "name": "feelpp"
+ },
+ "global_root":"/feelpp"
+}

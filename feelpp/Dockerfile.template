@@ -11,8 +11,10 @@ ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
 ARG CXX=g++
 ARG CC=gcc
 
+RUN mkdir /feelpp && chown -R feelpp /feelpp
 USER feelpp
 ENV HOME /home/feelpp
+COPY feelppconfig $HOME/.feelppconfig
 
 # Install Feel++
 RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
