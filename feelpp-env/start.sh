@@ -25,7 +25,7 @@ cat > $HOME/.feelppconfig << EOF
   "email": "",
   "name": "user"
  },
- "global_root":"/home/user/feelppdb"
+ "global_root":"/feelppdb"
 }
 EOF
 # OpenBLAS threads should be 1 to ensure performance
@@ -52,7 +52,7 @@ fi
 if ! [ -d /feelppdb/ -a -w /feelppdb/ ]; then
     mkdir -p /feelppdb
 fi
-if [ -d  /usr/local/share/feelpp/testcases/ ]; then
+if test -d  /usr/local/share/feelpp/testcases/ -a ! -d /feelppdb/testcases/; then
     cp -r  /usr/local/share/feelpp/testcases /feelppdb/
     echo ""
     echo "The Feel++ testcases have been copied on the host system in"
@@ -63,5 +63,5 @@ if [ -d  /usr/local/share/feelpp/testcases/ ]; then
     echo ""
 fi
 chown -R user.user $HOME
-
+chown -R user.user /feelppdb/testcases/
 exec /usr/sbin/gosu user bash

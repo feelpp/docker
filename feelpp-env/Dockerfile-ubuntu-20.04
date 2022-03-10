@@ -46,7 +46,7 @@ RUN apt-get -qq update && \
            ruby-tilt                                                   \
            asciidoctor ruby-asciidoctor-pdf                                                 \
            libglew-dev                                                  \
-           python3-sympy  python3-mpi4py python3-numpy python3-petsc4py-real python3-slepc4py-real      \
+           python3-h5py python3-sympy  python3-mpi4py python3-numpy python3-petsc4py-real python3-slepc4py-real      \
            docker.io jsonlint \
            man jq curl ruby ruby-dev \
            gdb\
