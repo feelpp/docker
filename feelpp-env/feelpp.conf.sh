@@ -159,9 +159,9 @@ ctest_feelpp_module()
         #ctest ${CTEST_FLAGS}
         ctest --preset $2 -R feelpp 
         status=$?
-        if (( status != 0 )); then
+#        if (( status != 0 )); then
           # ctest  --preset $2 -R feelpp
-        fi
+#        fi
         ((exit_status=$exit_status || $status));
         
         # if not empty then upload testsuite results
