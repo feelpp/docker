@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix: 
         include:
-          - {service: feelpp-env, dist: focal, flavor: ubuntu, version: 20.04, tag: ubuntu-20.04-1, dockerfile: Dockerfile }
+          - {service: feelpp-env, dist: focal, flavor: ubuntu, version: 20.04, tag: ubuntu-20.04, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: impish, flavor: ubuntu, version: 21.10, tag: ubuntu-21.10, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: jammy, flavor: ubuntu, version: 22.04, tag: ubuntu-22.04, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: buster, flavor: debian, version: 10, tag: debian-10, dockerfile: Dockerfile }

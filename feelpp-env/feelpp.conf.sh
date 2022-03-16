@@ -101,11 +101,11 @@ configure_feelpp_module()
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
     	#${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:4}";
-        cmake --preset $2
+        cmake --preset $2  -DCMAKE_INSTALL_PREFIX=/usr/ 
         ((exit_status= $exit_status || $?));
     else
         #${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:4}";
-        cmake --preset $2
+        cmake --preset $2  -DCMAKE_INSTALL_PREFIX=/usr/
         ((exit_status= $exit_status || $?));
     fi
     echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
@@ -131,12 +131,12 @@ build_feelpp_module()
         # $* now contains possible additional cmake flags
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}"
         #configure_feelpp_module "${MODULE}" "${MODULEPATH}" "${5}" "${@:6}"
-        cmake --preset ${MODULE} 
+        cmake --preset ${MODULE} -DCMAKE_INSTALL_PREFIX=/usr
         ((exit_status=$exit_status || $?));
 
         [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
         #sudo make -j $NJOBS install
-        cmake --build --preset ${MODULE} -j $NJOBS
+        sudo cmake --build --preset ${MODULE} -j $NJOBS 
         ((exit_status=$exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
@@ -160,7 +160,7 @@ ctest_feelpp_module()
         ctest --preset $2 -R feelpp 
         status=$?
         if (( status != 0 )); then
-          ctest  --preset $2 -R feelpp
+          # ctest  --preset $2 -R feelpp
         fi
         ((exit_status=$exit_status || $status));
         
