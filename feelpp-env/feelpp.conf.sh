@@ -16,8 +16,8 @@ mkdir -p ${FEELPP_HOME}
 export PATH=${FEELPP_HOME}/bin:${PATH}
 export LD_LIBRARY_PATH=${FEELPP_HOME}/lib:$LD_LIBRARY_PATH
 export PKG_CONFIG_PATH=${FEELPP_HOME}/lib/pkgconfig:$PKG_CONFIG_PATH
-export PYTHONPATH=${FEELPP_HOME}/lib/python3.5/site-packages:$PYTHONPATH
-export PYTHONPATH=${FEELPP_HOME}/lib/python3.5/dist-packages:$PYTHONPATH
+export PYTHONPATH=${FEELPP_HOME}/lib/python3.8/site-packages:$PYTHONPATH
+export PYTHONPATH=${FEELPP_HOME}/lib/python3.8/dist-packages:$PYTHONPATH
 export MANPATH=${FEELPP_HOME}/share/man:$MANPATH
 
 # bash functions
@@ -100,10 +100,12 @@ configure_feelpp_module()
     cd $HOME
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
-    	${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:4}";
+    	#${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --cxxflags="${CXXFLAGS}" --prefix="${FEELPP_HOME}" --cmakeflags="${@:4}";
+        cmake --preset $2
         ((exit_status= $exit_status || $?));
     else
-        ${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:4}";
+        #${FEELPP_SRC_DIR}/feelpp/configure ${3} --root="$2" --prefix="${FEELPP_HOME}"  --cmakeflags="${@:4}";
+        cmake --preset $2
         ((exit_status= $exit_status || $?));
     fi
     echo -e "\033[33;32m--- Configuring Feel++ $1 done. \033[0m"
@@ -128,11 +130,13 @@ build_feelpp_module()
         #shift
         # $* now contains possible additional cmake flags
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "configure_feelpp_module ${MODULE} ${MODULEPATH} ${5} ${@:6}"
-        configure_feelpp_module "${MODULE}" "${MODULEPATH}" "${5}" "${@:6}"
+        #configure_feelpp_module "${MODULE}" "${MODULEPATH}" "${5}" "${@:6}"
+        cmake --preset ${MODULE} 
         ((exit_status=$exit_status || $?));
 
         [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
-        sudo make -j $NJOBS install
+        #sudo make -j $NJOBS install
+        cmake --build --preset ${MODULE} -j $NJOBS
         ((exit_status=$exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
@@ -152,10 +156,11 @@ ctest_feelpp_module()
     then
         CTEST_FLAGS="${3}"
         test ! -z "${BUILDKITE_JOB_ID}" && buildkite-agent annotate "running ctest ${CTEST_FLAGS}"
-        ctest ${CTEST_FLAGS}
+        #ctest ${CTEST_FLAGS}
+        ctest --preset $2 -R feelpp 
         status=$?
         if (( status != 0 )); then
-          ctest --rerun-failed --output-on-failure 
+          ctest  --preset $2 -R feelpp
         fi
         ((exit_status=$exit_status || $status));
         
