@@ -69,8 +69,8 @@ build_feelpp_libs()
 }
 clean_feelpp()
 {
-    for i in /usr/local/bin/feelpp*; do sudo strip $i; done
-    for i in /usr/local/lib/libfeel*; do sudo strip $i; done
+    for i in /usr/bin/feelpp*; do sudo strip $i; done
+    for i in /usr/lib/libfeel*; do sudo strip $i; done
     sudo rm -rf ${FEELPP_BUILD_DIR}/*
 }
 
