@@ -120,6 +120,7 @@ build_feelpp_module()
     echo "--- Building Feel++ Module ${2}..."
     if [ -d ${FEELPP_SRC_DIR}/feelpp ]
     then
+        cd ${FEELPP_SRC_DIR}/feelpp
         MODULE="${2}"
         echo $MODULE
         MODULEPATH="${3}"
