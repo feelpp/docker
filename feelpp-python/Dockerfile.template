@@ -1,0 +1,25 @@
+MAINTAINER Feel++ Support <support@feelpp.org>
+
+ARG BRANCH=develop
+ARG BUILD_JOBS=16
+ARG CONFIGURE_FLAGS="-r"
+ARG CMAKE_FLAGS=""
+ARG CTEST_FLAGS="-T test --no-compress-output"
+ARG BUILDKITE_JOB_ID=""
+ARG BUILDKITE_AGENT_ACCESS_TOKEN=""
+ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
+ARG CXX=g++
+ARG CC=gcc
+
+USER feelpp
+ENV HOME /home/feelpp
+
+# Install Feel++
+RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} python $HOME/src/feelpp/python \"${BUILD_JOBS}\" \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
+
+COPY WELCOME $HOME/WELCOME.toolboxes
+
+# COPY WELCOME $HOME/WELCOME
+USER root
+#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
+CMD ["/usr/local/bin/start.sh"]
