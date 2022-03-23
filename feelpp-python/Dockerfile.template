@@ -15,9 +15,9 @@ USER feelpp
 ENV HOME /home/feelpp
 
 # Install Feel++
-RUN source $HOME/feelpp.conf.sh && \
+RUN bash -c "source $HOME/feelpp.conf.sh && \
     pull_feelpp ${BRANCH} && \
-    install_feelpp_module ${BRANCH} feelpp-python $HOME/src/feelpp/python "${BUILD_JOBS}" "${CONFIGURE_FLAGS}" "${CTEST_FLAGS}" "${CMAKE_FLAGS}"
+    install_feelpp_module ${BRANCH} feelpp-python $HOME/src/feelpp/python \"${BUILD_JOBS}\" \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
 
 COPY WELCOME $HOME/WELCOME.toolboxes
 
