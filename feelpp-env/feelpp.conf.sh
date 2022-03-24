@@ -7,10 +7,10 @@ DEFAULT_NJOBS=1
 export FEELPP_SRC_DIR=${HOME}/src
 mkdir -p ${FEELPP_SRC_DIR}
 
-export FEELPP_BUILD_DIR=${HOME}/build
+export FEELPP_BUILD_DIR=${FEELPP_SRC_DIR}/feelpp/build
 mkdir -p ${FEELPP_BUILD_DIR}
 
-export FEELPP_HOME=/usr/local
+export FEELPP_HOME=/usr/
 mkdir -p ${FEELPP_HOME}
 
 export PATH=${FEELPP_HOME}/bin:${PATH}
@@ -72,6 +72,7 @@ clean_feelpp()
     for i in /usr/bin/feelpp*; do sudo strip $i; done
     for i in /usr/lib/libfeel*; do sudo strip $i; done
     sudo rm -rf ${FEELPP_BUILD_DIR}/*
+    if test -d /feelpp/feelppdb/; then sudo rm -rf /feelpp/feelppdb/*; fi
 }
 
 # install Feel++ libs
