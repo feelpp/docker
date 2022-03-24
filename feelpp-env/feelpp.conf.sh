@@ -183,6 +183,15 @@ install_feelpp_module()
 {
     exit_status=0
     if [ ! -d ${FEELPP_SRC_DIR}/feelpp ]; then
+        echo "--- [install_feelpp_module ] Cloning feelpp..."
+        BRANCH="${1:-${DEFAULT_BRANCH}}"
+        pull_feelpp "${BRANCH}"
+        ((exit_status= $exit_status || $?))
+    elif test -d ${FEELPP_SRC_DIR}/feelpp/.git; then
+        echo "--- [install_feelpp_module ] Pulling feelpp..."
+        (${FEELPP_SRC_DIR}/feelpp/ && git pull)
+    else
+        echo "--- [install_feelpp_module ] Cloning feelpp..."
         BRANCH="${1:-${DEFAULT_BRANCH}}"
         pull_feelpp "${BRANCH}"
         ((exit_status= $exit_status || $?))
