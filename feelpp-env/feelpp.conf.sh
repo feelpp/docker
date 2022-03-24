@@ -196,6 +196,8 @@ install_feelpp_module()
         pull_feelpp "${BRANCH}"
         ((exit_status= $exit_status || $?))
     fi
+    echo "--- [install_feelpp_module] sources"
+    ls ${FEELPP_SRC_DIR}/feelpp
     exit_status=0
     build_feelpp_module "${1}" "${2}" "${3}" "${4:-${DEFAULT_NJOBS}}" "${5}" "${*:7}"
     ((exit_status=$exit_status || $?));

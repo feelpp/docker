@@ -12,6 +12,7 @@ RUN apt-get -y install tzdata
 RUN apt-get -qq update && \
   apt-get -y install \
            quilt debhelper                                    \
+           tree ne \
            cmake                                             \
            ssh git-lfs                                                 \
            clang-10 clang++-10 g++  sudo             \
