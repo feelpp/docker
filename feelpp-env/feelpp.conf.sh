@@ -8,12 +8,11 @@ export FEELPP_SRC_DIR=${HOME}/src
 mkdir -p ${FEELPP_SRC_DIR}
 
 export FEELPP_BUILD_DIR=${FEELPP_SRC_DIR}/feelpp/build
-mkdir -p ${FEELPP_BUILD_DIR}
 
 export FEELPP_HOME=/usr/
 mkdir -p ${FEELPP_HOME}
 
-export PATH=${FEELPP_HOME}/bin:${PATH}
+export PATH=/usr/local/bin:${FEELPP_HOME}/bin:${PATH}
 export LD_LIBRARY_PATH=${FEELPP_HOME}/lib:$LD_LIBRARY_PATH
 export PKG_CONFIG_PATH=${FEELPP_HOME}/lib/pkgconfig:$PKG_CONFIG_PATH
 export PYTHONPATH=${FEELPP_HOME}/lib/python3.8/site-packages:$PYTHONPATH
@@ -182,17 +181,17 @@ ctest_feelpp_module()
 install_feelpp_module()
 {
     exit_status=0
+    BRANCH="${1:-${DEFAULT_BRANCH}}"
     if [ ! -d ${FEELPP_SRC_DIR}/feelpp ]; then
-        echo "--- [install_feelpp_module ] Cloning feelpp..."
-        BRANCH="${1:-${DEFAULT_BRANCH}}"
+        echo "--- [install_feelpp_module ] Cloning feelpp branch ${BRANCH}..."
         pull_feelpp "${BRANCH}"
         ((exit_status= $exit_status || $?))
     elif test -d ${FEELPP_SRC_DIR}/feelpp/.git; then
         echo "--- [install_feelpp_module ] Pulling feelpp..."
-        (${FEELPP_SRC_DIR}/feelpp/ && git pull)
+        (cd ${FEELPP_SRC_DIR}/feelpp/ && git pull)
     else
-        echo "--- [install_feelpp_module ] Cloning feelpp..."
-        BRANCH="${1:-${DEFAULT_BRANCH}}"
+        rm -rf ${FEELPP_SRC_DIR}/feelpp/
+        echo "--- [install_feelpp_module ] Cloning feelpp(feelpp already exists) branch ${BRANCH}..."
         pull_feelpp "${BRANCH}"
         ((exit_status= $exit_status || $?))
     fi
