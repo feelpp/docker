@@ -64,10 +64,9 @@ jobs:
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
         load: true
-    -
-      name: Push ${{ matrix.service }}:${{ matrix.tag }}
-      run: |
-        docker push ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+        push: true
+        secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
     - 
       name: Build ${{ matrix.service }}-dev:${{ matrix.tag }}
       uses: docker/build-push-action@v2
@@ -77,7 +76,6 @@ jobs:
         file: ${{ matrix.service }}-dev/${{ matrix.dockerfile }}
         build-args: TAG=${{ matrix.tag }}
         load: true
-    -
-      name: Push ${{ matrix.service }}-dev:${{ matrix.tag }}
-      run: |
-        docker push ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
+        push: true
+        secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
