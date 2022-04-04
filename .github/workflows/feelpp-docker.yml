@@ -63,7 +63,6 @@ jobs:
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
-        load: true
         push: true
         secrets: |
             GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
@@ -75,7 +74,6 @@ jobs:
         tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
         file: ${{ matrix.service }}-dev/${{ matrix.dockerfile }}
         build-args: TAG=${{ matrix.tag }}
-        load: true
         push: true
         secrets: |
             GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
