@@ -36,7 +36,9 @@ pull_feelpp ()
       cd feelpp
       git submodule update --init --recursive 
   fi
-  
+  echo $(whoami)
+  echo "git config --global --add safe.directory $FEELPP_SRC_DIR/feelpp"
+  git config --global --add safe.directory $FEELPP_SRC_DIR/feelpp
 }
 configure_feelpp()
 {
