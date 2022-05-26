@@ -25,6 +25,7 @@ pull_feelpp ()
   echo "Pulling feelpp..."
   git config --global user.name "Docker Robot"
   git config --global user.email "docker@feelpp.org"
+  git config --global --add safe.directory $FEELPP_SRC_DIR/feelpp
   cd ${FEELPP_SRC_DIR}
   if [ -d feelpp ]
   then
@@ -35,6 +36,7 @@ pull_feelpp ()
       cd feelpp
       git submodule update --init --recursive 
   fi
+  
 }
 configure_feelpp()
 {
