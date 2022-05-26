@@ -101,6 +101,7 @@ configure_feelpp_module()
 
     exit_status=0
     echo "--- Configuring ${3} Feel++ $1 ..."
+    echo "user: $(whoami)"
     cd $HOME
     cd ${FEELPP_BUILD_DIR}/
     if [[ $CXXFLAGS ]]; then
@@ -141,7 +142,10 @@ build_feelpp_module()
 
         [[ ! -z $exit_status ]] && [ $exit_status -ne 0 ] && return $exit_status
         #sudo make -j $NJOBS install
-        sudo cmake --build --preset ${MODULE} -j $NJOBS 
+        echo "building all..."
+        cmake --build --preset ${MODULE} -j $NJOBS  -t all
+        echo "installing all..."
+        sudo cmake --build --preset ${MODULE} -j $NJOBS  -t install/fast
         ((exit_status=$exit_status || $?));
     else
         echo "Feel++ source cannot be found. Please run pull_feelpp first."
