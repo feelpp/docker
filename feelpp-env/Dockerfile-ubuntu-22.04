@@ -21,7 +21,7 @@ RUN apt-get -qq update && \
 	       chrpath                                                 \
 	       libboost-all-dev                                    \
            libcln-dev                                                  \
-           libmetis-dev                                                \
+           libmetis-dev libscotch-dev \
            petsc-dev                                       \
            slepc-dev                                       \           
            libhdf5-openmpi-dev                                         \
@@ -49,7 +49,6 @@ RUN apt-get -qq update && \
            docker.io jsonlint \
            man jq curl ruby ruby-dev \
            gdb\
-           libscotch-dev\
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
