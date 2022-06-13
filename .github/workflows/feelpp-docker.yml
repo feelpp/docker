@@ -61,7 +61,7 @@ jobs:
       if: ${{ matrix.service == 'feelpp' }}
       with: 
         context: ./${{ matrix.service }}/
-        tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
+        tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.dist }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
         push: true
         secrets: |
@@ -71,7 +71,7 @@ jobs:
       uses: docker/build-push-action@v2
       with: 
         context: ./${{ matrix.service }}-dev/
-        tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
+        tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.dist }}
         file: ${{ matrix.service }}-dev/${{ matrix.dockerfile }}
         build-args: TAG=${{ matrix.tag }}
         push: true
