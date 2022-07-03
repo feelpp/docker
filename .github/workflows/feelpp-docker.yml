@@ -32,7 +32,8 @@ jobs:
               dist: "${{ github.event.client_payload.dist }}", 
               version: "${{ github.event.client_payload.version }}", 
               tag: "v${{ github.event.client_payload.version }}-${{ github.event.client_payload.dist }}", 
-              dockerfile: "Dockerfile-${{ github.event.client_payload.dist }}" 
+              dockerfile: "Dockerfile-${{ github.event.client_payload.dist }}", 
+              dockerfile-dev: "Dockerfile" 
             }
     name: Build and Push feelpp/${{ matrix.service }}:${{ matrix.tag }}
 
@@ -72,7 +73,7 @@ jobs:
       with: 
         context: ./${{ matrix.service }}-dev/
         tags: ghcr.io/feelpp/${{ matrix.service }}-dev:${{ matrix.tag }}
-        file: ${{ matrix.service }}-dev/${{ matrix.dockerfile }}
+        file: ${{ matrix.service }}-dev/${{ matrix.dockerfile-dev }}
         build-args: TAG=${{ matrix.tag }}
         push: true
         secrets: |
