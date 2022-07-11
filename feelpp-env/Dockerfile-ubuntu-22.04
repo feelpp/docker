@@ -22,6 +22,7 @@ RUN apt-get -qq update && \
 	       libboost-all-dev                                    \
            libcln-dev                                                  \
            libmetis-dev libscotch-dev \
+           libeigen3-dev \
            petsc-dev                                       \
            slepc-dev                                       \           
            libhdf5-openmpi-dev                                         \
