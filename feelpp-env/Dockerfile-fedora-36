@@ -1,15 +1,15 @@
 FROM fedora:36
 
-RUN    dnf install -y sudo emacs-nox clang cmake git \
-       automake autoconf libtool \
-       cln-devel \
-       openmpi-devel \
-       boost-devel boost-openmpi-devel \
-       petsc-devel  petsc-openmpi-devel gmsh-devel \
-       hdf5-devel ann-devel glpk-devel \
-    && dnf clean all
-
-# how to use mpi: https://docs.fedoraproject.org/en-US/neurofedora/mpi/
-# export
-ENV arch=x86_64
-RUN module load mpi/openmpi-$arch # $arch is the architecture, for example x86_64
+RUN    dnf install -y sudo emacs-nox clang cmake git ruby libcurl-devel\
+    cln-devel \
+    openmpi-devel \
+    python3-devel \ 
+    boost-devel boost-openmpi-devel \
+    MUMPS-openmpi-devel metis-devel \
+    petsc-devel  petsc-openmpi-devel python3-petsc-openmpi \
+    gmsh gmsh-devel hdf5-openmpi-devel \
+    libzip-devel openssl-devel\
+    python3-mpi4py-openmpi python3-sympy \
+    && dnf clean all \
+    && echo ". /etc/profile.d/modules.sh" >> $HOME/.bashrc \
+    && echo "module load mpi/openmpi-x86_64" >> $HOME/.bashrc 

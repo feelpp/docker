@@ -12,4 +12,4 @@ RUN    dnf install -y sudo emacs-nox clang cmake git ruby libcurl-devel\
        python3-mpi4py-openmpi python3-sympy \
       && dnf clean all \
       && echo ". /etc/profile.d/modules.sh" >> $HOME/.bashrc \
-       && echo "module load mpi/openmpi-x86_64" >> $HOME/.bashrc 
+      && echo "module load mpi/openmpi-x86_64" >> $HOME/.bashrc 
