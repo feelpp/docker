@@ -69,5 +69,4 @@ jobs:
         context: ./${{ steps.generate.outputs.context }}
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ matrix.dockerfile }}
-        load: true
         push: ${{ github.event_name != 'pull_request' }}
