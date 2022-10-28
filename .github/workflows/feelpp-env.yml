@@ -29,12 +29,12 @@ jobs:
           - {service: feelpp-env, dist: jammy, flavor: ubuntu, version: "22.04", tag: ubuntu-22.04, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: buster, flavor: debian, version: 10, tag: debian-10, dockerfile: Dockerfile }
           - {service: feelpp-env, dist: bullseye, flavor: debian, version: "11", tag: debian-11, dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: bookworm, flavor: debian, version: "12", tag: debian-bookworm, dockerfile: Dockerfile }
+#          - {service: feelpp-env, dist: bookworm, flavor: debian, version: "12", tag: debian-bookworm, dockerfile: Dockerfile }
           - {service: feelpp-env, dist: fedora-36, flavor: fedora, version: "36", tag: fedora-36, dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: fedora-37, flavor: fedora, version: 37, tag: fedora-37, dockerfile: Dockerfile }
     runs-on: self-docker
     needs: activate
-    name: ${{ matrix.dist }} Build and Push Docker
+    name: ${{ matrix.dist }}
 
     steps:
     - uses: actions/checkout@v2.3.4
