@@ -8,8 +8,8 @@ RUN apt-get -qq update && \
 #RUN apt -qq update && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get -yq install tzdata
-RUN apt-get -qq update && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install tzdata
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qq update && \
   apt-get -yq install \
            quilt debhelper                                    \
            tree ne                                              \
