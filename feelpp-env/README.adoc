@@ -5,7 +5,7 @@
 
 generate images for ubuntu-16.10 with clang++ 3.9
 ----
-bash mkimg.sh  -f ubuntu:16.04 -t feelpp/feelpp-env:ubuntu-16.04 -c clang++-6.0   --
+bash mkimg.sh  -f ubuntu:16.04 -t ghcr.io/feelpp/feelpp-env:ubuntu-16.04 -c clang++-6.0   --
 
 start http daemon in feelpp-env directory for acusim
 python -m SimpleHTTPServer 8000
@@ -14,13 +14,28 @@ python -m SimpleHTTPServer 8000
 === Eoan
 
 ----
-bash mkimg.sh  -f ubuntu:19.10 -t feelpp/feelpp-env:ubuntu-19.10 -c clang++-9 --
+bash mkimg.sh  -f ubuntu:19.10 -t ghcr.io/feelpp/feelpp-env:ubuntu-19.10 -c clang++-9 --
 ----
 
 === Focal
 
 ----
-bash mkimg.sh  -f ubuntu:20.04 -t feelpp/feelpp-env:ubuntu-20.04 -c clang++ --
+bash mkimg.sh  -f ubuntu:20.04 -t ghcr.io/feelpp/feelpp-env:ubuntu-20.04 -c clang++ --
+docker build -t ghcr.io/feelpp/feelpp-env:ubuntu-20.04 "ubuntu-20.04-clang++"
+----
+
+=== Jammy
+
+----
+bash mkimg.sh  -f ubuntu:22.04 -t ghcr.io/feelpp/feelpp-env:ubuntu-22.04 -c clang++ --
+docker build -t ghcr.io/feelpp/feelpp-env:ubuntu-22.04 "ubuntu-20.04-clang++"
+----
+
+=== Kinetic
+
+----
+bash mkimg.sh  -f ubuntu:22.10 -t ghcr.io/feelpp/feelpp-env:ubuntu-22.10 --
+docker build -t ghcr.io/feelpp/feelpp-env:ubuntu-22.10 "ubuntu-22.10-clang++"
 ----
 
 == Debian
@@ -29,5 +44,14 @@ bash mkimg.sh  -f ubuntu:20.04 -t feelpp/feelpp-env:ubuntu-20.04 -c clang++ --
 
 ----
 bash mkimg.sh  -f debian:10 -t feelpp/feelpp-env:debian-10 -c clang++-7 --
-docker build -t feelpp/feelpp-env:debian-10 "debian-10-clang++-7"
+docker build -t ghcr.io/feelpp/feelpp-env:debian-10 "debian-10-clang++-7"
+----
+
+== Fedora
+
+=== Fedora 36
+
+----
+bash mkimg.sh  -f fedora:36 -t feelpp/feelpp-env:fedora-36 --
+docker build -t ghcr.io/feelpp/feelpp-env:fedora-36 "fedora-36-clang++"
 ----

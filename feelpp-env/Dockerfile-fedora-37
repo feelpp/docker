@@ -1,6 +1,6 @@
 FROM fedora:37
 
-RUN    dnf install -y sudo emacs-nox clang cmake git ruby libcurl-devel\
+RUN    dnf install -y redhat-lsb-core sudo emacs-nox clang cmake git ruby libcurl-devel\
        cln-devel \
        openmpi-devel \
        python3-devel \ 
