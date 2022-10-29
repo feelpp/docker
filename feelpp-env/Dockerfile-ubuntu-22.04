@@ -9,7 +9,7 @@ RUN apt-get -qq update && \
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
-RUN apt-get -yq install tzdata
+# RUN apt-get -yq install tzdata
 RUN apt-get -qq update && \
   apt-get -yq install \
            quilt debhelper                                    \
