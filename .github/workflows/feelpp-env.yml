@@ -5,6 +5,26 @@ on:
     paths:
       - 'feelpp-env/**'
       - '.github/workflows/feelpp-env.yml'
+  workflow_dispatch:
+    inputs:
+      dist:
+        description: 'Distribution codename'     
+        required: true
+        default: 'jammy'
+      flavor:
+        description: 'Flavor of the distribution'  
+        required: true
+        default: ubuntu
+      version:
+        description: 'Version of the distribution'  
+        required: true
+        default: 22.04
+      dockerfile:
+        description: 'Dockerfile to use'  
+        required: false
+        default: Dockerfile
+
+
 
 jobs:
 
@@ -18,8 +38,8 @@ jobs:
     - run: echo ok go
 
 
-  deliver:
-    if: "!contains(github.event.head_commit.message, 'deliver skip')"
+  all_images:
+    if: ${{ github.event_name == 'push' && "!contains(github.event.head_commit.message, 'all skip')" }}
     strategy:
       fail-fast: false
       matrix: 
@@ -69,4 +89,47 @@ jobs:
         context: ./${{ steps.generate.outputs.context }}
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ matrix.dockerfile }}
+        push: ${{ github.event_name != 'pull_request' }}
+
+
+  one_images:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: self-docker
+    needs: activate
+    name: ${{ inputs.dist }}
+    env:
+      tag: ${{ inputs.flavor }}-${{ inputs.version }}
+    steps:
+    - uses: actions/checkout@v2.3.4
+      with:
+#        lfs: true  
+        token: ${{ secrets.CR_PAT }}
+        submodules: recursive
+    - name: generate
+      run: |
+        bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ tag }}  --
+        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ tag }}  --)"
+        ls -lrt
+      id: generate
+      working-directory: feelpp-env
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1        
+    - 
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v1 
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - 
+      name: Build ${{ inputs.service }}:${{ tag }}
+      uses: docker/build-push-action@v2
+      with: 
+        context: ./${{ steps.generate.outputs.context }}
+        tags: ghcr.io/feelpp/${{ inputs.service }}:${{ tag }}
+        file: ./${{ steps.generate.outputs.context }}/${{ inputs.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
