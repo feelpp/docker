@@ -24,8 +24,10 @@ RUN apt-get -qq update && \
     libcln-dev \
     libmetis-dev libscotch-dev \
     libeigen3-dev \
-    libpetsc-real3.14-dev \
+    petsc-dev \
+    libpetsc-real-dev \
     slepc-dev \
+    libslepc-real-dev \
     libhdf5-openmpi-dev \
     libnlopt-dev \
     libgsl-dev \
