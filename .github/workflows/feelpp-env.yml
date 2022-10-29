@@ -107,8 +107,8 @@ jobs:
         submodules: recursive
     - name: generate
       run: |
-        bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ tag }}  --
-        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ tag }}  --)"
+        bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ env.tag }}  --
+        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ env.tag }}  --)"
         ls -lrt
       id: generate
       working-directory: feelpp-env
@@ -126,10 +126,10 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
     - 
-      name: Build ${{ inputs.service }}:${{ tag }}
+      name: Build ${{ inputs.service }}:${{ env.tag }}
       uses: docker/build-push-action@v2
       with: 
         context: ./${{ steps.generate.outputs.context }}
-        tags: ghcr.io/feelpp/${{ inputs.service }}:${{ tag }}
+        tags: ghcr.io/feelpp/${{ inputs.service }}:${{ env.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ inputs.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
