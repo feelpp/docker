@@ -1,16 +1,15 @@
-RUN apt-get -qq update && \
-    apt-get -y --force-yes install \
-    software-properties-common 
-    
-# RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/miroir.univ-lorraine.fr\/ubuntu\//' /etc/apt/sources.list
 
-#RUN (for deb in deb deb-src; do echo "$deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main"; done |  tee /etc/apt/sources.list.d/llvm-toolchain.list)
-#RUN apt -qq update && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
-
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get -y install tzdata
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
 RUN apt-get -qq update && \
-  apt-get -y install \
+    apt-get -y --force-yes install  tzdata software-properties-common \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get -qq update && \
+  apt-get -yq install \
            quilt debhelper                                    \
            tree ne                                              \
            cmake                                             \

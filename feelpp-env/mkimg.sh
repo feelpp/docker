@@ -62,6 +62,13 @@ LABEL org.feelpp.vendor="Cemosis" \
 
 EOF
 
+if test -f Dockerfile-$fromos; then
+    cat Dockerfile-$fromos >> "$dir/Dockerfile"
+fi
+if test -f Dockerfile-$fromos-$fromtag; then
+    cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
+fi
+
 if test $fromos != "fedora"; then
     if test -f Dockerfile-deb-om-$fromos-$fromtag; then
         cat Dockerfile-deb-om-$fromos-$fromtag  >> "$dir/Dockerfile"
@@ -69,7 +76,6 @@ if test $fromos != "fedora"; then
         cat Dockerfile-deb-om  >> "$dir/Dockerfile"
     fi
 fi
-cat Dockerfile-$fromos-$fromtag >> "$dir/Dockerfile"
 
 cat Dockerfile-cmake >> "$dir/Dockerfile"
 
