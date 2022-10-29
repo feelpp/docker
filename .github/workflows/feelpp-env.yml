@@ -92,13 +92,14 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
 
 
-  one_images:
+  one_image:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: self-docker
     needs: activate
     name: ${{ inputs.dist }}
     env:
       tag: ${{ inputs.flavor }}-${{ inputs.version }}
+      service: feelpp-env
     steps:
     - uses: actions/checkout@v2.3.4
       with:
@@ -107,8 +108,8 @@ jobs:
         submodules: recursive
     - name: generate
       run: |
-        bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ env.tag }}  --
-        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ inputs.service }}:${{ env.tag }}  --)"
+        bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --
+        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --)"
         ls -lrt
       id: generate
       working-directory: feelpp-env
@@ -126,10 +127,10 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
     - 
-      name: Build ${{ inputs.service }}:${{ env.tag }}
+      name: Build ${{ env.service }}:${{ env.tag }}
       uses: docker/build-push-action@v2
       with: 
         context: ./${{ steps.generate.outputs.context }}
-        tags: ghcr.io/feelpp/${{ inputs.service }}:${{ env.tag }}
+        tags: ghcr.io/feelpp/${{ env.service }}:${{ env.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ inputs.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
