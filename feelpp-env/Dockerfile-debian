@@ -7,7 +7,7 @@ RUN apt-get -qq update && \
 #RUN (for deb in deb deb-src; do echo "$deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main"; done |  tee /etc/apt/sources.list.d/llvm-toolchain.list)
 #RUN apt -qq update && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
 
-ENV DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
 RUN apt-get -y install tzdata
 RUN apt-get -qq update && \

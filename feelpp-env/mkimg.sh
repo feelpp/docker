@@ -48,6 +48,8 @@ cat > "$dir/Dockerfile" <<EOF
 FROM $from
 MAINTAINER Feel++ Support <support@feelpp.org>
 
+ARG FLAVOR="$fromos"
+ARG FLAVOR_VERSION="$fromtag"
 ARG BRANCH=develop
 ARG BUILD_JOBS=1
 ARG CMAKE_FLAGS=""
