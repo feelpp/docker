@@ -93,6 +93,14 @@ jobs:
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ matrix.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
+    - 
+      name: Trigger build runner:${{ matrix.tag }}
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        repository: feelpp/runners
+        event-type: runner-update-baseimage
+        client-payload: '{"flavor":"${{ matrix.flavor }}","version":"${{ matrix.version }}"}'
 
 
   one_image:
@@ -137,3 +145,11 @@ jobs:
         tags: ghcr.io/feelpp/${{ env.service }}:${{ env.tag }}
         file: ./${{ steps.generate.outputs.context }}/${{ inputs.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
+    - 
+      name: Trigger build runner:${{ env.tag }}
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        repository: feelpp/runners
+        event-type: runner-update-baseimage
+        client-payload: '{"flavor":"${{ inputs.flavor }}","version":"${{ inputs.version }}"}'
