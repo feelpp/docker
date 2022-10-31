@@ -1,1 +1,30 @@
+# Add Qt6 support
+
+# PIP requirement like "aqtinstall==2.0.6" or url with egg file
+ARG AQT_VERSION="aqtinstall==3.0.1"
+
+ARG QT_VERSION=6.4.0
+ARG QT_PATH=/opt/Qt
+
+ARG ADDITIONAL_PACKAGES="sudo git openssh-client ca-certificates build-essential curl python3 locales patchelf"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DEBCONF_NONINTERACTIVE_SEEN=true \
+    QT_PATH=${QT_PATH} \
+    QT_GCC=${QT_PATH}/${QT_VERSION}/gcc_64 \
+    PATH=${QT_PATH}/Tools/CMake/bin:${QT_PATH}/Tools/Ninja:${QT_PATH}/${QT_VERSION}/gcc_64/bin:$PATH
+
+COPY qt6/6.4-gcc-aqt/* /tmp/
+
+# Get Qt binaries with aqt
+RUN chmod +x /tmp/get_qt.sh && /tmp/get_qt.sh
+
+# Get linuxdeploy and build it
+RUN chmod +x /tmp/get_linuxdeploy.sh && /tmp/get_linuxdeploy.sh
+
+# Install the required packages
+RUN chmod +x /tmp/install_packages.sh && /tmp/install_packages.sh
+RUN rm  /tmp/get_qt.sh /tmp/get_linuxdeploy.sh /tmp/install_packages.sh
+# Reconfigure locale
+RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 

@@ -112,6 +112,7 @@ ENV PATH=/usr/local/bin:$PATH
 EOF
 
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
+cp -r qt6 $dir
 
 #( set -x; echo "docker build -t $tag \"$dir\"" )
 echo $dir
