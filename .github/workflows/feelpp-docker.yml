@@ -75,6 +75,7 @@ jobs:
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.dist }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
         build-args: |
+          IMAGE=${{ matrix.flavor }}:${{ matrix.dist }}
           FLAVOR=${{ matrix.flavor }}
           DIST=${{ matrix.dist }}
           VERSION=${{ matrix.version }}
@@ -140,6 +141,7 @@ jobs:
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.dist }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
         build-args: |
+          IMAGE=${{ matrix.flavor }}:${{ matrix.dist }}
           FLAVOR=${{ matrix.flavor }}
           DIST=${{ matrix.dist }}
           VERSION=${{ matrix.version }}
