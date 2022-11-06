@@ -1,7 +1,6 @@
 # -*- mode: Dockerfile -*-
 ARG FLAVOR=ubuntu
 ARG DIST=jammy
-
 FROM $FLAVOR:$DIST
 
 ARG VERSION=0.110.0
