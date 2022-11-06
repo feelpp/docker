@@ -1,5 +1,6 @@
 ARG IMAGE=ubuntu:jammy
-FROM $IMAGE
+FROM ${IMAGE}
+
 ARG FLAVOR=ubuntu
 ARG DIST=jammy
 ARG VERSION=0.110.0
