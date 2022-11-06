@@ -1,5 +1,5 @@
 name: Feelpp Docker
-run-name: [${{ github.event.client_payload.dist }}-${{ github.event.client_payload.version }}] 
+run-name: "[${{ github.event.client_payload.dist }}-${{ github.event.client_payload.version }}]"
 on: 
   repository_dispatch:
     types: [pkg-feelpp-published]
