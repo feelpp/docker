@@ -1,4 +1,3 @@
-# -*- mode: Dockerfile -*-
 ARG FLAVOR=ubuntu
 ARG DIST=jammy
 FROM $FLAVOR:$DIST
