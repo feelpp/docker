@@ -1,9 +1,10 @@
 # -*- mode: Dockerfile -*-
 ARG FLAVOR=ubuntu
 ARG DIST=jammy
-ARG VERSION=0.110.0
+
 FROM $FLAVOR:$DIST
 
+ARG VERSION=0.110.0
 ARG CHANNEL
 ENV CHANNEL=${CHANNEL:-latest}
 RUN apt-get update \
