@@ -4,6 +4,7 @@ on:
   repository_dispatch:
     types: [pkg-feelpp-published]
   workflow_dispatch:
+    inputs:
       flavor:
         description: 'Flavor of the distribution'  
         required: true
