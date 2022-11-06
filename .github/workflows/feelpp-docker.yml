@@ -74,6 +74,10 @@ jobs:
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.dist }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
+        build-args: |
+          FLAVOR=${{ matrix.flavor }}
+          DIST=${{ matrix.dist }}
+          VERSION=${{ matrix.version }}
         push: true
         secrets: |
             GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
@@ -99,6 +103,7 @@ jobs:
         include:
           - { 
               service: "feelpp", 
+              flavor: "${{ inputs.flavor }}",
               dist: "${{ inputs.dist }}", 
               version: "${{ inputs.version }}", 
               tag: "v${{ inputs.version }}-${{ inputs.dist }}", 
@@ -134,6 +139,10 @@ jobs:
         context: ./${{ matrix.service }}/
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }},ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.dist }}
         file: ${{ matrix.service }}/${{ matrix.dockerfile }}
+        build-args: |
+          FLAVOR=${{ matrix.flavor }}
+          DIST=${{ matrix.dist }}
+          VERSION=${{ matrix.version }}
         push: true
         secrets: |
             GIT_AUTH_TOKEN=${{ secrets.CR_PAT }}
