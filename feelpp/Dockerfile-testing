@@ -1,5 +1,5 @@
 ARG IMAGE=ubuntu:jammy
-FROM ${IMAGE}
+FROM debian:testing
 
 ARG FLAVOR=ubuntu
 ARG DIST=jammy
