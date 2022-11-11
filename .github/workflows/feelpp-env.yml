@@ -68,7 +68,7 @@ jobs:
     - name: generate
       run: |
         bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --
-        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)"
+        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)" >> $GITHUB_OUTPUT
         ls -lrt
       id: generate
       working-directory: feelpp-env
@@ -120,7 +120,7 @@ jobs:
     - name: generate
       run: |
         bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --
-        echo "::set-output name=context::feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --)"
+        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --)" >> $GITHUB_OUTPUT
         ls -lrt
       id: generate
       working-directory: feelpp-env
