@@ -54,7 +54,7 @@ jobs:
           - {service: feelpp-env, dist: debian-sid, flavor: debian, version: "sid", tag: debian-sid, experimental: true, dockerfile: Dockerfile }
           - {service: feelpp-env, dist: fedora-36, flavor: fedora, version: "36", tag: fedora-36, experimental: false, dockerfile: Dockerfile }
           - {service: feelpp-env, dist: fedora-37, flavor: fedora, version: "37", tag: fedora-37, experimental: true, dockerfile: Dockerfile }
-    runs-on: self-ubuntu-20.04
+    runs-on: self-docker
     needs: activate
     name: ${{ matrix.flavor }}-${{ matrix.version }}
     continue-on-error: ${{ matrix.experimental }}
