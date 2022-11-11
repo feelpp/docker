@@ -29,7 +29,7 @@ on:
 jobs:
 
   activate:
-    runs-on: self-docker
+    runs-on: ubuntu-latest
     if: |
       github.repository == 'feelpp/docker' &&
       !startsWith(github.event.head_commit.message, 'Release ') &&
