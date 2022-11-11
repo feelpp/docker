@@ -65,15 +65,15 @@ LABEL org.feelpp.vendor="Cemosis" \
 EOF
 
 if test -f Dockerfile-$fromos; then
-    ( cat Dockerfile-$fromos; echo )  >> "$dir/Dockerfile"
+    ( cat "Dockerfile-$fromos"; echo )  >> "$dir/Dockerfile"
 fi
 if test -f Dockerfile-$fromos-$fromtag; then
-    ( cat Dockerfile-$fromos-$fromtag; echo ) >> "$dir/Dockerfile"
+    ( cat "Dockerfile-$fromos-$fromtag"; echo ) >> "$dir/Dockerfile"
 fi
 
 if test $fromos != "fedora"; then
     if test -f Dockerfile-deb-om-$fromos-$fromtag; then
-        ( cat Dockerfile-deb-om-$fromos-$fromtag; echo )  >> "$dir/Dockerfile"
+        ( cat "Dockerfile-deb-om-$fromos-$fromtag"; echo )  >> "$dir/Dockerfile"
     else
         ( cat Dockerfile-deb-om; echo )  >> "$dir/Dockerfile"
     fi
@@ -103,10 +103,10 @@ fi
 
 #cat Dockerfile-fmi >> "$dir/Dockerfile"
 
-( cat Dockerfile-$fromos-buildkite; echo ) >> "$dir/Dockerfile"
+( cat "Dockerfile-$fromos-buildkite"; echo ) >> "$dir/Dockerfile"
+
 
 ( cat Dockerfile-feelpp; echo ) >> "$dir/Dockerfile"
-
 ( cat >> "$dir/Dockerfile"; echo ) <<EOF
 ENV PATH=/usr/local/bin:$PATH
 EOF
