@@ -105,12 +105,12 @@ fi
 
 ( cat "Dockerfile-$fromos-buildkite"; echo ) >> "$dir/Dockerfile"
 
-
 ( cat Dockerfile-feelpp; echo ) >> "$dir/Dockerfile"
+
 cat >> "$dir/Dockerfile" <<EOF
 ENV PATH=/usr/local/bin:$PATH
 EOF
-echo titi
+
 cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
 cp -r qt6 $dir
 
