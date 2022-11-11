@@ -68,7 +68,7 @@ jobs:
     - name: generate
       run: |
         bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --
-        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)" >> $GITHUB_ENV
+        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }}  --)" >> $GITHUB_OUTPUT
         ls -lrt
       id: generate
       working-directory: feelpp-env
@@ -91,7 +91,7 @@ jobs:
       with: 
         context: ./${{ steps.generate.outputs.context }}
         tags: ghcr.io/feelpp/${{ matrix.service }}:${{ matrix.tag }}
-        file: ./${{ env.context }}/${{ matrix.dockerfile }}
+        file: ./${{ steps.generate.outputs.context }}/${{ matrix.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
     - 
       name: Trigger build runner:${{ matrix.tag }}
@@ -120,7 +120,7 @@ jobs:
     - name: generate
       run: |
         bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --
-        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --)" >> $GITHUB_ENV
+        echo "context=feelpp-env/$(bash mkimg.sh  -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }}  --)" >> $GITHUB_OUTPUT
         ls -lrt
       id: generate
       working-directory: feelpp-env
@@ -143,7 +143,7 @@ jobs:
       with: 
         context: ./${{ steps.generate.outputs.context }}
         tags: ghcr.io/feelpp/${{ env.service }}:${{ env.tag }}
-        file: ./${{ env.context }}/${{ inputs.dockerfile }}
+        file: ./${{ steps.generate.outputs.context }}/${{ inputs.dockerfile }}
         push: ${{ github.event_name != 'pull_request' }}
     - 
       name: Trigger build runner:${{ env.tag }}
