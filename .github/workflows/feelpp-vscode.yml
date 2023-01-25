@@ -8,6 +8,7 @@ on:
       - 'feelpp-mor/**'
       - 'feelpp-mor-dev/**'
       - '.github/workflows/vscode.yml'
+      - 'feelpp-vscode/**'
 
 jobs:
 
