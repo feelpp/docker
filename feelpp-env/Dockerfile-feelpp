@@ -8,6 +8,8 @@
 #     && apt-get clean \
 #     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# install nbmake to test notebooks
+RUN pip3 install nbmake
 
 #RUN gem install rake github_changelog_generator asciidoctor  asciidoctor-bibtex jekyll jekyll-asciidoc \
 # && gem install asciidoctor-latex --pre
