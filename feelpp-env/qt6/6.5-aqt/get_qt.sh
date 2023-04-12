@@ -29,11 +29,11 @@ echo
 echo '--> Download & install the Qt library using aqt'
 echo
 
-aqt install-qt -O "$QT_PATH" linux desktop "$QT_VERSION" wasm_singlethread
+aqt install-qt -O "$QT_PATH" linux desktop "$QT_VERSION" wasm_singlethread  -m qtcharts qtquick3d qtshadertools qtdatavis3d
 aqt install-tool -O "$QT_PATH" linux desktop tools_cmake
 aqt install-tool -O "$QT_PATH" linux desktop tools_ninja
 # Host Qt needed for cross-compilation
-aqt install-qt -O "$QT_PATH" linux desktop "$QT_VERSION" gcc_64
+aqt install-qt -O "$QT_PATH" linux desktop "$QT_VERSION" gcc_64  -m qtcharts qtquick3d qtshadertools qtdatavis3d
 
 pip3 freeze | xargs pip3 uninstall -y
 
