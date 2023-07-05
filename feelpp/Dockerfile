@@ -38,10 +38,16 @@ RUN wget -qO - http://apt.feelpp.org/apt.gpg | gpg --dearmor > feelpp.gpg; \
         echo "deb [signed-by=/etc/apt/trusted.gpg.d/feelpp.gpg] http://apt.feelpp.org/$FLAVOR/$DIST $DIST ${CHANNEL}" | tee -a /etc/apt/sources.list.d/feelpp.list; \
         rm -f feelpp.gpg; \
         apt-get update ;\
-        apt-get install -y --no-install-recommends g++ clang man-db make cmake rsync ipython3 'feelpp-*' 'libfeelpp1' 'python3-feelpp*'; \
+        apt-get install -y --no-install-recommends \
+                         g++ clang man-db make cmake rsync ipython3 \
+                         python3-pip \
+                         'feelpp-*' 'libfeelpp1' 'python3-feelpp*'; \
         rm -rf /var/lib/apt/lists/* ;
+
 
 RUN     echo "export FEELPP_REPOSITORY=/feel" >> ~feelpp/.bashrc;\
         echo "export OMPI_MCA_btl_vader_single_copy_mechanism=none" >> ~feelpp/.bashrc
 
 USER feelpp
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel pyvista xvfbwrapper ipykernel plotly pandas
