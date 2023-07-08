@@ -47,6 +47,11 @@ bash mkimg.sh  -f debian:10 -t feelpp/feelpp-env:debian-10 -c clang++-7 --
 docker build -t ghcr.io/feelpp/feelpp-env:debian-10 "debian-10-clang++-7"
 ----
 
+----
+bash mkimg.sh  -f debian:12 -t feelpp/feelpp-env:debian-12  --
+docker build -t ghcr.io/feelpp/feelpp-env:debian-12 "debian-12-clang++"
+----
+
 == Fedora
 
 === Fedora 36

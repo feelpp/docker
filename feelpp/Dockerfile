@@ -11,6 +11,9 @@ ENV CHANNEL=${CHANNEL:-latest}
 RUN if test "$FLAVOR" = "ubuntu"; then \
         sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/miroir.univ-lorraine.fr\/ubuntu\//' /etc/apt/sources.list; \
     fi
+RUN if test "$FLAVOR" = "debian"; then \
+        sed -i 's/http:\/\/deb.debian.org\/debian\//http:\/\/miroir.univ-lorraine.fr\/deb\//' /etc/apt/sources.list; \
+        fi
 RUN apt-get update \
         && apt-get install -y \
         vim \
