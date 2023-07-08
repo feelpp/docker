@@ -1,4 +1,8 @@
-RUN sed -i 's/http:\/\/deb.debian.org\/ubuntu\//http:\/\/miroir.univ-lorraine.fr\/debian\//' /etc/apt/sources.list
+RUN if test -f /etc/apt/sources.list; then sed -i 's/http:\/\/deb.debian.org\/debian\//http:\/\/miroir.univ-lorraine.fr\/debian\//' /etc/apt/sources.list; fi
+RUN if test -f /etc/apt/sources.list; then sed -i 's/http:\/\/security.debian.org\/debian-security\//http:\/\/miroir.univ-lorraine.fr\/debian-security\//' /etc/apt/sources.list; fi
+
+
+
 
 RUN apt-get -qq update && \
     apt-get -y --force-yes install \
