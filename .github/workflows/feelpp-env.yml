@@ -2,6 +2,8 @@ name: Feel++ Env
 
 on: 
   push: 
+    branches:
+      - master
     paths:
       - 'feelpp-env/**'
       - '.github/workflows/feelpp-env.yml'

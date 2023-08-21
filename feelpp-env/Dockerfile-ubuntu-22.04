@@ -1,9 +1,8 @@
 # Add Qt6 support
 
-# PIP requirement like "aqtinstall==2.0.6" or url with egg file
-ARG AQT_VERSION="aqtinstall==3.0.1"
+ARG AQT_VERSION="aqtinstall==3.1.4"
 
-ARG QT_VERSION=6.4.1
+ARG QT_VERSION=6.5.0
 ARG QT_PATH=/opt/Qt
 
 ARG ADDITIONAL_PACKAGES="sudo git openssh-client ca-certificates build-essential curl python3 locales patchelf"
@@ -11,10 +10,12 @@ ARG ADDITIONAL_PACKAGES="sudo git openssh-client ca-certificates build-essential
 ENV DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true \
     QT_PATH=${QT_PATH} \
-    QT_GCC=${QT_PATH}/${QT_VERSION}/gcc_64 \
-    PATH=${QT_PATH}/Tools/CMake/bin:${QT_PATH}/Tools/Ninja:${QT_PATH}/${QT_VERSION}/gcc_64/bin:$PATH
+    QT_WASM=${QT_PATH}/${QT_VERSION}/wasm_singlethread \
+    EMSDK=${SDK_PATH} \
+    EMSDK_NODE=${SDK_PATH}/node/14.18.2_64bit/bin/node \
+    PATH=$PATH:${QT_PATH}/Tools/CMake/bin:${QT_PATH}/Tools/Ninja:${QT_PATH}/${QT_VERSION}/wasm_singlethread/bin:${SDK_PATH}/upstream/bin:${SDK_PATH}/upstream/emscripten:${SDK_PATH}/node/14.18.2_64bit/bin:${SDK_PATH}
 
-COPY qt6/6.4-aqt/* /tmp/
+COPY qt6/6.5-aqt/* /tmp/
 
 # Get Qt binaries with aqt
 RUN ls /tmp -lrt  && chmod +x /tmp/*.sh && /tmp/install_wasm_qt6.sh
