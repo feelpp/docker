@@ -39,7 +39,7 @@ RUN apt-get -qq update && \
     libgsl-dev                                                  \
     libnetcdf-dev libgl2ps-dev libglu1-mesa-dev libsm-dev libxt-dev \
     libfftw3-mpi-dev                                            \
-    libxml2-dev                                             \
+    libxml2-dev   libpugixml-dev                                          \
     libgmsh-dev gmsh                                       \
     bison flex                                              \
     doxygen doxygen-latex                                  \
