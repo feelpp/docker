@@ -1,0 +1,3 @@
+# create docker group to avoid failure later
+# docker is not yet supported in fedora-37
+RUN groupadd docker

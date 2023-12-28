@@ -59,9 +59,9 @@ docker build -t ghcr.io/feelpp/feelpp-env:debian-sid "debian-sid-clang++"
 
 == Fedora
 
-=== Fedora 36
+=== Fedora 39
 
 ----
-bash mkimg.sh  -f fedora:36 -t feelpp/feelpp-env:fedora-36 --
-docker build -t ghcr.io/feelpp/feelpp-env:fedora-36 "fedora-36-clang++"
+bash mkimg.sh  -f fedora:39 -t feelpp/feelpp-env:fedora-39 --
+docker build -t ghcr.io/feelpp/feelpp-env:fedora-39 "fedora-39-clang++"
 ----
