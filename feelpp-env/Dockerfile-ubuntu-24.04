@@ -1,1 +1,6 @@
-
+RUN apt-get -qq update && \
+  apt-get -yq install \
+    libboost1.83-all-dev \
+  && apt-get -y autoremove \
+  && apt-get -y clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

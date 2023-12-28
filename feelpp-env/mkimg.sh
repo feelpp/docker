@@ -71,7 +71,7 @@ if test -f Dockerfile-$fromos-$fromtag; then
     ( cat "Dockerfile-$fromos-$fromtag"; echo ) >> "$dir/Dockerfile"
 fi
 
-if test $fromos != "fedora"; then
+if test $fromos != "fedora" -a $fromtag != "24.04"; then
     if test -f Dockerfile-deb-om-$fromos-$fromtag; then
         ( cat "Dockerfile-deb-om-$fromos-$fromtag"; echo )  >> "$dir/Dockerfile"
     else
