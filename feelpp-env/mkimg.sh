@@ -79,7 +79,9 @@ if test $fromos != "fedora"; then
     fi
 fi
 
-( cat Dockerfile-cmake; echo ) >> "$dir/Dockerfile"
+if test $fromtag = "20.04"; then
+    ( cat Dockerfile-cmake; echo ) >> "$dir/Dockerfile"
+fi
 
 #cat Dockerfile-openmpi >> "$dir/Dockerfile"
 
