@@ -13,22 +13,27 @@ on:
         description: 'Distribution codename'     
         required: true
         default: 'jammy'
+        type: string
       flavor:
         description: 'Flavor of the distribution'  
         required: true
-        default: ubuntu
+        default: 'ubuntu'
+        type: string
       version:
         description: 'Version of the distribution'  
         required: true
-        default: 22.04
+        default: '22.04'
+        type: string
       dockerfile:
         description: 'Dockerfile to use'  
         required: false
-        default: Dockerfile
+        default: 'Dockerfile'
+        type: string
       platforms:
         description: 'Platforms to build'  
         required: false
-        default: linux/amd64,linux/arm64
+        default: 'linux/amd64,linux/arm64'
+        type: string
 
 
 
