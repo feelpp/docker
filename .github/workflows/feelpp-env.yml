@@ -1,5 +1,5 @@
 name: Feel++ Env
-
+run-name: "Feel++ Env [${{ inputs.dist }}/${{ inputs.platforms }}]"
 on: 
   push: 
     branches:
