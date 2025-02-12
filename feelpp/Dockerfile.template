@@ -19,8 +19,7 @@ USER feelpp
 ENV HOME /home/feelpp
 COPY feelppconfig $HOME/.feelppconfig
 
-# Install Feel++cp ../fee 
-COPY feelpp.conf.sh  /home/feelpp
+# Install Feel++
 RUN bash -c "\
         export FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN} && \
         export FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY} && \
