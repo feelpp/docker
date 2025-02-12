@@ -8,6 +8,8 @@ ARG CMAKE_FLAGS=""
 ARG CTEST_FLAGS="-T test --no-compress-output"
 ARG BUILDKITE_JOB_ID=""
 ARG BUILDKITE_AGENT_ACCESS_TOKEN=""
+ARG FEELPP_GIRDER_API_KEY=""
+ARG FEELPP_GITHUB_TOKEN=""
 ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
 ARG CXX=g++
 ARG CC=gcc
@@ -19,12 +21,9 @@ COPY feelppconfig $HOME/.feelppconfig
 
 # Install Feel++cp ../fee 
 COPY feelpp.conf.sh  /home/feelpp
-RUN \
-    --mount=type=secret,id=FEELPP_GITHUB_TOKEN,dst=/run/secrets/FEELPP_GITHUB_TOKEN \
-    --mount=type=secret,id=FEELPP_GIRDER_API_KEY,dst=/run/secrets/FEELPP_GIRDER_API_KEY \
-    bash -c "\
-        export FEELPP_GITHUB_TOKEN=$(cat /run/secrets/FEELPP_GITHUB_TOKEN) && \
-        export FEELPP_GIRDER_API_KEY=$(cat /run/secrets/FEELPP_GIRDER_API_KEY) && \
+RUN bash -c "\
+        export FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN} && \
+        export FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY} && \
         source $HOME/feelpp.conf.sh && \
         install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
 
