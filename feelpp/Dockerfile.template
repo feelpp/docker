@@ -1,7 +1,8 @@
+FROM ghcr.io/feelpp/feelpp-env:ubuntu-22.04
 MAINTAINER Feel++ Support <support@feelpp.org>
 
 ARG BRANCH=develop
-ARG BUILD_JOBS=16
+ARG BUILD_JOBS=40
 ARG CONFIGURE_FLAGS="-r"
 ARG CMAKE_FLAGS=""
 ARG CTEST_FLAGS="-T test --no-compress-output"
@@ -16,8 +17,16 @@ USER feelpp
 ENV HOME /home/feelpp
 COPY feelppconfig $HOME/.feelppconfig
 
-# Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
+# Install Feel++cp ../fee 
+COPY feelpp.conf.sh  /home/feelpp
+RUN \
+    --mount=type=secret,id=FEELPP_GITHUB_TOKEN,dst=/run/secrets/FEELPP_GITHUB_TOKEN \
+    --mount=type=secret,id=FEELPP_GIRDER_API_KEY,dst=/run/secrets/FEELPP_GIRDER_API_KEY \
+    bash -c "\
+        export FEELPP_GITHUB_TOKEN=$(cat /run/secrets/FEELPP_GITHUB_TOKEN) && \
+        export FEELPP_GIRDER_API_KEY=$(cat /run/secrets/FEELPP_GIRDER_API_KEY) && \
+        source $HOME/feelpp.conf.sh && \
+        install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
 
 COPY WELCOME $HOME/WELCOME
 
