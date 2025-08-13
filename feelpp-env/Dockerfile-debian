@@ -42,7 +42,7 @@ RUN apt-get -qq update && \
     libxml2-dev   libpugixml-dev                                          \
     libgmsh-dev gmsh                                       \
     bison flex                                              \
-    doxygen doxygen-latex                                  \
+    doxygen                                   \
     transfig imagemagick                                    \
     libtbb-dev                                  \
     libann-dev libglpk-dev                                 \
