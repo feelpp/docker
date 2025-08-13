@@ -33,7 +33,7 @@ RUN apt-get -qq update && \
     libmetis-dev libscotch-dev \
     libeigen3-dev \
     petsc-dev                                       \
-    slepc-dev                                       \           
+    slepc-dev                                       \
     libhdf5-openmpi-dev                                         \
     libnlopt-dev                                                \
     libgsl-dev                                                  \
@@ -49,7 +49,7 @@ RUN apt-get -qq update && \
     libbz2-dev libzip-dev                                       \
     libbson-dev                                                 \
     libmongoc-dev                                               \
-    libmongoclient-dev                                          \
+    libmongo-client-dev                                          \
     python3-pymongo                                              \
     ruby-progressbar                                            \
     ruby-tilt                                                   \
