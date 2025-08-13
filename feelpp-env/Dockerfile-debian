@@ -5,7 +5,7 @@ RUN if test -f /etc/apt/sources.list; then sed -i 's/http:\/\/security.debian.or
 
 
 RUN apt-get -qq update && \
-    apt-get -y --force-yes install \
+    apt-get -y  install \
     gnupg \
     ca-certificates-java default-jre-headless \
     quilt  debhelper dh-python 
@@ -19,7 +19,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
 RUN apt-get -y install tzdata
 RUN apt-get -qq update && \
-    apt-get -y --force-yes install \
+    apt-get -y  install \
     quilt debhelper                                    \
     tree ne                                              \
     cmake                                             \
