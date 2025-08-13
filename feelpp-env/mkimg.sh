@@ -1,53 +1,53 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 mkimg="$(basename "$0")"
 
-from=debian:10
-cxx=clang++
-cc=clang
-token=
+from="debian:10"
+cxx="clang++"
+cc="clang"
+token=""
+install_altair=""
+tag=""
 
 usage() {
-    echo >&2 "usage: $mkimg [-f fromos:fromtag] [-t tag] [-c c++ compiler] [-cc c compiler]"
-    echo >&2 "   ie: $mkimg -f $from -t feelpp-env:19.10 -c clang++ -cc clang "
-    exit 1
+  echo >&2 "usage: $mkimg [-f fromos:fromtag] [-t tag] [-c c++ compiler] [-cc c compiler] [-o token] [-a 0|1]"
+  echo >&2 "   ex: $mkimg -f debian:13 -t feelpp-env:debian-13 -c clang++ -cc clang"
+  exit 1
 }
 
-fromos=
-fromtag=
-install_altair=
-
-tag=
-while true; do
-    case "$1" in
-        -a|--altair) install_altair="$2" ; shift 2 ;;
-        -f|--from) from="$2" ; shift 2 ;;
-        -t|--tag) tag="$2" ; shift 2 ;;
-        -c|--cxx) cxx="$2" ; shift 2 ;;
-        -o|--token) token="$2" ; shift 2 ;;
-        -cc) cc="$2" ; shift 2 ;;
-        -h|--help) usage ;;
-        --) shift ; break ;;
-    esac
+# ---- Parse args (no need for trailing --) ----
+while (($#)); do
+  case "$1" in
+    -a|--altair) install_altair="${2:-}"; shift 2 ;;
+    -f|--from)   from="${2:-}";          shift 2 ;;
+    -t|--tag)    tag="${2:-}";           shift 2 ;;
+    -c|--cxx)    cxx="${2:-}";           shift 2 ;;
+    -cc)         cc="${2:-}";            shift 2 ;;
+    -o|--token)  token="${2:-}";         shift 2 ;;
+    -h|--help)   usage ;;
+    --)          shift; break ;;
+    *)           echo "Unknown option: $1" >&2; usage ;;
+  esac
 done
 
-splitfrom=(`echo "$from" | tr ":" "\n"`)
-fromos=${splitfrom[0]}
-fromtag=${splitfrom[1]}
-
-#echo >&2 "directory $fromos-$fromtag"
-dir=$fromos-$fromtag-$cxx
-if [ ! -d "$dir" ]; then
-    #(set -x; mkdir "$dir")
-    mkdir "$dir"
+# ---- Split FROM into os:tag safely ----
+if [[ "$from" != *:* ]]; then
+  echo "ERROR: --from/-f must be of the form os:tag (got '$from')" >&2
+  exit 1
 fi
+fromos="${from%%:*}"
+fromtag="${from#*:}"
 
-#echo >&2 "+ cat > '$dir/Dockerfile'"
-cat > "$dir/Dockerfile" <<EOF
-FROM $from
-MAINTAINER Feel++ Support <support@feelpp.org>
+# ---- Build directory ----
+dir="${fromos}-${fromtag}-${cxx}"
+mkdir -p "$dir"
 
+# ---- Start Dockerfile ----
+{
+  echo "FROM $from"
+  echo 'LABEL maintainer="Feel++ Support <support@feelpp.org>"'
+  cat <<EOF
 ARG FLAVOR="$fromos"
 ARG FLAVOR_VERSION="$fromtag"
 ARG BRANCH=develop
@@ -57,64 +57,50 @@ ARG VERSION="1.0"
 ARG CXX="${cxx}"
 ARG CC="${cc}"
 ARG TOKEN="${token}"
-ENV FEELPP_DEP_INSTALL_PREFIX /usr/local
+ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
 
 LABEL org.feelpp.vendor="Cemosis" \
-      org.feelpp.version="${VERSION}"
-
+      org.feelpp.version="\${VERSION}"
 EOF
+} > "$dir/Dockerfile"
 
-if test -f Dockerfile-$fromos; then
-    ( cat "Dockerfile-$fromos"; echo )  >> "$dir/Dockerfile"
+# ---- Concatenate optional fragments if present ----
+append_if_exists() {
+  local f="$1"
+  if [[ -f "$f" ]]; then
+    { cat "$f"; echo; } >> "$dir/Dockerfile"
+  fi
+}
+
+append_if_exists "Dockerfile-${fromos}"
+append_if_exists "Dockerfile-${fromos}-${fromtag}"
+
+# Include OpenMPI / deb-om layer for all but Fedora and Ubuntu 24.04
+if [[ "$fromos" != "fedora" && "$fromtag" != "24.04" ]]; then
+  if [[ -f "Dockerfile-deb-om-${fromos}-${fromtag}" ]]; then
+    append_if_exists "Dockerfile-deb-om-${fromos}-${fromtag}"
+  else
+    append_if_exists "Dockerfile-deb-om"
+  fi
 fi
-if test -f Dockerfile-$fromos-$fromtag; then
-    ( cat "Dockerfile-$fromos-$fromtag"; echo ) >> "$dir/Dockerfile"
+
+# CMake layer only for Ubuntu 20.04 (legacy)
+if [[ "$fromtag" == "20.04" ]]; then
+  append_if_exists "Dockerfile-cmake"
 fi
 
-if test $fromos != "fedora" -a $fromtag != "24.04"; then
-    if test -f Dockerfile-deb-om-$fromos-$fromtag; then
-        ( cat "Dockerfile-deb-om-$fromos-$fromtag"; echo )  >> "$dir/Dockerfile"
-    else
-        ( cat Dockerfile-deb-om; echo )  >> "$dir/Dockerfile"
-    fi
-fi
+append_if_exists "Dockerfile-${fromos}-buildkite"
+append_if_exists "Dockerfile-feelpp"
 
-if test $fromtag = "20.04"; then
-    ( cat Dockerfile-cmake; echo ) >> "$dir/Dockerfile"
-fi
+# Final ENV
+echo 'ENV PATH=/usr/local/bin:$PATH' >> "$dir/Dockerfile"
 
-#cat Dockerfile-openmpi >> "$dir/Dockerfile"
+# ---- Copy aux files if they exist ----
+shopt -s nullglob
+for f in WELCOME start.sh start-user.sh bashrc.feelpp feelpp.* ctest*xsl; do
+  [[ -e "$f" ]] && cp "$f" "$dir"/
+done
+[[ -d qt6 ]] && cp -r qt6 "$dir"/
 
-#cat Dockerfile-boost >> "$dir/Dockerfile"
-
-#cat Dockerfile-petsc-slepc >> "$dir/Dockerfile"
-
-#if [ "x$install_altair" = "x1" ]; then
-#cat Dockerfile-altair >> "$dir/Dockerfile"
-#fi
-
-#cat Dockerfile-paraview-$fromos-$fromtag >> "$dir/Dockerfile"
-
-#cat Dockerfile-deb-mongodb-$fromos-$fromtag >> "$dir/Dockerfile"
-
-#cat Dockerfile-openturns >> "$dir/Dockerfile"
-
-#cat Dockerfile-deb-sympy >> "$dir/Dockerfile"
-
-#cat Dockerfile-deb-mpi4py >> "$dir/Dockerfile"
-
-#cat Dockerfile-fmi >> "$dir/Dockerfile"
-
-( cat "Dockerfile-$fromos-buildkite"; echo ) >> "$dir/Dockerfile"
-
-( cat Dockerfile-feelpp; echo ) >> "$dir/Dockerfile"
-
-cat >> "$dir/Dockerfile" <<EOF
-ENV PATH=/usr/local/bin:$PATH
-EOF
-
-cp WELCOME ctest*xsl feelpp.* start.sh bashrc.feelpp start-user.sh $dir
-cp -r qt6 $dir
-
-#( set -x; echo "docker build -t $tag \"$dir\"" )
-echo $dir
+echo "Base: $from  -> Dockerfile: ${dir}/Dockerfile" >&2
+echo "$dir"
