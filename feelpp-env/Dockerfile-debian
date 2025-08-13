@@ -1,7 +1,16 @@
-RUN if test -f /etc/apt/sources.list; then sed -i 's/http:\/\/deb.debian.org\/debian\//http:\/\/miroir.univ-lorraine.fr\/debian\//' /etc/apt/sources.list; fi
-RUN if test -f /etc/apt/sources.list; then sed -i 's/http:\/\/security.debian.org\/debian-security\//http:\/\/miroir.univ-lorraine.fr\/debian-security\//' /etc/apt/sources.list; fi
-
-
+# ARG DEBIAN_MAIN_MIRROR=ftp.fr.debian.org   # override with --build-arg if needed
+ARG DEBIAN_MAIN_MIRROR=miroir.univ-lorraine.fr
+RUN set -e; \
+  . /etc/os-release || true; \
+  case "${ID}:${VERSION_CODENAME}" in \
+    debian:bookworm|debian:trixie|debian:sid|debian:testing) \
+      f=/etc/apt/sources.list.d/debian.sources; \
+      echo "Switching main archive to http://${DEBIAN_MAIN_MIRROR}/debian (keeping security) in ${f}"; \
+      sed -i "0,/^URIs:\s*http:\/\/deb\.debian\.org\/debian/s//URIs: http:\/\/${DEBIAN_MAIN_MIRROR}\/debian/" "$f"; \
+      apt-get -qq update; \
+      ;; \
+    *) echo "Leaving APT sources untouched (ID=${ID} CODENAME=${VERSION_CODENAME}).";; \
+  esac
 
 
 RUN apt-get -qq update && \
