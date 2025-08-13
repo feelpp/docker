@@ -76,7 +76,7 @@ append_if_exists "Dockerfile-${fromos}"
 append_if_exists "Dockerfile-${fromos}-${fromtag}"
 
 # Include OpenMPI / deb-om layer for all but Fedora and Ubuntu 24.04
-if [[ "$fromos" != "fedora" && "$fromtag" != "24.04" ]]; then
+if [[ "$fromos" != "fedora" && "$fromtag" != "24.04" && "$fromtag" != "13" ]]; then
   if [[ -f "Dockerfile-deb-om-${fromos}-${fromtag}" ]]; then
     append_if_exists "Dockerfile-deb-om-${fromos}-${fromtag}"
   else
@@ -89,7 +89,6 @@ if [[ "$fromtag" == "20.04" ]]; then
   append_if_exists "Dockerfile-cmake"
 fi
 
-append_if_exists "Dockerfile-${fromos}-buildkite"
 append_if_exists "Dockerfile-feelpp"
 
 # Final ENV
