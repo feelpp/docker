@@ -12,7 +12,7 @@ on:
       dist:
         description: 'Distribution codename'     
         required: true
-        default: 'jammy'
+        default: 'noble'
         type: string
       flavor:
         description: 'Flavor of the distribution'  
@@ -22,7 +22,7 @@ on:
       version:
         description: 'Version of the distribution'  
         required: true
-        default: '22.04'
+        default: '24.04'
         type: string
       dockerfile:
         description: 'Dockerfile to use'  
@@ -53,8 +53,8 @@ jobs:
       max-parallel: 4
       matrix: 
         include:
-          - {service: feelpp-env, dist: focal,  flavor: ubuntu, version: "20.04", tag: ubuntu-20.04, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: mantic, flavor: ubuntu, version: "23.10", tag: ubuntu-23.10, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
+#          - {service: feelpp-env, dist: focal,  flavor: ubuntu, version: "20.04", tag: ubuntu-20.04, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
+#          - {service: feelpp-env, dist: mantic, flavor: ubuntu, version: "23.10", tag: ubuntu-23.10, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
           - {service: feelpp-env, dist: jammy,  flavor: ubuntu, version: "22.04", tag: ubuntu-22.04, experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: noble,  flavor: ubuntu, version: "24.04", tag: ubuntu-24.04, experimental: true,  platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
 #         - {service: feelpp-env, dist: buster, flavor: debian, version: "10",    tag: debian-10,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
@@ -63,7 +63,7 @@ jobs:
           - {service: feelpp-env, dist: trixie,   flavor: debian, version: "13",  tag: debian-13,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: debian-testing, flavor: debian, version: "testing", tag: debian-testing, experimental: true, platforms: "linux/amd64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: debian-sid,      flavor: debian, version: "sid",     tag: debian-sid,     experimental: true, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: fedora-39, flavor: fedora, version: "39", tag: fedora-39, experimental: false, platforms: "linux/amd64",                     dockerfile: Dockerfile }
+          - {service: feelpp-env, dist: fedora-42, flavor: fedora, version: "42", tag: fedora-42, experimental: false, platforms: "linux/amd64",                     dockerfile: Dockerfile }
     runs-on: self-docker
     needs: activate
     name: ${{ matrix.flavor }}-${{ matrix.version }}

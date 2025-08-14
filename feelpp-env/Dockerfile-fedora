@@ -1,23 +1,24 @@
-
-
-RUN    dnf install -y redhat-lsb-core sudo emacs-nox clang cmake git ruby libcurl-devel jq\
-    cln-devel \
-    openmpi-devel \
-    python3-devel \ 
-    boost-devel boost-openmpi-devel \
-    MUMPS-openmpi-devel metis-devel \
-    petsc-devel  petsc-openmpi-devel python3-petsc-openmpi \
-    gmsh gmsh-devel hdf5-openmpi-devel \
-    libzip-devel openssl-devel\
-    python3-mpi4py-openmpi python3-sympy \
-    curl jq openssl-devel libffi-devel python3 python3-virtualenv python3-devel python3-pip nodejs \
-    sudo \
-    && dnf clean all \
-    && echo ". /etc/profile.d/modules.sh" >> /etc/profile \
-    && echo "module load mpi/openmpi-x86_64" >> /etc/profile
-
-
-
-
-
-
+RUN set -eux; \
+    dnf -y update; \
+    dnf -y install \
+      sudo emacs-nox clang cmake git ruby \
+      libcurl-devel jq cln-devel \
+      openmpi-devel environment-modules \
+      python3 python3-devel python3-pip python3-virtualenv \
+      boost-devel boost-openmpi-devel \
+      MUMPS-openmpi-devel metis-devel \
+      petsc-devel petsc-openmpi-devel python3-petsc-openmpi \
+      gmsh gmsh-devel hdf5-openmpi-devel \
+      libzip-devel openssl-devel libffi-devel \
+      python3-mpi4py-openmpi python3-sympy nodejs \
+      --setopt=install_weak_deps=False \
+      --best --allowerasing; \
+    dnf clean all; \
+    rm -rf /var/cache/dnf; \
+    # enable Modules and preload OpenMPI module in interactive shells
+    if [ -f /etc/profile.d/modules.sh ]; then \
+      echo ". /etc/profile.d/modules.sh" >> /etc/profile; \
+    elif [ -f /usr/share/Modules/init/bash ]; then \
+      echo "source /usr/share/Modules/init/bash" >> /etc/profile; \
+    fi; \
+    echo "module load mpi/openmpi-x86_64" >> /etc/profile
