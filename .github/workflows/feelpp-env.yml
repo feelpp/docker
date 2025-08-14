@@ -55,11 +55,11 @@ jobs:
         include:
 #          - {service: feelpp-env, dist: focal,  flavor: ubuntu, version: "20.04", tag: ubuntu-20.04, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
 #          - {service: feelpp-env, dist: mantic, flavor: ubuntu, version: "23.10", tag: ubuntu-23.10, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: jammy,  flavor: ubuntu, version: "22.04", tag: ubuntu-22.04, experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
+          - {service: feelpp-env, dist: jammy,  flavor: ubuntu, version: "22.04", tag: ubuntu-22.04, experimental: false, platforms: "linux/amd64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: noble,  flavor: ubuntu, version: "24.04", tag: ubuntu-24.04, experimental: true,  platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
 #         - {service: feelpp-env, dist: buster, flavor: debian, version: "10",    tag: debian-10,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
 #         - {service: feelpp-env, dist: bullseye, flavor: debian, version: "11",  tag: debian-11,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: bookworm, flavor: debian, version: "12",  tag: debian-12,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
+          - {service: feelpp-env, dist: bookworm, flavor: debian, version: "12",  tag: debian-12,   experimental: false, platforms: "linux/amd64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: trixie,   flavor: debian, version: "13",  tag: debian-13,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: debian-testing, flavor: debian, version: "testing", tag: debian-testing, experimental: true, platforms: "linux/amd64",        dockerfile: Dockerfile }
           - {service: feelpp-env, dist: debian-sid,      flavor: debian, version: "sid",     tag: debian-sid,     experimental: true, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile }
