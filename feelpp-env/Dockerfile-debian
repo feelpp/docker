@@ -1,5 +1,5 @@
-# ARG DEBIAN_MAIN_MIRROR=ftp.fr.debian.org   # override with --build-arg if needed
-ARG DEBIAN_MAIN_MIRROR=miroir.univ-lorraine.fr
+ARG DEBIAN_MAIN_MIRROR=ftp.fr.debian.org   # override with --build-arg if needed
+#ARG DEBIAN_MAIN_MIRROR=miroir.univ-lorraine.fr
 RUN set -e; \
   . /etc/os-release || true; \
   case "${ID}:${VERSION_CODENAME}" in \
