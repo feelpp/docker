@@ -21,4 +21,9 @@ RUN set -eux; \
     elif [ -f /usr/share/Modules/init/bash ]; then \
       echo "source /usr/share/Modules/init/bash" >> /etc/profile; \
     fi; \
-    echo "module load mpi/openmpi-x86_64" >> /etc/profile
+    echo "module load mpi/openmpi-x86_64" >> /etc/bashrc
+
+ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
+
+
+
