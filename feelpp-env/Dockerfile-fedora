@@ -1,29 +1,96 @@
+# --- BuildKit auto platform args (injected by buildx) ---
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETOS
+
+# --- Useful env defaults (baked per-arch) ---
+ENV DISTRIBUTION=auto \
+    ARCH=${TARGETARCH} \
+    FEELPP_DEP_INSTALL_PREFIX=/usr/local \
+    OMPI_ALLOW_RUN_AS_ROOT=1 \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
+    OMPI_MCA_btl_vader_single_copy_mechanism=none \
+    DNF_YUM_BACKEND=dnf5
+
+# -------- System setup --------
 RUN set -eux; \
     dnf -y update; \
     dnf -y install \
-      sudo emacs-nox clang cmake git ruby tree lsb_release ninja\
-      libcurl-devel jq cln-devel \
-      openmpi-devel environment-modules \
-      python3 python3-devel python3-pip python3-virtualenv \
+      sudo which tree ninja-build \
+      clang cmake git ruby jq curl \
+      environment-modules openmpi openmpi-devel \
+      python3 python3-devel python3-pip python3-virtualenv python3-sympy \
+      python3-mpi4py-openmpi \
       boost-devel boost-openmpi-devel \
       MUMPS-openmpi-devel metis-devel \
       petsc-devel petsc-openmpi-devel python3-petsc-openmpi \
-      gmsh gmsh-devel hdf5-openmpi-devel \
-      libzip-devel openssl-devel libffi-devel \
-      python3-mpi4py-openmpi python3-sympy nodejs pugixml-devel \
+      gmsh gmsh-devel hdf5-openmpi-devel libzip-devel pugixml-devel \
+      openssl-devel libffi-devel \
+      lsof procps-ng findutils file \
+      nodejs \
       --setopt=install_weak_deps=False \
       --best --allowerasing; \
+    dnf -y install redhat-lsb-core || dnf -y install redhat-lsb || true; \
     dnf clean all; \
-    rm -rf /var/cache/dnf; \
-    # enable Modules and preload OpenMPI module in interactive shells
-    if [ -f /etc/profile.d/modules.sh ]; then \
-      echo ". /etc/profile.d/modules.sh" >> /etc/profile; \
-    elif [ -f /usr/share/Modules/init/bash ]; then \
-      echo "source /usr/share/Modules/init/bash" >> /etc/profile; \
-    fi; \
-    echo "module load mpi/openmpi-x86_64" >> /etc/bashrc
+    rm -rf /var/cache/dnf
 
-ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
+# -------- Shell environment (part 1): /etc/profile.d helper --------
+RUN set -eux; \
+  cat >/etc/profile.d/00-feelpp-env.sh <<'EOF'
+# Feel++ base environment
+# Source environment-modules (Modules or Lmod) if present
+if [ -f /etc/profile.d/modules.sh ]; then
+  . /etc/profile.d/modules.sh
+elif [ -f /usr/share/Modules/init/bash ]; then
+  . /usr/share/Modules/init/bash
+fi
 
+# Load OpenMPI module when interactive
+case "$-" in
+  *i*)
+    module -q load mpi/openmpi-x86_64 2>/dev/null || true
+  ;;
+esac
 
+# Compute DISTRIBUTION if set to 'auto'
+if [ "${DISTRIBUTION:-auto}" = "auto" ] && [ -r /etc/os-release ]; then
+  . /etc/os-release
+  if [ -n "${ID:-}" ] && [ -n "${VERSION_ID:-}" ]; then
+    export DISTRIBUTION="${ID}${VERSION_ID}"
+  fi
+fi
 
+# Ensure OpenMPI tools are visible even without modules for non-interactive scripts
+if ! command -v mpicc >/dev/null 2>&1; then
+  if [ -d /usr/lib64/openmpi/bin ]; then
+    export PATH="/usr/lib64/openmpi/bin:${PATH}"
+  fi
+  if [ -d /usr/lib64/openmpi/lib ]; then
+    export LD_LIBRARY_PATH="/usr/lib64/openmpi/lib:${LD_LIBRARY_PATH:-}"
+  fi
+fi
+EOF
+
+# -------- Shell environment (part 2): /etc/bashrc tweaks --------
+RUN set -eux; \
+  # Enable environment-modules in interactive bash
+  if ! grep -q 'Modules/init' /etc/bashrc 2>/dev/null && \
+     ! grep -q '/etc/profile.d/modules.sh' /etc/bashrc 2>/dev/null; then \
+    printf '\n# Enable environment-modules for interactive bash\n' >> /etc/bashrc; \
+    printf '[ -f /etc/profile.d/modules.sh ] && . /etc/profile.d/modules.sh || true\n' >> /etc/bashrc; \
+  fi; \
+  # Auto-load the OpenMPI module for interactive bash
+  if ! grep -q 'module -q load mpi/openmpi-x86_64' /etc/bashrc 2>/dev/null; then \
+    printf 'case "$-" in *i*) module -q load mpi/openmpi-x86_64 2>/dev/null || true;; esac\n' >> /etc/bashrc; \
+  fi
+
+# -------- Quick sanity hints --------
+RUN set -eux; \
+    echo; echo "=== OpenMPI sanity (non-fatal) ==="; \
+    bash -lc 'type module >/dev/null 2>&1 && module -q load mpi/openmpi-x86_64 || true'; \
+    bash -lc 'command -v mpicc  && mpicc  --version  | head -n1 || true'; \
+    bash -lc 'command -v mpirun && mpirun --version | head -n1 || true'; \
+    echo "==================================="; echo
+
+# Keep PATH nice
+ENV PATH=/usr/local/bin:${PATH}
