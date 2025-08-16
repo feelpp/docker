@@ -48,7 +48,7 @@ fi
 # Load OpenMPI module when interactive
 case "$-" in
   *i*)
-    module -q load mpi/openmpi-x86_64 2>/dev/null || true
+    module  load mpi/openmpi-x86_64 2>/dev/null || true
   ;;
 esac
 
@@ -80,14 +80,14 @@ RUN set -eux; \
     printf '[ -f /etc/profile.d/modules.sh ] && . /etc/profile.d/modules.sh || true\n' >> /etc/bashrc; \
   fi; \
   # Auto-load the OpenMPI module for interactive bash
-  if ! grep -q 'module -q load mpi/openmpi-x86_64' /etc/bashrc 2>/dev/null; then \
-    printf 'case "$-" in *i*) module -q load mpi/openmpi-x86_64 2>/dev/null || true;; esac\n' >> /etc/bashrc; \
+  if ! grep -q 'module  load mpi/openmpi-x86_64' /etc/bashrc 2>/dev/null; then \
+    printf 'case "$-" in *i*) module  load mpi/openmpi-x86_64 2>/dev/null || true;; esac\n' >> /etc/bashrc; \
   fi
 
 # -------- Quick sanity hints --------
 RUN set -eux; \
     echo; echo "=== OpenMPI sanity (non-fatal) ==="; \
-    bash -lc 'type module >/dev/null 2>&1 && module -q load mpi/openmpi-x86_64 || true'; \
+    bash -lc 'type module >/dev/null 2>&1 && module  load mpi/openmpi-x86_64 || true'; \
     bash -lc 'command -v mpicc  && mpicc  --version  | head -n1 || true'; \
     bash -lc 'command -v mpirun && mpirun --version | head -n1 || true'; \
     echo "==================================="; echo
