@@ -5,7 +5,7 @@ ARG TARGETOS
 
 # --- Useful env defaults (baked per-arch) ---
 ENV DISTRIBUTION=auto \
-    ARCH=${TARGETARCH} \
+    ARCH=-${TARGETARCH} \
     FEELPP_DEP_INSTALL_PREFIX=/usr/local \
     DNF_YUM_BACKEND=dnf5
 
@@ -25,6 +25,7 @@ RUN set -eux; \
       MUMPS-openmpi-devel metis-devel \
       petsc-devel petsc-openmpi-devel python3-petsc-openmpi \
       gmsh gmsh-devel hdf5-openmpi-devel libzip-devel pugixml-devel \
+      libcurl-devel cln-devel \
       openssl-devel libffi-devel \
       lsof procps-ng findutils file \
       nodejs \
@@ -98,7 +99,7 @@ fi
 if [ "${DISTRIBUTION:-auto}" = "auto" ] && [ -r /etc/os-release ]; then
   . /etc/os-release
   if [ -n "${ID:-}" ] && [ -n "${VERSION_ID:-}" ]; then
-    export DISTRIBUTION="${ID}${VERSION_ID}"
+    export DISTRIBUTION="-${ID}${VERSION_ID}"
   fi
 fi
 
