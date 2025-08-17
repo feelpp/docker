@@ -7,12 +7,12 @@ ARG TARGETOS
 ENV DISTRIBUTION=auto \
     ARCH=${TARGETARCH} \
     FEELPP_DEP_INSTALL_PREFIX=/usr/local \
-    OMPI_ALLOW_RUN_AS_ROOT=1 \
-    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
-    OMPI_MCA_btl_vader_single_copy_mechanism=none \
     DNF_YUM_BACKEND=dnf5
 
 # -------- System setup --------
+# Use bash -l for subsequent RUNs so /etc/profile.d gets sourced when needed
+SHELL ["/bin/bash", "-l", "-c"]
+
 RUN set -eux; \
     dnf -y update; \
     dnf -y install \
@@ -34,10 +34,54 @@ RUN set -eux; \
     dnf clean all; \
     rm -rf /var/cache/dnf
 
-# -------- Shell environment (part 1): /etc/profile.d helper --------
+# ----------------------------------------------------------------------------------
+# Open MPI Configuration
+#
+# The following environment variables configure how Open MPI operates within the container:
+#
+# 1. OMPI_MCA_pml:
+#    - Defines the point-to-point messaging layer.
+#    - Setting to "ob1" selects the basic, yet versatile, messaging layer.
+#
+# 2. OMPI_MCA_btl:
+#    - Specifies the Byte Transfer Layers (BTLs) for data movement.
+#    - "self,vader" enables both the self and vader BTLs. The "self" BTL handles
+#      loopback communication while "vader" is optimized for intranode communication.
+#
+# 3. OMPI_MCA_mtl:
+#    - Controls the Message Transfer Layers (MTLs).
+#    - The value "^ofi,psm2" disables the "ofi" and "psm2" modules to avoid conflicts
+#      and potentially enforce the use of the selected PML/BTL configuration.
+#
+# 4. OMPI_MCA_btl_vader_single_copy_mechanism:
+#    - Determines the mechanism used by the vader BTL for single-copy operations.
+#    - The "cma" value enforces the use of Cross Memory Attach (CMA) for efficient memory copying.
+#
+# These settings are chosen to optimize performance and ensure compatibility
+# within the containerized environment based on Fedora.
+# ----------------------------------------------------------------------------------
+ENV OMPI_MCA_pml=ob1 \
+    OMPI_MCA_btl=self,vader \
+    OMPI_MCA_mtl=^ofi,psm2 \
+    OMPI_MCA_btl_vader_single_copy_mechanism=cma
+
+# allow mpi as root
+ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+# --- Make OpenMPI globally visible in ALL contexts (non-interactive builds, CI, etc.)
+ENV PATH="/usr/lib64/openmpi/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/lib64/openmpi/lib:${LD_LIBRARY_PATH}"
+
+# -------- Shell environment helper: /etc/profile.d --------
+# - Source environment-modules if present
+# - Load OpenMPI module whenever 'module' exists (not only interactive shells)
+# - Compute DISTRIBUTION when set to 'auto'
+# - Leave PATH/LD_LIBRARY_PATH as-is (already set above); keep fallback just in case
 RUN set -eux; \
   cat >/etc/profile.d/00-feelpp-env.sh <<'EOF'
 # Feel++ base environment
+
 # Source environment-modules (Modules or Lmod) if present
 if [ -f /etc/profile.d/modules.sh ]; then
   . /etc/profile.d/modules.sh
@@ -45,12 +89,10 @@ elif [ -f /usr/share/Modules/init/bash ]; then
   . /usr/share/Modules/init/bash
 fi
 
-# Load OpenMPI module when interactive
-case "$-" in
-  *i*)
-    module  load mpi/openmpi-x86_64 2>/dev/null || true
-  ;;
-esac
+# Load OpenMPI module whenever modules are available (non-fatal)
+if type module >/dev/null 2>&1; then
+  module load mpi/openmpi-x86_64 2>/dev/null || true
+fi
 
 # Compute DISTRIBUTION if set to 'auto'
 if [ "${DISTRIBUTION:-auto}" = "auto" ] && [ -r /etc/os-release ]; then
@@ -60,7 +102,7 @@ if [ "${DISTRIBUTION:-auto}" = "auto" ] && [ -r /etc/os-release ]; then
   fi
 fi
 
-# Ensure OpenMPI tools are visible even without modules for non-interactive scripts
+# Fallback: ensure OpenMPI tools are visible even if modules weren't sourced
 if ! command -v mpicc >/dev/null 2>&1; then
   if [ -d /usr/lib64/openmpi/bin ]; then
     export PATH="/usr/lib64/openmpi/bin:${PATH}"
@@ -71,25 +113,19 @@ if ! command -v mpicc >/dev/null 2>&1; then
 fi
 EOF
 
-# -------- Shell environment (part 2): /etc/bashrc tweaks --------
+# -------- Optional: enable environment-modules in interactive bash --------
 RUN set -eux; \
-  # Enable environment-modules in interactive bash
-  if ! grep -q 'Modules/init' /etc/bashrc 2>/dev/null && \
-     ! grep -q '/etc/profile.d/modules.sh' /etc/bashrc 2>/dev/null; then \
+  if ! grep -q '/etc/profile.d/modules.sh' /etc/bashrc 2>/dev/null; then \
     printf '\n# Enable environment-modules for interactive bash\n' >> /etc/bashrc; \
     printf '[ -f /etc/profile.d/modules.sh ] && . /etc/profile.d/modules.sh || true\n' >> /etc/bashrc; \
-  fi; \
-  # Auto-load the OpenMPI module for interactive bash
-  if ! grep -q 'module  load mpi/openmpi-x86_64' /etc/bashrc 2>/dev/null; then \
-    printf 'case "$-" in *i*) module  load mpi/openmpi-x86_64 2>/dev/null || true;; esac\n' >> /etc/bashrc; \
   fi
 
-# -------- Quick sanity hints --------
+# -------- Quick sanity checks (non-fatal) --------
 RUN set -eux; \
     echo; echo "=== OpenMPI sanity (non-fatal) ==="; \
-    bash -lc 'type module >/dev/null 2>&1 && module  load mpi/openmpi-x86_64 || true'; \
-    bash -lc 'command -v mpicc  && mpicc  --version  | head -n1 || true'; \
-    bash -lc 'command -v mpirun && mpirun --version | head -n1 || true'; \
+    command -v mpicc  && mpicc  --version  | head -n1 || true; \
+    command -v mpirun && mpirun --version | head -n1 || true; \
+    type module >/dev/null 2>&1 && module avail 2>/dev/null | head -n20 || true; \
     echo "==================================="; echo
 
 # Keep PATH nice
