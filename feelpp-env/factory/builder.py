@@ -137,9 +137,8 @@ class ImageBuilder:
         # Create indentation
         spaces = ' ' * indent
         
-        # Join packages with continuation
-        lines = [f"{spaces}{pkg} \\" for pkg in packages[:-1]]
-        lines.append(f"{spaces}{packages[-1]}")
+        # Join packages with continuation (including last package)
+        lines = [f"{spaces}{pkg} \\" for pkg in packages]
         
         return '\n'.join(lines)
     
