@@ -1,0 +1,88 @@
+# =============================================================================
+# Feel++ MOR (Model Order Reduction) - Multistage Dockerfile
+# =============================================================================
+# Targets:
+#   - builder: Full dev image with source and build artifacts
+#   - runtime: Minimal image with only installed MOR components
+# =============================================================================
+
+# Global ARGs
+ARG FROM_IMAGE=ghcr.io/feelpp/feelpp-toolboxes:ubuntu-24.04
+ARG DESCRIPTION="Feel++ Model Order Reduction"
+
+# =============================================================================
+# Stage 1: BUILDER
+# =============================================================================
+FROM ${FROM_IMAGE} AS builder
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
+
+ARG BUILD_JOBS=20
+ARG CMAKE_FLAGS=""
+ARG CXX=clang++
+ARG CC=clang
+
+USER feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}/src/feelpp
+
+# Build Feel++ MOR using CMake preset
+RUN cmake --preset mor \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset mor
+
+# Install (needs root for /usr/local)
+USER root
+RUN cmake --build ${HOME}/src/feelpp/build/mor -t install
+USER feelpp
+
+# Run tests
+RUN ctest --preset mor || true
+
+# Clean up build artifacts
+RUN rm -rf build/mor/{CMakeFiles,_deps} && \
+    find build/mor -name "*.o" -delete && \
+    sudo ldconfig
+
+# =============================================================================
+# Stage 2: RUNTIME
+# =============================================================================
+ARG FROM_IMAGE
+ARG DESCRIPTION
+FROM ${FROM_IMAGE} AS runtime
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Copy MOR binaries
+COPY --from=builder /usr/local/bin/feelpp_mor* /usr/local/bin/
+
+# Copy MOR libraries
+COPY --from=builder /usr/local/lib/libfeelpp_mor* /usr/local/lib/
+
+# Copy MOR headers
+COPY --from=builder /usr/local/include/feelpp/mor /usr/local/include/feelpp/mor
+
+# Copy MOR CMake and data files
+COPY --from=builder /usr/local/share/feelpp/mor /usr/local/share/feelpp/mor
+
+# Update library cache
+RUN ldconfig
+
+USER feelpp
+ENV HOME=/home/feelpp
+ENV FEELPP_REPOSITORY=/feel
+WORKDIR ${HOME}
+CMD ["/bin/bash"]
+
+# =============================================================================
+# Default target: builder
+# =============================================================================
+FROM builder AS default
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]

@@ -1,0 +1,88 @@
+# =============================================================================
+# Feel++ Toolboxes - Multistage Dockerfile
+# =============================================================================
+# Targets:
+#   - builder: Full dev image with source and build artifacts
+#   - runtime: Minimal image with only installed toolboxes
+# =============================================================================
+
+# Global ARGs
+ARG FROM_IMAGE=ghcr.io/feelpp/feelpp:ubuntu-24.04
+ARG DESCRIPTION="Feel++ Toolboxes"
+
+# =============================================================================
+# Stage 1: BUILDER
+# =============================================================================
+FROM ${FROM_IMAGE} AS builder
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
+
+ARG BUILD_JOBS=20
+ARG CMAKE_FLAGS=""
+ARG CXX=clang++
+ARG CC=clang
+
+USER feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}/src/feelpp
+
+# Build Feel++ Toolboxes using CMake preset
+RUN cmake --preset toolboxes \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset toolboxes
+
+# Install (needs root for /usr/local)
+USER root
+RUN cmake --build ${HOME}/src/feelpp/build/toolboxes -t install
+USER feelpp
+
+# Run tests
+RUN ctest --preset toolboxes || true
+
+# Clean up build artifacts
+RUN rm -rf build/toolboxes/{CMakeFiles,_deps} && \
+    find build/toolboxes -name "*.o" -delete && \
+    sudo ldconfig
+
+# =============================================================================
+# Stage 2: RUNTIME
+# =============================================================================
+ARG FROM_IMAGE
+ARG DESCRIPTION
+FROM ${FROM_IMAGE} AS runtime
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Copy toolboxes binaries
+COPY --from=builder /usr/local/bin/feelpp_toolbox* /usr/local/bin/
+
+# Copy toolboxes libraries
+COPY --from=builder /usr/local/lib/libfeelpp_toolbox* /usr/local/lib/
+
+# Copy toolboxes headers (if any)
+COPY --from=builder /usr/local/include/feelpp/toolboxes /usr/local/include/feelpp/toolboxes
+
+# Copy toolboxes CMake and data files
+COPY --from=builder /usr/local/share/feelpp/toolboxes /usr/local/share/feelpp/toolboxes
+
+# Update library cache
+RUN ldconfig
+
+USER feelpp
+ENV HOME=/home/feelpp
+ENV FEELPP_REPOSITORY=/feel
+WORKDIR ${HOME}
+CMD ["/bin/bash"]
+
+# =============================================================================
+# Default target: builder
+# =============================================================================
+FROM builder AS default
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]

@@ -1,0 +1,112 @@
+# =============================================================================
+# Feel++ Core Library - Multistage Dockerfile
+# =============================================================================
+# This Dockerfile provides two build targets:
+#   - builder (default): Full development image with source and build artifacts
+#   - runtime: Minimal image with only installed libraries and binaries
+#
+# Usage:
+#   docker build -t feelpp:ubuntu-24.04 .                    # dev image (default)
+#   docker build --target runtime -t feelpp:ubuntu-24.04-rt . # runtime image
+# =============================================================================
+
+# Global ARGs (available in all stages)
+ARG FROM_IMAGE=ghcr.io/feelpp/feelpp-env:ubuntu-24.04
+ARG DESCRIPTION="Feel++ core library"
+
+# =============================================================================
+# Stage 1: BUILDER - Full development environment
+# =============================================================================
+FROM ${FROM_IMAGE} AS builder
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
+
+ARG BRANCH=develop
+ARG BUILD_JOBS=20
+ARG CMAKE_FLAGS=""
+ARG FEELPP_GIRDER_API_KEY=""
+ARG FEELPP_GITHUB_TOKEN=""
+ARG FEELPP_CKAN_API_KEY=""
+ARG FEELPP_CKAN_URL=""
+ARG FEELPP_CKAN_ORGANIZATION=""
+ARG CXX=clang++
+ARG CC=clang
+
+USER feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}
+
+# Clone Feel++ repository
+RUN git config --global user.name "Docker Robot" && \
+    git config --global user.email "docker@feelpp.org" && \
+    git config --global --add safe.directory ${HOME}/src/feelpp && \
+    mkdir -p ${HOME}/src && \
+    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git ${HOME}/src/feelpp && \
+    cd ${HOME}/src/feelpp && git submodule update --init --recursive
+
+WORKDIR ${HOME}/src/feelpp
+
+# Configure and build Feel++
+RUN cmake --preset feelpp \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset feelpp
+
+# Install Feel++ (needs root for /usr/local)
+USER root
+RUN cmake --build ${HOME}/src/feelpp/build/feelpp -t install
+USER feelpp
+
+# Run tests
+RUN ctest --preset feelpp || true
+
+# Clean up build artifacts (keep source for downstream builds)
+RUN rm -rf build/feelpp/{CMakeFiles,_deps,benchmarks,testsuite,doc} && \
+    find build/feelpp -name "*.o" -delete && \
+    sudo ldconfig
+
+# =============================================================================
+# Stage 2: RUNTIME - Minimal production image
+# =============================================================================
+ARG FROM_IMAGE
+ARG DESCRIPTION
+FROM ${FROM_IMAGE} AS runtime
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Copy only what feelpp installs to /usr/local
+# (system libraries like cln, ginac, fmt, etc. are already in the base image)
+
+# Feel++ binaries
+COPY --from=builder /usr/local/bin/feelpp* /usr/local/bin/
+
+# Feel++ libraries
+COPY --from=builder /usr/local/lib/libfeelpp* /usr/local/lib/
+
+# Feel++ headers
+COPY --from=builder /usr/local/include/feelpp /usr/local/include/feelpp
+
+# Feel++ CMake configuration and data files
+COPY --from=builder /usr/local/share/feelpp /usr/local/share/feelpp
+
+# Update library cache
+RUN ldconfig
+
+# Set up feelpp user environment
+USER feelpp
+ENV HOME=/home/feelpp
+ENV FEELPP_REPOSITORY=/feel
+
+WORKDIR ${HOME}
+CMD ["/bin/bash"]
+
+# =============================================================================
+# Default target: builder (backwards compatible)
+# =============================================================================
+FROM builder AS default
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]

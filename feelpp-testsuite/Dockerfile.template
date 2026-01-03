@@ -1,31 +1,41 @@
-MAINTAINER Feel++ Support <support@feelpp.org>
+FROM ${FROM_IMAGE}
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
 
 ARG BRANCH=develop
-ARG BUILD_JOBS=16
-ARG MAKE_FLAGS=""
-ARG CONFIGURE_FLAGS="-r"
+ARG BUILD_JOBS=20
 ARG CMAKE_FLAGS=""
-ARG CTEST_FLAGS="-T test --no-compress-output"
-ARG BUILDKITE_JOB_ID=""
 ARG FEELPP_GIRDER_API_KEY=""
 ARG FEELPP_GITHUB_TOKEN=""
-ARG BUILDKITE_AGENT_ACCESS_TOKEN=""
-ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
-ARG CXX=g++
-ARG CC=gcc
+ARG FEELPP_CKAN_API_KEY=""
+ARG FEELPP_CKAN_URL=""
+ARG FEELPP_CKAN_ORGANIZATION=""
+ARG CXX=clang++
+ARG CC=clang
 
 USER feelpp
-ENV HOME /home/feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}/src/feelpp
 
-# Install Feel++
-RUN bash -c "\
-        export FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN} && \
-        export FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY} && \
-        source $HOME/feelpp.conf.sh && \
-        install_test_feelpp_module_nofail ${BRANCH} testsuite $HOME/src/feelpp/testsuite \"${BUILD_JOBS}\" \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\" && \
-        clean_feelpp_cpp_o"
+# Build and run Feel++ Testsuite using CMake preset
+RUN cmake --preset testsuite \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset testsuite && \
+    sudo cmake --build --preset testsuite -t install
 
-COPY WELCOME $HOME/WELCOME.testsuite
+# Run testsuite tests using CMake preset
+RUN ctest --preset testsuite || true
+
+# Clean up
+RUN rm -rf build/testsuite/{CMakeFiles,*.o} && \
+    sudo ldconfig
+
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]
 
 
 ENV FEELPP_REPOSITORY /feel

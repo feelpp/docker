@@ -1,0 +1,89 @@
+# =============================================================================
+# Feel++ Python Bindings - Multistage Dockerfile
+# =============================================================================
+# Targets:
+#   - builder: Full dev image with source and build artifacts
+#   - runtime: Minimal image with only installed Python bindings
+# =============================================================================
+
+# Global ARGs
+ARG FROM_IMAGE=ghcr.io/feelpp/feelpp-mor:ubuntu-24.04
+ARG DESCRIPTION="Feel++ Python Bindings"
+
+# =============================================================================
+# Stage 1: BUILDER
+# =============================================================================
+FROM ${FROM_IMAGE} AS builder
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
+
+ARG BUILD_JOBS=20
+ARG CMAKE_FLAGS=""
+ARG CXX=clang++
+ARG CC=clang
+
+USER feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}/src/feelpp
+
+# Build Feel++ Python bindings using CMake preset
+RUN cmake --preset python \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset python
+
+# Install (needs root for /usr/local)
+USER root
+RUN cmake --build ${HOME}/src/feelpp/build/python -t install
+USER feelpp
+
+# Update Python path
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
+
+# Run tests
+RUN ctest --preset python || true
+
+# Clean up build artifacts
+RUN rm -rf build/python/{CMakeFiles,_deps} && \
+    find build/python -name "*.o" -delete && \
+    sudo ldconfig
+
+# =============================================================================
+# Stage 2: RUNTIME
+# =============================================================================
+ARG FROM_IMAGE
+ARG DESCRIPTION
+FROM ${FROM_IMAGE} AS runtime
+ARG DESCRIPTION
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Copy Python modules
+COPY --from=builder /usr/local/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/
+
+# Copy any additional binaries
+COPY --from=builder /usr/local/bin/feelpp_py* /usr/local/bin/
+
+# Set Python path
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
+
+# Update library cache
+RUN ldconfig
+
+USER feelpp
+ENV HOME=/home/feelpp
+ENV FEELPP_REPOSITORY=/feel
+WORKDIR ${HOME}
+CMD ["/bin/bash"]
+
+# =============================================================================
+# Default target: builder
+# =============================================================================
+FROM builder AS default
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]

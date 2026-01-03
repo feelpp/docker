@@ -50,6 +50,8 @@ groups:
       - python3-venv
       - python3-pymongo
       - dh-python
+      - pybind11-dev
+      - pybind11-json-dev
     dnf:
       - python3
       - python3-devel
@@ -59,6 +61,8 @@ groups:
       - python3-pytest
       - python3-mpi4py-openmpi
       - python3-petsc-openmpi
+      - pybind11-devel
+      - pybind11-json-devel
   
   boost_libraries:
     apt:

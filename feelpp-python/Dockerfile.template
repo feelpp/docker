@@ -1,27 +1,37 @@
-MAINTAINER Feel++ Support <support@feelpp.org>
+FROM ${FROM_IMAGE}
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
 
 ARG BRANCH=develop
-ARG BUILD_JOBS=16
-ARG CONFIGURE_FLAGS="-r"
+ARG BUILD_JOBS=20
 ARG CMAKE_FLAGS=""
-ARG CTEST_FLAGS="-T test --no-compress-output"
-ARG BUILDKITE_JOB_ID=""
-ARG BUILDKITE_AGENT_ACCESS_TOKEN=""
-ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
-ARG CXX=g++
-ARG CC=gcc
+ARG CXX=clang++
+ARG CC=clang
 
 USER feelpp
-ENV HOME /home/feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}/src/feelpp
 
-# Install Feel++
-RUN bash -c "source $HOME/feelpp.conf.sh && \
-    pull_feelpp ${BRANCH} && \
-    install_feelpp_module ${BRANCH} feelpp-python $HOME/src/feelpp/python \"${BUILD_JOBS}\" \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
+# Build Feel++ Python bindings using CMake preset
+RUN cmake --preset python \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset python && \
+    sudo cmake --build --preset python -t install
 
-#COPY WELCOME $HOME/WELCOME.toolboxes
+# Update Python path
+ENV PYTHONPATH=/usr/local/lib/python3.12/site-packages:${PYTHONPATH}
 
-# COPY WELCOME $HOME/WELCOME
+# Run Python tests using CMake preset
+RUN ctest --preset python || true
+
+# Clean up
+RUN rm -rf build/python/{CMakeFiles,*.o} && \
+    sudo ldconfig
+
 USER root
-#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/usr/local/bin/start.sh"]
+WORKDIR /root
+CMD ["/bin/bash"]

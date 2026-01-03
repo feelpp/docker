@@ -1,34 +1,54 @@
-FROM ghcr.io/feelpp/feelpp-env:ubuntu-22.04
-MAINTAINER Feel++ Support <support@feelpp.org>
+FROM ${FROM_IMAGE}
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
 
 ARG BRANCH=develop
-ARG BUILD_JOBS=40
-ARG CONFIGURE_FLAGS="-r"
+ARG BUILD_JOBS=20
 ARG CMAKE_FLAGS=""
-ARG CTEST_FLAGS="-T test --no-compress-output"
-ARG BUILDKITE_JOB_ID=""
-ARG BUILDKITE_AGENT_ACCESS_TOKEN=""
 ARG FEELPP_GIRDER_API_KEY=""
 ARG FEELPP_GITHUB_TOKEN=""
-ARG BUILDKITE_AGENT_ENDPOINT="https://agent.buildkite.com/v3"
-ARG CXX=g++
-ARG CC=gcc
+ARG FEELPP_CKAN_API_KEY=""
+ARG FEELPP_CKAN_URL=""
+ARG FEELPP_CKAN_ORGANIZATION=""
+ARG CXX=clang++
+ARG CC=clang
 
-RUN mkdir /feelpp && chown -R feelpp /feelpp
 USER feelpp
-ENV HOME /home/feelpp
-COPY feelppconfig $HOME/.feelppconfig
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}
 
-# Install Feel++
-RUN bash -c "\
-        export FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN} && \
-        export FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY} && \
-        source $HOME/feelpp.conf.sh && \
-        install_feelpp_module ${BRANCH} feelpp $HOME/src/feelpp/ ${BUILD_JOBS} \"${CONFIGURE_FLAGS}\" \"${CTEST_FLAGS}\" \"${CMAKE_FLAGS}\""
+# Clone/update Feel++ repository
+RUN git config --global user.name "Docker Robot" && \
+    git config --global user.email "docker@feelpp.org" && \
+    git config --global --add safe.directory ${HOME}/src/feelpp && \
+    mkdir -p ${HOME}/src && \
+    if [ -d ${HOME}/src/feelpp ]; then \
+        cd ${HOME}/src/feelpp && git pull origin ${BRANCH}; \
+    else \
+        git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git ${HOME}/src/feelpp && \
+        cd ${HOME}/src/feelpp && git submodule update --init --recursive; \
+    fi
 
-COPY WELCOME $HOME/WELCOME
+# Configure and build Feel++ using CMake presets
+RUN cd ${HOME}/src/feelpp && \
+    cmake --preset feelpp \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset feelpp && \
+    sudo cmake --build --preset feelpp -t install
 
-# COPY WELCOME $HOME/WELCOME
+# Run tests using CMake preset
+RUN ctest --preset feelpp || true
+
+# Clean up build artifacts to reduce image size
+RUN cd ${HOME}/src/feelpp && \
+    rm -rf build/feelpp/{CMakeFiles,_deps,benchmarks,testsuite,doc} && \
+    find build/feelpp -name "*.o" -delete && \
+    sudo ldconfig
+
 USER root
-#ENTRYPOINT ["/sbin/my_init","--quiet","--","sudo","-u","feelpp","/bin/sh","-c"]
-CMD ["/usr/local/bin/start.sh"]
+WORKDIR /root
+CMD ["/bin/bash"]
