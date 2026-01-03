@@ -60,7 +60,12 @@ USER root
 RUN cmake --build ${HOME}/src/feelpp/build/feelpp -t install
 USER feelpp
 
-# Run tests
+# Run tests (with data service credentials)
+ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
+ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
+ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
+ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
+ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
 RUN ctest --preset feelpp || true
 
 # Clean up build artifacts (keep source for downstream builds)

@@ -35,6 +35,27 @@ variable "CMAKE_FLAGS" {
   default = ""
 }
 
+# Secrets for tests (passed via environment variables)
+variable "FEELPP_GITHUB_TOKEN" {
+  default = ""
+}
+
+variable "FEELPP_GIRDER_API_KEY" {
+  default = ""
+}
+
+variable "FEELPP_CKAN_API_KEY" {
+  default = ""
+}
+
+variable "FEELPP_CKAN_URL" {
+  default = ""
+}
+
+variable "FEELPP_CKAN_ORGANIZATION" {
+  default = ""
+}
+
 # =============================================================================
 # Groups - Build multiple targets together
 # =============================================================================
@@ -77,6 +98,11 @@ target "feelpp" {
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
+    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
+    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
+    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
+    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
+    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
   tags = [
     "${REGISTRY}/feelpp:${DIST}-dev",
@@ -111,6 +137,11 @@ target "toolboxes" {
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
+    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
+    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
+    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
+    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
+    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
   tags = [
     "${REGISTRY}/feelpp-toolboxes:${DIST}-dev",
@@ -146,6 +177,11 @@ target "mor" {
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
+    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
+    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
+    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
+    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
+    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
   tags = [
     "${REGISTRY}/feelpp-mor:${DIST}-dev",
@@ -181,6 +217,11 @@ target "python" {
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
+    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
+    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
+    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
+    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
+    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
   tags = [
     "${REGISTRY}/feelpp-python:${DIST}-dev",

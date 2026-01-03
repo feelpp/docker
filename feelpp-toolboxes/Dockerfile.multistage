@@ -22,6 +22,11 @@ ARG BUILD_JOBS=20
 ARG CMAKE_FLAGS=""
 ARG CXX=clang++
 ARG CC=clang
+ARG FEELPP_GIRDER_API_KEY=""
+ARG FEELPP_GITHUB_TOKEN=""
+ARG FEELPP_CKAN_API_KEY=""
+ARG FEELPP_CKAN_URL=""
+ARG FEELPP_CKAN_ORGANIZATION=""
 
 USER feelpp
 ENV HOME=/home/feelpp
@@ -40,7 +45,12 @@ USER root
 RUN cmake --build ${HOME}/src/feelpp/build/toolboxes -t install
 USER feelpp
 
-# Run tests
+# Run tests (with data service credentials)
+ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
+ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
+ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
+ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
+ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
 RUN ctest --preset toolboxes || true
 
 # Clean up build artifacts
