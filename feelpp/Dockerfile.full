@@ -1,0 +1,125 @@
+# =============================================================================
+# Feel++ Full Build - Multistage Dockerfile
+# =============================================================================
+# Builds the entire Feel++ stack in a single image using preset 'default':
+#   - Feel++ core library
+#   - Toolboxes
+#   - MOR (Model Order Reduction)
+#   - Python bindings
+#
+# Targets:
+#   - builder: Full dev image with source and build artifacts
+#   - runtime: Minimal image with only installed components
+#
+# Image naming (to avoid collision with component builds):
+#   - Dev:     ghcr.io/feelpp/feelpp:ubuntu-24.04-full-dev
+#   - Runtime: ghcr.io/feelpp/feelpp:ubuntu-24.04-full
+# =============================================================================
+
+# Global ARGs (available in all stages)
+ARG FROM_IMAGE=ghcr.io/feelpp/feelpp-env:ubuntu-24.04
+ARG DESCRIPTION="Feel++ Full Stack"
+
+# =============================================================================
+# Stage 1: BUILDER - Full development environment with all components
+# =============================================================================
+FROM ${FROM_IMAGE} AS builder
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION}"
+
+ARG BRANCH=develop
+ARG BUILD_JOBS=20
+ARG CMAKE_FLAGS=""
+ARG FEELPP_GIRDER_API_KEY=""
+ARG FEELPP_GITHUB_TOKEN=""
+ARG FEELPP_CKAN_API_KEY=""
+ARG FEELPP_CKAN_URL=""
+ARG FEELPP_CKAN_ORGANIZATION=""
+ARG CXX=clang++
+ARG CC=clang
+
+USER feelpp
+ENV HOME=/home/feelpp
+WORKDIR ${HOME}
+
+# Clone Feel++ repository
+RUN git config --global user.name "Docker Robot" && \
+    git config --global user.email "docker@feelpp.org" && \
+    git config --global --add safe.directory ${HOME}/src/feelpp && \
+    mkdir -p ${HOME}/src && \
+    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git ${HOME}/src/feelpp && \
+    cd ${HOME}/src/feelpp && git submodule update --init --recursive
+
+WORKDIR ${HOME}/src/feelpp
+
+# Configure and build Feel++ (full stack using default preset)
+RUN cmake --preset default \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset default
+
+# Install Feel++ (needs root for /usr/local)
+USER root
+RUN cmake --build ${HOME}/src/feelpp/build/default -t install
+USER feelpp
+
+# Run tests (with data service credentials)
+ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
+ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
+ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
+ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
+ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
+RUN ctest --preset default || true
+
+# Clean up build artifacts (keep source for potential debugging)
+RUN rm -rf build/default/{CMakeFiles,_deps} && \
+    find build/default -name "*.o" -delete && \
+    sudo ldconfig
+
+# =============================================================================
+# Stage 2: RUNTIME - Minimal production image with all components
+# =============================================================================
+ARG FROM_IMAGE
+ARG DESCRIPTION
+FROM ${FROM_IMAGE} AS runtime
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Copy all Feel++ binaries
+COPY --from=builder /usr/local/bin/feelpp* /usr/local/bin/
+
+# Copy all Feel++ libraries
+COPY --from=builder /usr/local/lib/libfeelpp* /usr/local/lib/
+
+# Copy all Feel++ headers
+COPY --from=builder /usr/local/include/feelpp /usr/local/include/feelpp
+
+# Copy all Feel++ CMake configuration and data files
+COPY --from=builder /usr/local/share/feelpp /usr/local/share/feelpp
+
+# Copy Python bindings
+COPY --from=builder /usr/local/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/
+
+# Update library cache
+RUN ldconfig
+
+# Set up feelpp user environment
+USER feelpp
+ENV HOME=/home/feelpp
+ENV FEELPP_REPOSITORY=/feel
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
+
+WORKDIR ${HOME}
+CMD ["/bin/bash"]
+
+# =============================================================================
+# Default target: builder
+# =============================================================================
+FROM builder AS default
+USER root
+WORKDIR /root
+CMD ["/bin/bash"]

@@ -72,6 +72,14 @@ group "all" {
   targets = ["feelpp-runtime", "toolboxes-runtime", "mor-runtime", "python-runtime"]
 }
 
+group "full" {
+  targets = ["feelpp-full"]
+}
+
+group "full-all" {
+  targets = ["feelpp-full", "feelpp-full-runtime"]
+}
+
 # =============================================================================
 # Base Environment (built separately via factory.sh)
 # =============================================================================
@@ -240,6 +248,49 @@ target "python-runtime" {
   tags = [
     "${REGISTRY}/feelpp-python:${DIST}",
     "${REGISTRY}/feelpp-python:${DIST}-${BRANCH}"
+  ]
+}
+
+# =============================================================================
+# Full Build (all components in one image)
+# =============================================================================
+# Use this for a complete Feel++ installation in a single build.
+# Image names use "-full" suffix to avoid collision with component builds.
+# =============================================================================
+
+target "feelpp-full" {
+  context = "feelpp"
+  dockerfile = "Dockerfile.full"
+  target = "builder"
+  args = {
+    FROM_IMAGE = "${REGISTRY}/feelpp-env:${DIST}"
+    DESCRIPTION = "Feel++ Full Stack (dev)"
+    BRANCH = "${BRANCH}"
+    CXX = "${CXX}"
+    CC = "${CC}"
+    CMAKE_FLAGS = "${CMAKE_FLAGS}"
+    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
+    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
+    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
+    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
+    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
+  }
+  tags = [
+    "${REGISTRY}/feelpp:${DIST}-full-dev",
+    "${REGISTRY}/feelpp:${DIST}-${BRANCH}-full-dev"
+  ]
+  platforms = ["linux/amd64"]
+}
+
+target "feelpp-full-runtime" {
+  inherits = ["feelpp-full"]
+  target = "runtime"
+  args = {
+    DESCRIPTION = "Feel++ Full Stack"
+  }
+  tags = [
+    "${REGISTRY}/feelpp:${DIST}-full",
+    "${REGISTRY}/feelpp:${DIST}-${BRANCH}-full"
   ]
 }
 
