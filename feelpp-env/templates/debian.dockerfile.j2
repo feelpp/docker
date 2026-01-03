@@ -53,6 +53,10 @@ ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 {% endif %}
 
+# Create feelpp user
+RUN useradd -m -s /bin/bash -G sudo feelpp && \
+    echo "feelpp ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # Set Feel++ environment
 ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
 ENV PATH=/usr/local/bin:$PATH

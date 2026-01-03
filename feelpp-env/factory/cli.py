@@ -333,6 +333,144 @@ def build(ctx, dist: str, variant: str, tag: Optional[str],
 
 
 @main.command()
+@click.argument('dist', required=True)
+@click.option('--variant', default='feelpp-env', help='Variant to push')
+@click.option('--registry', default='ghcr.io', help='Container registry')
+@click.option('--repo', default='feelpp', help='Repository organization')
+@click.option('--token', help='GitHub token (default: $CR_PAT or $GITHUB_TOKEN)')
+@click.option('--user', help='Registry username (default: $GITHUB_ACTOR)')
+@click.option('--dry-run', is_flag=True, help='Show what would be pushed without pushing')
+@click.pass_context
+def push(ctx, dist: str, variant: str, registry: str, repo: str, 
+         token: Optional[str], user: Optional[str], dry_run: bool):
+    """Push Docker image to container registry (ghcr.io).
+    
+    DIST should be in format 'name:version' (e.g., ubuntu:24.04, debian:13)
+    
+    Requires GitHub Personal Access Token with packages:write scope.
+    Set via CR_PAT or GITHUB_TOKEN environment variable, or use --token option.
+    
+    Examples:
+    
+        # Push Ubuntu 24.04 (using CR_PAT env var)
+        export CR_PAT=ghp_xxxxxxxxxxxx
+        ./factory.sh push ubuntu:24.04
+        
+        # Push with explicit token
+        ./factory.sh push debian:13 --token ghp_xxxxx
+        
+        # Dry run to preview
+        ./factory.sh push ubuntu:24.04 --dry-run
+        
+        # Push to different registry
+        ./factory.sh push debian:sid --registry docker.io --repo myuser
+    """
+    import os
+    
+    # Parse distribution
+    try:
+        dist_name, version_tag = dist.split(':')
+    except ValueError:
+        console.print(f"[red]Error:[/red] DIST must be in format 'name:version' (got '{dist}')")
+        console.print("Examples: ubuntu:24.04, debian:13, fedora:42")
+        sys.exit(1)
+    
+    # Get token from environment if not provided
+    if not token:
+        token = os.getenv('CR_PAT') or os.getenv('GITHUB_TOKEN')
+        if not token:
+            console.print("[red]Error:[/red] GitHub token required")
+            console.print("Set CR_PAT or GITHUB_TOKEN environment variable, or use --token option")
+            sys.exit(1)
+    
+    # Get username from environment if not provided
+    if not user:
+        user = os.getenv('GITHUB_ACTOR') or os.getenv('USER')
+        if not user:
+            console.print("[red]Error:[/red] Username required")
+            console.print("Set GITHUB_ACTOR environment variable, or use --user option")
+            sys.exit(1)
+    
+    # Construct tags
+    local_tag = f"{variant}:{dist_name}-{version_tag}"
+    remote_tag = f"{registry}/{repo}/{variant}:{dist_name}-{version_tag}"
+    
+    console.print("\n[green]═══ Pushing to Container Registry ═══[/green]")
+    console.print(f"Distribution: {dist}")
+    console.print(f"Local tag:    {local_tag}")
+    console.print(f"Remote tag:   {remote_tag}")
+    console.print(f"Registry:     {registry}")
+    console.print(f"Repository:   {repo}/{variant}")
+    console.print()
+    
+    if dry_run:
+        console.print("[yellow]DRY RUN - No actual push will occur[/yellow]\n")
+        console.print("Would execute:")
+        console.print(f"  echo <token> | docker login {registry} -u {user} --password-stdin")
+        console.print(f"  docker tag {local_tag} {remote_tag}")
+        console.print(f"  docker push {remote_tag}")
+        return
+    
+    # Check if local image exists
+    try:
+        result = subprocess.run(
+            ['docker', 'image', 'inspect', local_tag],
+            capture_output=True,
+            check=False
+        )
+        if result.returncode != 0:
+            console.print(f"[red]Error:[/red] Local image '{local_tag}' not found\n")
+            console.print("Build it first with:")
+            console.print(f"  ./factory.sh build {dist}")
+            sys.exit(1)
+    except FileNotFoundError:
+        console.print("[red]Error:[/red] Docker command not found. Is Docker installed?")
+        sys.exit(1)
+    
+    # Login to registry
+    console.print(f"[blue]Logging in to {registry}...[/blue]")
+    try:
+        result = subprocess.run(
+            ['docker', 'login', registry, '-u', user, '--password-stdin'],
+            input=token.encode(),
+            capture_output=True,
+            check=False
+        )
+        if result.returncode != 0:
+            console.print(f"[red]Login failed:[/red] {result.stderr.decode()}")
+            sys.exit(1)
+    except Exception as e:
+        console.print(f"[red]Login error:[/red] {e}")
+        sys.exit(1)
+    
+    # Tag image
+    console.print("[blue]Tagging image...[/blue]")
+    result = subprocess.run(
+        ['docker', 'tag', local_tag, remote_tag],
+        capture_output=True,
+        check=False
+    )
+    if result.returncode != 0:
+        console.print(f"[red]Tag failed:[/red] {result.stderr.decode()}")
+        sys.exit(1)
+    
+    # Push image
+    console.print("[blue]Pushing image...[/blue]")
+    result = subprocess.run(
+        ['docker', 'push', remote_tag],
+        check=False
+    )
+    
+    if result.returncode == 0:
+        console.print(f"\n[green]✓ Successfully pushed {remote_tag}[/green]\n")
+        console.print("Pull with:")
+        console.print(f"  docker pull {remote_tag}")
+    else:
+        console.print(f"\n[red]✗ Push failed with exit code {result.returncode}[/red]")
+        sys.exit(result.returncode)
+
+
+@main.command()
 @click.option('--variant', default='feelpp-env', help='Variant to update CI for')
 @click.option('--workflow-file', type=click.Path(path_type=Path),
               default=Path.cwd() / '.github' / 'workflows' / 'feelpp-env.yml',

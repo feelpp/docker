@@ -4,8 +4,11 @@ LABEL maintainer="Feel++ Support <support@feelpp.org>"
 # Distribution: {{ dist_name }} {{ dist_version }} ({{ dist_codename }})
 # Variant: {{ variant_name }}
 
-# Configure APT to use mirror
-RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/miroir.univ-lorraine.fr\/ubuntu\//' /etc/apt/sources.list || true
+# Configure APT to use Lorraine mirror (handles both old and new Ubuntu formats)
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|http://miroir.univ-lorraine.fr/ubuntu|g' /etc/apt/sources.list.d/*.sources 2>/dev/null || true && \
+    sed -i 's|http://security.ubuntu.com/ubuntu|http://miroir.univ-lorraine.fr/ubuntu|g' /etc/apt/sources.list.d/*.sources 2>/dev/null || true && \
+    sed -i 's|http://archive.ubuntu.com/ubuntu|http://miroir.univ-lorraine.fr/ubuntu|g' /etc/apt/sources.list 2>/dev/null || true && \
+    sed -i 's|http://security.ubuntu.com/ubuntu|http://miroir.univ-lorraine.fr/ubuntu|g' /etc/apt/sources.list 2>/dev/null || true
 
 # Set timezone
 ARG DEBIAN_FRONTEND=noninteractive
@@ -38,6 +41,10 @@ RUN apt-get -qq update && \
 ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 {% endif %}
+
+# Create feelpp user
+RUN useradd -m -s /bin/bash -G sudo feelpp && \
+    echo "feelpp ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Set Feel++ environment
 ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
