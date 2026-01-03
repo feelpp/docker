@@ -21,18 +21,18 @@ RUN set -e; \
 
 # Install core dependencies
 RUN apt-get -qq update && \
-    apt-get -y install \
+    apt-get -y install --no-install-recommends \
     gnupg \
     ca-certificates-java default-jre-headless
 
 # Set timezone
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
-RUN apt-get -y install tzdata
+RUN apt-get -y install --no-install-recommends tzdata
 
 # Install all packages
 RUN apt-get -qq update && \
-    apt-get -y install \
+    apt-get -y install --no-install-recommends \
 {{ packages | join_packages(8) }}
     && apt-get autoremove \
     && apt-get clean \
@@ -41,7 +41,7 @@ RUN apt-get -qq update && \
 {% if enable_openmpi and requires_openmpi_layer %}
 # Install OpenMPI
 RUN apt-get -qq update && \
-    apt-get -y install \
+    apt-get -y install --no-install-recommends \
         libopenmpi-dev \
         openmpi-bin \
     && apt-get autoremove \

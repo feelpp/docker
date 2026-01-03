@@ -2,7 +2,7 @@ distributions:
   debian:
     package_manager: apt
     template: debian.dockerfile.j2
-    mirror: ftp.fr.debian.org
+    mirror: miroir.univ-lorraine.fr
     versions:
       - name: trixie
         tag: "13"

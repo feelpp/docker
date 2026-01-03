@@ -11,14 +11,14 @@ RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/miroir.univ-lorrain
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
 RUN apt-get -qq update && \
-    apt-get -y --force-yes install tzdata software-properties-common \
+    apt-get -y --force-yes install --no-install-recommends tzdata software-properties-common \
     && apt-get -y autoremove \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install all packages
 RUN apt-get -qq update && \
-    apt-get -yq install \
+    apt-get -y install --no-install-recommends \
 {{ packages | join_packages(8) }}
     && apt-get -y autoremove \
     && apt-get -y clean \
@@ -27,7 +27,7 @@ RUN apt-get -qq update && \
 {% if enable_openmpi and requires_openmpi_layer %}
 # Install OpenMPI
 RUN apt-get -qq update && \
-    apt-get -yq install \
+    apt-get -y install --no-install-recommends \
         libopenmpi-dev \
         openmpi-bin \
     && apt-get -y autoremove \

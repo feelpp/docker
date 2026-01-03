@@ -2,6 +2,7 @@
 """Command-line interface for Feel++ Docker factory."""
 
 import sys
+import subprocess
 from pathlib import Path
 from typing import Optional
 
@@ -217,6 +218,118 @@ def matrix(ctx, variant: str, format: str):
     except Exception as e:
         console.print(f"[red]Error generating matrix:[/red] {e}")
         sys.exit(1)
+
+
+@main.command()
+@click.argument('dist', required=True)
+@click.option('--variant', default='feelpp-env', help='Variant to build')
+@click.option('--tag', help='Docker tag (default: feelpp-env:DIST-VERSION)')
+@click.option('--platform', help='Platform to build for (e.g., linux/amd64)')
+@click.option('--no-cache', is_flag=True, help='Build without using cache')
+@click.option('--output-dir', type=click.Path(path_type=Path), 
+              default=Path.cwd(),
+              help='Directory containing generated Dockerfiles')
+@click.pass_context
+def build(ctx, dist: str, variant: str, tag: Optional[str], 
+         platform: Optional[str], no_cache: bool, output_dir: Path):
+    """Build Docker image locally for testing.
+    
+    DIST should be in format 'name:version' (e.g., ubuntu:24.04, debian:13)
+    
+    Examples:
+    
+        # Build Ubuntu 24.04 image
+        ./factory.sh build ubuntu:24.04
+        
+        # Build with custom tag
+        ./factory.sh build debian:13 --tag test:debian-13
+        
+        # Build for specific platform
+        ./factory.sh build ubuntu:24.04 --platform linux/amd64
+        
+        # Build without cache
+        ./factory.sh build fedora:42 --no-cache
+    """
+    config: Config = ctx.obj['config']
+    builder: ImageBuilder = ctx.obj['builder']
+    
+    if variant not in config.variants:
+        console.print(f"[red]Error:[/red] Unknown variant '{variant}'")
+        console.print(f"Available variants: {', '.join(config.variants.keys())}")
+        sys.exit(1)
+    
+    try:
+        dist_name, version_tag = dist.split(':')
+    except ValueError:
+        console.print(f"[red]Error:[/red] DIST must be in format 'name:version' (got '{dist}')")
+        console.print("Examples: ubuntu:24.04, debian:13, fedora:42")
+        sys.exit(1)
+    
+    # Check if Dockerfile exists, generate if not
+    dockerfile_dir = output_dir / f"{dist_name}-{version_tag}-clang++"
+    dockerfile_path = dockerfile_dir / "Dockerfile"
+    
+    if not dockerfile_path.exists():
+        console.print(f"[yellow]Dockerfile not found, generating...[/yellow]")
+        try:
+            builder.generate_dockerfile(variant, dist_name, version_tag, dockerfile_dir)
+            console.print(f"[green]✓[/green] Generated {dockerfile_path}")
+        except Exception as e:
+            console.print(f"[red]Error generating Dockerfile:[/red] {e}")
+            sys.exit(1)
+    
+    # Prepare Docker build command
+    if not tag:
+        tag = f"feelpp-env:{dist_name}-{version_tag}"
+    
+    build_cmd = [
+        "docker", "build",
+        "-t", tag,
+        "-f", str(dockerfile_path),
+    ]
+    
+    if platform:
+        build_cmd.extend(["--platform", platform])
+    
+    if no_cache:
+        build_cmd.append("--no-cache")
+    
+    # Context is the directory containing the Dockerfile
+    build_cmd.append(str(dockerfile_dir))
+    
+    console.print(f"\n[blue]Building Docker image:[/blue]")
+    console.print(f"  Distribution: {dist}")
+    console.print(f"  Tag: {tag}")
+    console.print(f"  Dockerfile: {dockerfile_path}")
+    if platform:
+        console.print(f"  Platform: {platform}")
+    console.print()
+    
+    # Show the command
+    console.print(f"[dim]$ {' '.join(build_cmd)}[/dim]\n")
+    
+    # Run Docker build
+    try:
+        result = subprocess.run(
+            build_cmd,
+            check=False,
+            cwd=dockerfile_dir.parent
+        )
+        
+        if result.returncode == 0:
+            console.print(f"\n[green]✓ Successfully built {tag}[/green]")
+            console.print(f"\nTo run the image:")
+            console.print(f"  docker run -it --rm {tag}")
+        else:
+            console.print(f"\n[red]✗ Build failed with exit code {result.returncode}[/red]")
+            sys.exit(result.returncode)
+            
+    except FileNotFoundError:
+        console.print("[red]Error:[/red] Docker command not found. Is Docker installed?")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Build interrupted by user[/yellow]")
+        sys.exit(130)
 
 
 @main.command()

@@ -59,7 +59,7 @@ jobs:
           - {service: feelpp-env, dist: testing,  flavor: debian, version: "testing", tag: debian-testing, experimental: true,  platforms: "linux/amd64",              dockerfile: Dockerfile}
           - {service: feelpp-env, dist: sid,      flavor: debian, version: "sid",     tag: debian-sid,     experimental: true,  platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
           - {service: feelpp-env, dist: noble,    flavor: ubuntu, version: "24.04",   tag: ubuntu-24.04,   experimental: false, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
-          - {service: feelpp-env, dist: oracular, flavor: ubuntu, version: "26.04",   tag: ubuntu-26.04,   experimental: true,  platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
+          # ubuntu-26.04 disabled: resolute repositories not yet available on mirrors
           - {service: feelpp-env, dist: fedora-42, flavor: fedora, version: "42",     tag: fedora-42,      experimental: false, platforms: "linux/amd64",              dockerfile: Dockerfile}
     runs-on: self-docker
     needs: activate
@@ -76,25 +76,16 @@ jobs:
         enable-cache: true
     - name: Setup Python factory
       run: |
-          if [ -f "feelpp-env/factory.sh" ]; then
-            echo "Setting up Python factory environment..."
-            cd feelpp-env
-            uv venv .venv
-            source .venv/bin/activate
-            uv pip install -q pyyaml jinja2 click rich pydantic
-            ./factory.sh validate || echo "Validation skipped"
-          fi
+          echo "Setting up Python factory environment..."
+          cd feelpp-env
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install -q pyyaml jinja2 click rich pydantic
+          ./factory.sh validate
     - name: generate
       run: |
-          # Try Python factory first, fallback to bash script
-          if [ -x "./factory.sh" ] && [ -d "config" ]; then
-            echo "Using Python factory..."
-            ./factory.sh generate --dist ${{ matrix.flavor }}:${{ matrix.version }}
-            dir="${{ matrix.flavor }}-${{ matrix.version }}-clang++"
-          else
-            echo "Using bash mkimg.sh..."
-            dir="$(bash mkimg.sh -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }})"
-          fi
+          ./factory.sh generate --dist ${{ matrix.flavor }}:${{ matrix.version }}
+          dir="${{ matrix.flavor }}-${{ matrix.version }}-clang++"
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate
@@ -143,25 +134,16 @@ jobs:
         enable-cache: true
     - name: Setup Python factory
       run: |
-          if [ -f "feelpp-env/factory.sh" ]; then
-            echo "Setting up Python factory environment..."
-            cd feelpp-env
-            uv venv .venv
-            source .venv/bin/activate
-            uv pip install -q pyyaml jinja2 click rich pydantic
-            ./factory.sh validate || echo "Validation skipped"
-          fi
+          echo "Setting up Python factory environment..."
+          cd feelpp-env
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install -q pyyaml jinja2 click rich pydantic
+          ./factory.sh validate
     - name: generate
       run: |
-          # Try Python factory first, fallback to bash script
-          if [ -x "./factory.sh" ] && [ -d "config" ]; then
-            echo "Using Python factory..."
-            ./factory.sh generate --dist ${{ inputs.flavor }}:${{ inputs.version }}
-            dir="${{ inputs.flavor }}-${{ inputs.version }}-clang++"
-          else
-            echo "Using bash mkimg.sh..."
-            dir="$(bash mkimg.sh -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }})"
-          fi
+          ./factory.sh generate --dist ${{ inputs.flavor }}:${{ inputs.version }}
+          dir="${{ inputs.flavor }}-${{ inputs.version }}-clang++"
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate
