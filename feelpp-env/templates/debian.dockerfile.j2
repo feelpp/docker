@@ -1,0 +1,58 @@
+FROM {{ base_image }}
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+
+# Distribution: {{ dist_name }} {{ dist_version }} ({{ dist_codename }})
+# Variant: {{ variant_name }}
+
+{% if mirror %}
+# Configure APT mirror
+ARG DEBIAN_MAIN_MIRROR={{ mirror }}
+RUN set -e; \
+  . /etc/os-release || true; \
+  case "${ID}:${VERSION_CODENAME}" in \
+    debian:*) \
+      echo "deb http://${DEBIAN_MAIN_MIRROR}/debian ${VERSION_CODENAME} main contrib non-free" > /etc/apt/sources.list; \
+      echo "deb http://${DEBIAN_MAIN_MIRROR}/debian ${VERSION_CODENAME}-updates main contrib non-free" >> /etc/apt/sources.list; \
+      echo "deb http://security.debian.org/debian-security ${VERSION_CODENAME}-security main contrib non-free" >> /etc/apt/sources.list; \
+      ;; \
+    *) echo "Leaving APT sources untouched (ID=${ID} CODENAME=${VERSION_CODENAME}).";; \
+  esac
+{% endif %}
+
+# Install core dependencies
+RUN apt-get -qq update && \
+    apt-get -y install \
+    gnupg \
+    ca-certificates-java default-jre-headless
+
+# Set timezone
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
+RUN apt-get -y install tzdata
+
+# Install all packages
+RUN apt-get -qq update && \
+    apt-get -y install \
+{{ packages | join_packages(8) }}
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+{% if enable_openmpi and requires_openmpi_layer %}
+# Install OpenMPI
+RUN apt-get -qq update && \
+    apt-get -y install \
+        libopenmpi-dev \
+        openmpi-bin \
+    && apt-get autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Configure OpenMPI
+ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+{% endif %}
+
+# Set Feel++ environment
+ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
+ENV PATH=/usr/local/bin:$PATH

@@ -1,0 +1,228 @@
+groups:
+  core_build_tools:
+    apt:
+      - cmake
+      - ninja-build
+      - git
+      - git-lfs
+      - clang
+      - g++
+      - sudo
+      - ssh
+    dnf:
+      - cmake
+      - ninja-build
+      - git
+      - git-lfs
+      - clang
+      - gcc-c++
+      - sudo
+  
+  system_utilities:
+    apt:
+      - tree
+      - ne
+      - chrpath
+      - rsync
+      - gdb
+    dnf:
+      - tree
+      - rsync
+      - gdb
+      - which
+  
+  python_stack:
+    apt:
+      - python3
+      - python3-dev
+      - python3-setuptools
+      - python3-sympy
+      - python3-pytest
+      - python3-gmsh
+      - python3-plotly
+      - python3-sklearn-pandas
+      - python3-tqdm
+      - python3-h5py
+      - python3-mpi4py
+      - python3-numpy
+      - python3-petsc4py-real
+      - python3-slepc4py-real
+      - python3-venv
+      - python3-pymongo
+      - dh-python
+    dnf:
+      - python3
+      - python3-devel
+      - python3-pip
+      - python3-virtualenv
+      - python3-sympy
+      - python3-pytest
+      - python3-mpi4py-openmpi
+      - python3-petsc-openmpi
+  
+  boost_libraries:
+    apt:
+      - libboost-all-dev
+    dnf:
+      - boost-devel
+      - boost-openmpi-devel
+  
+  math_libraries:
+    apt:
+      - libcln-dev
+      - libmetis-dev
+      - libscotch-dev
+      - libeigen3-dev
+      - libgsl-dev
+      - libnlopt-dev
+      - libann-dev
+      - libglpk-dev
+    dnf:
+      - cln-devel
+      - metis-devel
+      - eigen3-devel
+      - libcurl-devel
+      - cln-devel
+  
+  petsc_slepc:
+    apt:
+      - petsc-dev
+      - slepc-dev
+    dnf:
+      - petsc-devel
+      - petsc-openmpi-devel
+  
+  hdf5_netcdf:
+    apt:
+      - libhdf5-openmpi-dev
+      - libnetcdf-dev
+      - libfftw3-mpi-dev
+    dnf:
+      - hdf5-openmpi-devel
+      - netcdf-openmpi-devel
+      - fftw-devel
+  
+  geometry_mesh:
+    apt:
+      - libgmsh-dev
+      - gmsh
+      - libgl2ps-dev
+      - libglu1-mesa-dev
+      - libsm-dev
+      - libxt-dev
+    dnf:
+      - gmsh
+      - gmsh-devel
+  
+  xml_parsers:
+    apt:
+      - libxml2-dev
+      - libpugixml-dev
+    dnf:
+      - libxml2-devel
+      - pugixml-devel
+  
+  build_deps:
+    apt:
+      - bison
+      - flex
+      - libtbb-dev
+      - libbz2-dev
+      - libzip-dev
+    dnf:
+      - bison
+      - flex
+  
+  database_clients:
+    apt:
+      - libbson-dev
+      - libmongoc-dev
+      - libmongo-client-dev
+    dnf: []
+  
+  documentation:
+    apt:
+      - doxygen
+      - transfig
+      - imagemagick
+      - ruby-progressbar
+      - ruby-tilt
+      - asciidoctor
+      - ruby-asciidoctor-pdf
+      - ruby
+      - ruby-dev
+    dnf:
+      - ruby
+      - rubygem-bundler
+  
+  graphics_opengl:
+    apt:
+      - libglew-dev
+    dnf: []
+  
+  containers_tools:
+    apt:
+      - docker.io
+      - jsonlint
+    dnf:
+      - nodejs
+  
+  misc_tools:
+    apt:
+      - man
+      - jq
+      - curl
+    dnf:
+      - jq
+      - curl
+      - lsof
+      - procps-ng
+      - findutils
+      - file
+  
+  debian_packaging:
+    apt:
+      - quilt
+      - debhelper
+    dnf: []
+  
+  openmpi_ubuntu_debian:
+    apt:
+      - libopenmpi-dev
+      - openmpi-bin
+    dnf: []
+  
+  openmpi_fedora:
+    dnf:
+      - environment-modules
+      - openmpi
+      - openmpi-devel
+
+layers:
+  base:
+    - core_build_tools
+    - system_utilities
+  
+  python:
+    - python_stack
+  
+  math:
+    - boost_libraries
+    - math_libraries
+    - petsc_slepc
+    - hdf5_netcdf
+  
+  geometry:
+    - geometry_mesh
+    - xml_parsers
+  
+  build:
+    - build_deps
+    - documentation
+  
+  feelpp:
+    - database_clients
+    - graphics_opengl
+    - containers_tools
+    - misc_tools
+    - debian_packaging

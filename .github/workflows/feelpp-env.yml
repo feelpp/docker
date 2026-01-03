@@ -52,18 +52,15 @@ jobs:
       fail-fast: true
       max-parallel: 4
       matrix: 
+        # Auto-generated from: feelpp-env/factory.sh matrix --format yaml
+        # To update: cd feelpp-env && ./factory.sh matrix --format yaml
         include:
-#          - {service: feelpp-env, dist: focal,  flavor: ubuntu, version: "20.04", tag: ubuntu-20.04, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
-#          - {service: feelpp-env, dist: mantic, flavor: ubuntu, version: "23.10", tag: ubuntu-23.10, experimental: false, platforms: "linux/amd64",                    dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: jammy,  flavor: ubuntu, version: "22.04", tag: ubuntu-22.04, experimental: false, platforms: "linux/amd64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: noble,  flavor: ubuntu, version: "24.04", tag: ubuntu-24.04, experimental: true,  platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
-#         - {service: feelpp-env, dist: buster, flavor: debian, version: "10",    tag: debian-10,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
-#         - {service: feelpp-env, dist: bullseye, flavor: debian, version: "11",  tag: debian-11,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: bookworm, flavor: debian, version: "12",  tag: debian-12,   experimental: false, platforms: "linux/amd64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: trixie,   flavor: debian, version: "13",  tag: debian-13,   experimental: false, platforms: "linux/amd64,linux/arm64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: debian-testing, flavor: debian, version: "testing", tag: debian-testing, experimental: true, platforms: "linux/amd64",        dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: debian-sid,      flavor: debian, version: "sid",     tag: debian-sid,     experimental: true, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile }
-          - {service: feelpp-env, dist: fedora-42, flavor: fedora, version: "42", tag: fedora-42, experimental: false, platforms: "linux/amd64",                     dockerfile: Dockerfile }
+          - {service: feelpp-env, dist: trixie,   flavor: debian, version: "13",      tag: debian-13,      experimental: false, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
+          - {service: feelpp-env, dist: testing,  flavor: debian, version: "testing", tag: debian-testing, experimental: true,  platforms: "linux/amd64",              dockerfile: Dockerfile}
+          - {service: feelpp-env, dist: sid,      flavor: debian, version: "sid",     tag: debian-sid,     experimental: true,  platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
+          - {service: feelpp-env, dist: noble,    flavor: ubuntu, version: "24.04",   tag: ubuntu-24.04,   experimental: false, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
+          - {service: feelpp-env, dist: oracular, flavor: ubuntu, version: "26.04",   tag: ubuntu-26.04,   experimental: true,  platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
+          - {service: feelpp-env, dist: fedora-42, flavor: fedora, version: "42",     tag: fedora-42,      experimental: false, platforms: "linux/amd64",              dockerfile: Dockerfile}
     runs-on: self-docker
     needs: activate
     name: ${{ matrix.flavor }}-${{ matrix.version }}
@@ -74,9 +71,29 @@ jobs:
       with:
         token: ${{ secrets.CR_PAT }}
         submodules: recursive
+    - name: Setup Python factory
+      run: |
+          if [ -f "feelpp-env/factory.sh" ]; then
+            echo "Setting up Python factory environment..."
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            export PATH="$HOME/.local/bin:$PATH"
+            cd feelpp-env
+            uv venv .venv
+            source .venv/bin/activate
+            uv pip install -q pyyaml jinja2 click rich pydantic
+            ./factory.sh validate || echo "Validation skipped"
+          fi
     - name: generate
       run: |
-          dir="$(bash mkimg.sh -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }})"
+          # Try Python factory first, fallback to bash script
+          if [ -x "./factory.sh" ] && [ -d "config" ]; then
+            echo "Using Python factory..."
+            ./factory.sh generate --dist ${{ matrix.flavor }}:${{ matrix.version }}
+            dir="${{ matrix.flavor }}-${{ matrix.version }}-clang++"
+          else
+            echo "Using bash mkimg.sh..."
+            dir="$(bash mkimg.sh -f ${{ matrix.flavor }}:${{ matrix.version }} -t feelpp/${{ matrix.service }}:${{ matrix.tag }})"
+          fi
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate
@@ -120,9 +137,29 @@ jobs:
       with:
         token: ${{ secrets.CR_PAT }}
         submodules: recursive
+    - name: Setup Python factory
+      run: |
+          if [ -f "feelpp-env/factory.sh" ]; then
+            echo "Setting up Python factory environment..."
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            export PATH="$HOME/.local/bin:$PATH"
+            cd feelpp-env
+            uv venv .venv
+            source .venv/bin/activate
+            uv pip install -q pyyaml jinja2 click rich pydantic
+            ./factory.sh validate || echo "Validation skipped"
+          fi
     - name: generate
       run: |
-          dir="$(bash mkimg.sh -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }})"
+          # Try Python factory first, fallback to bash script
+          if [ -x "./factory.sh" ] && [ -d "config" ]; then
+            echo "Using Python factory..."
+            ./factory.sh generate --dist ${{ inputs.flavor }}:${{ inputs.version }}
+            dir="${{ inputs.flavor }}-${{ inputs.version }}-clang++"
+          else
+            echo "Using bash mkimg.sh..."
+            dir="$(bash mkimg.sh -f ${{ inputs.flavor }}:${{ inputs.version }} -t feelpp/${{ env.service }}:${{ env.tag }})"
+          fi
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate

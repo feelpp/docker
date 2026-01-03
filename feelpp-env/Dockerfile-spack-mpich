@@ -8,7 +8,11 @@ RUN apt-get update && apt-get install -y \
     python3-setuptools \
     rsync \
     libblas-dev \
-    liblapack-dev 
+    liblapack-dev \
+    sudo \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install Clang via Spack
 RUN spack install -j40 llvm \
@@ -28,19 +32,19 @@ RUN spack install -j40 gmsh +oce +hdf5 ^/$(spack find --format "{hash:7}" hdf5)\
     && spack clean -a
 
 # Install Boost with MPI support, using MPICH
-RUN spack install -j40 boost +date_time+filesystem+iostreams+mpi+multithreaded+program_options+serialization+shared+system+test  ^mpich && spack load boost \
+RUN spack install -j40 boost +regex+date_time+filesystem+iostreams+mpi+multithreaded+program_options+serialization+shared+system+test  ^mpich \
     && spack clean -a
 
 # Install PETSc with MPI support
-RUN spack install -j40 petsc +mumps ^/$(spack find --format "{hash:7}" mumps) +mpi ^mpich && spack load petsc \
+RUN spack install -j40 petsc +mumps ^/$(spack find --format "{hash:7}" mumps) +mpi ^mpich \
     && spack clean -a
 
 # Install SLEPc
-RUN spack install -j40 slepc ^/$(spack find --format "{hash:7}" petsc) && spack load slepc \
+RUN spack install -j40 slepc ^/$(spack find --format "{hash:7}" petsc)  \
     && spack clean -a
 
 # Install Python packages via Spack
-RUN spack install -j40 python  && spack load python \
+RUN spack install -j40 python  \
     && spack clean -a
 
 RUN spack install -j40 py-mpi4py ^mpich\
@@ -49,7 +53,6 @@ RUN spack install -j40 py-petsc4py ^/$(spack find --format "{hash:7}" petsc)\
     && spack clean -a
 RUN spack install -j40 py-slepc4py ^/$(spack find --format "{hash:7}" slepc)\
     && spack clean -a
-RUN spack load py-mpi4py py-petsc4py py-slepc4py
 
 RUN spack install -j10 py-sympy\
     && spack clean -a
@@ -65,21 +68,20 @@ RUN spack install -j10 py-h5py\
     && spack clean -a
 RUN spack install -j10 py-numpy\
     && spack clean -a
-RUN spack load py-sympy py-pytest py-pandas py-tqdm py-h5py py-numpy/wlkev44
 
-RUN spack install -j10 libzip && spack load libzip\
+RUN spack install -j10 libzip \
     && spack clean -a
-RUN spack install -j10 cmake && spack load cmake\
+RUN spack install -j10 cmake \
     && spack clean -a
-RUN spack install -j10 ninja && spack load ninja\
+RUN spack install -j10 ninja \
     && spack clean -a
-RUN spack install -j10 git && spack load git\
+RUN spack install -j10 git \
     && spack clean -a
-RUN spack install -j10 curl && spack load curl\
+RUN spack install -j10 curl \
     && spack clean -a
-RUN spack install -j10 wget && spack load wget\
+RUN spack install -j10 wget \
     && spack clean -a
-RUN spack install -j10 rsync && spack load rsync\
+RUN spack install -j10 rsync \
     && spack clean -a
 
 RUN useradd -m devuser
@@ -96,6 +98,15 @@ WORKDIR /home/devuser
 RUN git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it \
     && ~/.bash_it/install.sh \
     && echo "source /opt/spack/share/spack/bash/spack-completion.bash" >> ~/.bashrc
+
+
+RUN echo 'packages=(mpich hdf5/vc43gg7 mumps gmsh boost petsc slepc python py-mpi4py py-petsc4py py-slepc4py \
+                    py-sympy py-pytest py-pandas py-tqdm py-h5py py-numpy/wlkev44 \
+                    libzip cmake ninja git curl wget rsync)' >> .bashrc \
+    && echo 'for package in "${packages[@]}"; do' >> .bashrc \
+    && echo '  echo "Loading package: $package..."' >> .bashrc \
+    && echo '  spack load $package' >> .bashrc \
+    && echo 'done' >> .bashrc 
 
 # Set the default command to launch when starting the container
 #CMD ["/bin/bash"]

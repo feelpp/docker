@@ -1,0 +1,21 @@
+variants:
+  feelpp-env:
+    description: "Feel++ development environment"
+    layers:
+      - base
+      - python
+      - math
+      - geometry
+      - build
+      - feelpp
+    enable_openmpi: true
+    distributions:
+      - debian:13
+      - debian:testing
+      - debian:sid
+      - ubuntu:24.04
+      - ubuntu:26.04
+      - fedora:42
+    extra_packages:
+      apt: []
+      dnf: []

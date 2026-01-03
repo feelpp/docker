@@ -1,0 +1,44 @@
+FROM {{ base_image }}
+LABEL maintainer="Feel++ Support <support@feelpp.org>"
+
+# Distribution: {{ dist_name }} {{ dist_version }} ({{ dist_codename }})
+# Variant: {{ variant_name }}
+
+# Configure APT to use mirror
+RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/miroir.univ-lorraine.fr\/ubuntu\//' /etc/apt/sources.list || true
+
+# Set timezone
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
+RUN apt-get -qq update && \
+    apt-get -y --force-yes install tzdata software-properties-common \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install all packages
+RUN apt-get -qq update && \
+    apt-get -yq install \
+{{ packages | join_packages(8) }}
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+{% if enable_openmpi and requires_openmpi_layer %}
+# Install OpenMPI
+RUN apt-get -qq update && \
+    apt-get -yq install \
+        libopenmpi-dev \
+        openmpi-bin \
+    && apt-get -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Configure OpenMPI
+ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+{% endif %}
+
+# Set Feel++ environment
+ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
+ENV PATH=/usr/local/bin:$PATH

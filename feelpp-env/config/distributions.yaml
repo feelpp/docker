@@ -1,0 +1,55 @@
+distributions:
+  debian:
+    package_manager: apt
+    template: debian.dockerfile.j2
+    mirror: ftp.fr.debian.org
+    versions:
+      - name: trixie
+        tag: "13"
+        base_image: "debian:13"
+        platforms: ["linux/amd64", "linux/arm64"]
+        experimental: false
+        requires_openmpi_layer: true
+      
+      - name: sid
+        tag: "sid"
+        base_image: "debian:sid"
+        platforms: ["linux/amd64", "linux/arm64"]
+        experimental: true
+        requires_openmpi_layer: false
+      
+      - name: testing
+        tag: "testing"
+        base_image: "debian:testing"
+        platforms: ["linux/amd64"]
+        experimental: true
+        requires_openmpi_layer: false
+
+  ubuntu:
+    package_manager: apt
+    template: ubuntu.dockerfile.j2
+    versions:
+      - name: noble
+        tag: "24.04"
+        base_image: "ubuntu:24.04"
+        platforms: ["linux/amd64", "linux/arm64"]
+        experimental: false
+        requires_openmpi_layer: false
+      
+      - name: oracular
+        tag: "26.04"
+        base_image: "ubuntu:26.04"
+        platforms: ["linux/amd64", "linux/arm64"]
+        experimental: true
+        requires_openmpi_layer: false
+
+  fedora:
+    package_manager: dnf
+    template: fedora.dockerfile.j2
+    versions:
+      - name: fedora-42
+        tag: "42"
+        base_image: "fedora:42"
+        platforms: ["linux/amd64"]
+        experimental: false
+        requires_openmpi_layer: false  # Built-in OpenMPI support

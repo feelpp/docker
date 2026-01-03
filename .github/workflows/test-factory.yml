@@ -1,0 +1,90 @@
+name: Test Feel++ Factory
+run-name: "Test Factory [${{ github.event_name }}]"
+
+on:
+  pull_request:
+    paths:
+      - 'feelpp-env/factory/**'
+      - 'feelpp-env/config/**'
+      - 'feelpp-env/templates/**'
+      - 'feelpp-env/factory.sh'
+      - '.github/workflows/test-factory.yml'
+  workflow_dispatch:
+
+jobs:
+  test-factory:
+    runs-on: ubuntu-latest
+    name: Test Factory Configuration
+    
+    steps:
+    - uses: actions/checkout@v5
+    
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Setup Python environment
+      working-directory: feelpp-env
+      run: |
+        uv venv .venv
+        source .venv/bin/activate
+        uv pip install pyyaml jinja2 click rich pydantic
+    
+    - name: Validate configuration
+      working-directory: feelpp-env
+      run: |
+        source .venv/bin/activate
+        ./factory.sh validate
+    
+    - name: Show configuration
+      working-directory: feelpp-env
+      run: |
+        source .venv/bin/activate
+        ./factory.sh show --variant feelpp-env
+    
+    - name: Generate all Dockerfiles
+      working-directory: feelpp-env
+      run: |
+        source .venv/bin/activate
+        ./factory.sh generate --output-dir test-output
+    
+    - name: Verify ninja-build in all Dockerfiles
+      working-directory: feelpp-env
+      run: |
+        echo "Checking for ninja-build in generated Dockerfiles..."
+        for dockerfile in test-output/*/Dockerfile; do
+          if ! grep -q "ninja-build" "$dockerfile"; then
+            echo "ERROR: ninja-build missing in $dockerfile"
+            exit 1
+          fi
+          echo "✓ $dockerfile has ninja-build"
+        done
+    
+    - name: Verify auxiliary files
+      working-directory: feelpp-env
+      run: |
+        echo "Checking for auxiliary files..."
+        for dir in test-output/*/; do
+          for file in Dockerfile bashrc.feelpp feelpp.conf.sh start.sh WELCOME; do
+            if [ ! -f "$dir/$file" ]; then
+              echo "ERROR: $file missing in $dir"
+              exit 1
+            fi
+          done
+          echo "✓ $dir has all required files"
+        done
+    
+    - name: Generate build matrix
+      working-directory: feelpp-env
+      run: |
+        source .venv/bin/activate
+        echo "Build matrix:"
+        ./factory.sh matrix
+    
+    - name: Lint Dockerfiles
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: feelpp-env/test-output/*/Dockerfile
+        recursive: true
+        failure-threshold: warning

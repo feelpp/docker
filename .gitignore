@@ -1,3 +1,5 @@
 feelpp-env/debian-*
 feelpp-env/ubuntu-*
 feelpp-env/*-clang++/
+**/__pycache__/**
+**/poc-output/**

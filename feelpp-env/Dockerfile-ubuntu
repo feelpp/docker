@@ -12,7 +12,7 @@ RUN apt-get -qq update && \
   apt-get -yq install \
            quilt debhelper                                    \
            tree ne                                              \
-           cmake                                             \
+           cmake ninja-build                                             \
            ssh git-lfs                                                 \
            clang g++  sudo             \
            dh-python                                                   \
