@@ -134,7 +134,6 @@ jobs:
     steps:
     - uses: actions/checkout@v5
       with:
-        token: ${{ secrets.CR_PAT }}
         submodules: recursive
     - name: Setup Python factory
       run: |
