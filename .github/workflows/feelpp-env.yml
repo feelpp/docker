@@ -70,12 +70,14 @@ jobs:
     - uses: actions/checkout@v5
       with:
         submodules: recursive
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
     - name: Setup Python factory
       run: |
           if [ -f "feelpp-env/factory.sh" ]; then
             echo "Setting up Python factory environment..."
-            curl -LsSf https://astral.sh/uv/install.sh | sh
-            export PATH="$HOME/.local/bin:$PATH"
             cd feelpp-env
             uv venv .venv
             source .venv/bin/activate
@@ -135,12 +137,14 @@ jobs:
     - uses: actions/checkout@v5
       with:
         submodules: recursive
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
     - name: Setup Python factory
       run: |
           if [ -f "feelpp-env/factory.sh" ]; then
             echo "Setting up Python factory environment..."
-            curl -LsSf https://astral.sh/uv/install.sh | sh
-            export PATH="$HOME/.local/bin:$PATH"
             cd feelpp-env
             uv venv .venv
             source .venv/bin/activate
