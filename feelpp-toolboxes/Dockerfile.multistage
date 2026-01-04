@@ -17,6 +17,10 @@ ARG DESCRIPTION="Feel++ Toolboxes"
 # Stage 1: BUILDER
 # =============================================================================
 FROM ${FROM_IMAGE} AS builder
+
+# Switch to root (base runtime image has USER feelpp)
+USER root
+
 ARG DESCRIPTION
 LABEL maintainer="Feel++ Support <support@feelpp.org>"
 LABEL org.opencontainers.image.description="${DESCRIPTION}"
