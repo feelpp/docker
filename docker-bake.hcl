@@ -7,8 +7,10 @@
 # Build and push:       docker buildx bake --push
 #
 # Image naming convention:
-#   - Runtime (for users):  ghcr.io/feelpp/feelpp:ubuntu-24.04
-#   - Dev (for CI chain):   ghcr.io/feelpp/feelpp:ubuntu-24.04-dev
+#   - develop branch:       ghcr.io/feelpp/feelpp:ubuntu-24.04 (runtime)
+#                           ghcr.io/feelpp/feelpp:ubuntu-24.04-dev (dev)
+#   - feature branches:     ghcr.io/feelpp/feelpp:ubuntu-24.04-{branch} (runtime)
+#                           ghcr.io/feelpp/feelpp:ubuntu-24.04-{branch}-dev (dev)
 # =============================================================================
 
 variable "REGISTRY" {
@@ -112,8 +114,9 @@ target "feelpp" {
     FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
     FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
-  tags = [
-    "${REGISTRY}/feelpp:${DIST}-dev",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp:${DIST}-dev"
+  ] : [
     "${REGISTRY}/feelpp:${DIST}-${BRANCH}-dev"
   ]
   platforms = ["linux/amd64"]
@@ -125,8 +128,9 @@ target "feelpp-runtime" {
   args = {
     DESCRIPTION = "Feel++ core library"
   }
-  tags = [
-    "${REGISTRY}/feelpp:${DIST}",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp:${DIST}"
+  ] : [
     "${REGISTRY}/feelpp:${DIST}-${BRANCH}"
   ]
 }
@@ -134,14 +138,17 @@ target "feelpp-runtime" {
 # =============================================================================
 # Toolboxes
 # =============================================================================
+# Builder uses RUNTIME base image (not -dev) - smaller, just needs installed libs.
+# Source is cloned in the Dockerfile.
 
 target "toolboxes" {
   context = "feelpp-toolboxes"
   dockerfile = "Dockerfile.multistage"
   target = "builder"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp:${DIST}-dev"
+    FROM_IMAGE = BRANCH == "develop" ? "${REGISTRY}/feelpp:${DIST}" : "${REGISTRY}/feelpp:${DIST}-${BRANCH}"
     DESCRIPTION = "Feel++ Toolboxes (dev)"
+    BRANCH = "${BRANCH}"
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
@@ -151,8 +158,9 @@ target "toolboxes" {
     FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
     FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
-  tags = [
-    "${REGISTRY}/feelpp-toolboxes:${DIST}-dev",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-toolboxes:${DIST}-dev"
+  ] : [
     "${REGISTRY}/feelpp-toolboxes:${DIST}-${BRANCH}-dev"
   ]
   platforms = ["linux/amd64"]
@@ -162,11 +170,11 @@ target "toolboxes-runtime" {
   inherits = ["toolboxes"]
   target = "runtime"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp:${DIST}"
     DESCRIPTION = "Feel++ Toolboxes"
   }
-  tags = [
-    "${REGISTRY}/feelpp-toolboxes:${DIST}",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-toolboxes:${DIST}"
+  ] : [
     "${REGISTRY}/feelpp-toolboxes:${DIST}-${BRANCH}"
   ]
 }
@@ -174,14 +182,17 @@ target "toolboxes-runtime" {
 # =============================================================================
 # Model Order Reduction (MOR)
 # =============================================================================
+# Builder uses RUNTIME base image (not -dev) - smaller, just needs installed libs.
+# Source is cloned in the Dockerfile.
 
 target "mor" {
   context = "feelpp-mor"
   dockerfile = "Dockerfile.multistage"
   target = "builder"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp-toolboxes:${DIST}-dev"
+    FROM_IMAGE = BRANCH == "develop" ? "${REGISTRY}/feelpp-toolboxes:${DIST}" : "${REGISTRY}/feelpp-toolboxes:${DIST}-${BRANCH}"
     DESCRIPTION = "Feel++ Model Order Reduction (dev)"
+    BRANCH = "${BRANCH}"
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
@@ -191,8 +202,9 @@ target "mor" {
     FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
     FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
-  tags = [
-    "${REGISTRY}/feelpp-mor:${DIST}-dev",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-mor:${DIST}-dev"
+  ] : [
     "${REGISTRY}/feelpp-mor:${DIST}-${BRANCH}-dev"
   ]
   platforms = ["linux/amd64"]
@@ -202,11 +214,11 @@ target "mor-runtime" {
   inherits = ["mor"]
   target = "runtime"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp-toolboxes:${DIST}"
     DESCRIPTION = "Feel++ Model Order Reduction"
   }
-  tags = [
-    "${REGISTRY}/feelpp-mor:${DIST}",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-mor:${DIST}"
+  ] : [
     "${REGISTRY}/feelpp-mor:${DIST}-${BRANCH}"
   ]
 }
@@ -214,14 +226,17 @@ target "mor-runtime" {
 # =============================================================================
 # Python Bindings
 # =============================================================================
+# Builder uses RUNTIME base image (not -dev) - smaller, just needs installed libs.
+# Source is cloned in the Dockerfile.
 
 target "python" {
   context = "feelpp-python"
   dockerfile = "Dockerfile.multistage"
   target = "builder"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp-mor:${DIST}-dev"
+    FROM_IMAGE = BRANCH == "develop" ? "${REGISTRY}/feelpp-mor:${DIST}" : "${REGISTRY}/feelpp-mor:${DIST}-${BRANCH}"
     DESCRIPTION = "Feel++ Python Bindings (dev)"
+    BRANCH = "${BRANCH}"
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
@@ -231,8 +246,9 @@ target "python" {
     FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
     FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
-  tags = [
-    "${REGISTRY}/feelpp-python:${DIST}-dev",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-python:${DIST}-dev"
+  ] : [
     "${REGISTRY}/feelpp-python:${DIST}-${BRANCH}-dev"
   ]
   platforms = ["linux/amd64"]
@@ -242,11 +258,11 @@ target "python-runtime" {
   inherits = ["python"]
   target = "runtime"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp-mor:${DIST}"
     DESCRIPTION = "Feel++ Python Bindings"
   }
-  tags = [
-    "${REGISTRY}/feelpp-python:${DIST}",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-python:${DIST}"
+  ] : [
     "${REGISTRY}/feelpp-python:${DIST}-${BRANCH}"
   ]
 }
@@ -275,8 +291,9 @@ target "feelpp-full" {
     FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
     FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
   }
-  tags = [
-    "${REGISTRY}/feelpp:${DIST}-full-dev",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp:${DIST}-full-dev"
+  ] : [
     "${REGISTRY}/feelpp:${DIST}-${BRANCH}-full-dev"
   ]
   platforms = ["linux/amd64"]
@@ -288,8 +305,9 @@ target "feelpp-full-runtime" {
   args = {
     DESCRIPTION = "Feel++ Full Stack"
   }
-  tags = [
-    "${REGISTRY}/feelpp:${DIST}-full",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp:${DIST}-full"
+  ] : [
     "${REGISTRY}/feelpp:${DIST}-${BRANCH}-full"
   ]
 }
@@ -302,14 +320,15 @@ target "testsuite" {
   context = "feelpp-testsuite"
   dockerfile = "Dockerfile.template"
   args = {
-    FROM_IMAGE = "${REGISTRY}/feelpp:${DIST}"
+    FROM_IMAGE = BRANCH == "develop" ? "${REGISTRY}/feelpp:${DIST}" : "${REGISTRY}/feelpp:${DIST}-${BRANCH}"
     DESCRIPTION = "Feel++ Test Suite"
     CXX = "${CXX}"
     CC = "${CC}"
     CMAKE_FLAGS = "${CMAKE_FLAGS}"
   }
-  tags = [
-    "${REGISTRY}/feelpp-testsuite:${DIST}",
+  tags = BRANCH == "develop" ? [
+    "${REGISTRY}/feelpp-testsuite:${DIST}"
+  ] : [
     "${REGISTRY}/feelpp-testsuite:${DIST}-${BRANCH}"
   ]
   platforms = ["linux/amd64"]

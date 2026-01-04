@@ -38,21 +38,30 @@ ARG FEELPP_CKAN_ORGANIZATION=""
 ARG CXX=clang++
 ARG CC=clang
 
-USER feelpp
-ENV HOME=/home/feelpp
-WORKDIR ${HOME}
+# Build as root (simpler, no sudo needed)
+# MPI needs these to run tests as root
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+# Set test credentials as environment variables
+ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
+ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
+ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
+ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
+ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
 
 # Clone Feel++ repository
+WORKDIR /src
 RUN git config --global user.name "Docker Robot" && \
     git config --global user.email "docker@feelpp.org" && \
-    git config --global --add safe.directory ${HOME}/src/feelpp && \
-    mkdir -p ${HOME}/src && \
-    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git ${HOME}/src/feelpp && \
-    cd ${HOME}/src/feelpp && git submodule update --init --recursive
+    git config --global --add safe.directory /src/feelpp && \
+    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git feelpp && \
+    cd feelpp && git submodule update --init --recursive
 
-WORKDIR ${HOME}/src/feelpp
+WORKDIR /src/feelpp
 
-# Configure and build Feel++ (full stack using default preset)
+# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
+# Tests run BEFORE install (they use build paths, not install paths)
 RUN cmake --preset default \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DCMAKE_BUILD_TYPE=Release \
@@ -60,25 +69,11 @@ RUN cmake --preset default \
         -DCMAKE_C_COMPILER=${CC} \
         -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
         ${CMAKE_FLAGS} && \
-    cmake --build --preset default
-
-# Install Feel++ (needs root for /usr/local)
-USER root
-RUN cmake --build ${HOME}/src/feelpp/build/default -t install
-USER feelpp
-
-# Run tests (with data service credentials)
-ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
-ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
-ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
-ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
-ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
-RUN ctest --preset default || true
-
-# Clean up build artifacts (keep source for potential debugging)
-RUN rm -rf build/default/{CMakeFiles,_deps} && \
-    find build/default -name "*.o" -delete && \
-    sudo ldconfig
+    cmake --build --preset default && \
+    ctest --preset default || true && \
+    cmake --install build/default && \
+    ldconfig && \
+    rm -rf build/default /root/feelppdb /root/.cache /feel
 
 # =============================================================================
 # Stage 2: RUNTIME - Minimal production image with all components

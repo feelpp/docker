@@ -4,6 +4,9 @@
 # Targets:
 #   - builder: Full dev image with source and build artifacts
 #   - runtime: Minimal image with only installed toolboxes
+#
+# Base image: Uses feelpp RUNTIME image (not -dev) since we only need
+# installed libraries/headers, not source code or build artifacts.
 # =============================================================================
 
 # Global ARGs
@@ -18,6 +21,7 @@ ARG DESCRIPTION
 LABEL maintainer="Feel++ Support <support@feelpp.org>"
 LABEL org.opencontainers.image.description="${DESCRIPTION}"
 
+ARG BRANCH=develop
 ARG BUILD_JOBS=20
 ARG CMAKE_FLAGS=""
 ARG CXX=clang++
@@ -28,35 +32,40 @@ ARG FEELPP_CKAN_API_KEY=""
 ARG FEELPP_CKAN_URL=""
 ARG FEELPP_CKAN_ORGANIZATION=""
 
-USER feelpp
-ENV HOME=/home/feelpp
-WORKDIR ${HOME}/src/feelpp
+# Build as root (simpler, no sudo needed)
+# MPI needs these to run tests as root
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-# Build Feel++ Toolboxes using CMake preset
-RUN cmake --preset toolboxes \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_CXX_COMPILER=${CXX} \
-        -DCMAKE_C_COMPILER=${CC} \
-        ${CMAKE_FLAGS} && \
-    cmake --build --preset toolboxes
-
-# Install (needs root for /usr/local)
-USER root
-RUN cmake --build ${HOME}/src/feelpp/build/toolboxes -t install
-USER feelpp
-
-# Run tests (with data service credentials)
+# Set test credentials as environment variables
 ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
 ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
 ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
 ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
 ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
-RUN ctest --preset toolboxes || true
 
-# Clean up build artifacts
-RUN rm -rf build/toolboxes/{CMakeFiles,_deps} && \
-    find build/toolboxes -name "*.o" -delete && \
-    sudo ldconfig
+# Clone Feel++ repository (source not in runtime base image)
+WORKDIR /src
+RUN git config --global user.name "Docker Robot" && \
+    git config --global user.email "docker@feelpp.org" && \
+    git config --global --add safe.directory /src/feelpp && \
+    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git feelpp && \
+    cd feelpp && git submodule update --init --recursive
+
+WORKDIR /src/feelpp
+
+# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
+# Tests run BEFORE install (they use build paths, not install paths)
+RUN cmake --preset toolboxes \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_C_COMPILER=${CC} \
+        ${CMAKE_FLAGS} && \
+    cmake --build --preset toolboxes && \
+    ctest --preset toolboxes || true && \
+    cmake --install build/toolboxes && \
+    ldconfig && \
+    rm -rf build/toolboxes /root/feelppdb /root/.cache /feel
 
 # =============================================================================
 # Stage 2: RUNTIME

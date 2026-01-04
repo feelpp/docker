@@ -32,46 +32,41 @@ ARG FEELPP_CKAN_ORGANIZATION=""
 ARG CXX=clang++
 ARG CC=clang
 
-USER feelpp
-ENV HOME=/home/feelpp
-WORKDIR ${HOME}
+# Build as root (simpler, no sudo needed)
+# MPI needs these to run tests as root
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+# Set test credentials as environment variables
+ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
+ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
+ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
+ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
+ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
 
 # Clone Feel++ repository
+WORKDIR /src
 RUN git config --global user.name "Docker Robot" && \
     git config --global user.email "docker@feelpp.org" && \
-    git config --global --add safe.directory ${HOME}/src/feelpp && \
-    mkdir -p ${HOME}/src && \
-    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git ${HOME}/src/feelpp && \
-    cd ${HOME}/src/feelpp && git submodule update --init --recursive
+    git config --global --add safe.directory /src/feelpp && \
+    git clone --depth=1 --branch=${BRANCH} https://github.com/feelpp/feelpp.git feelpp && \
+    cd feelpp && git submodule update --init --recursive
 
-WORKDIR ${HOME}/src/feelpp
+WORKDIR /src/feelpp
 
-# Configure and build Feel++
+# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
+# Tests run BEFORE install (they use build paths, not install paths)
 RUN cmake --preset feelpp \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_C_COMPILER=${CC} \
         ${CMAKE_FLAGS} && \
-    cmake --build --preset feelpp
-
-# Install Feel++ (needs root for /usr/local)
-USER root
-RUN cmake --build ${HOME}/src/feelpp/build/feelpp -t install
-USER feelpp
-
-# Run tests (with data service credentials)
-ENV FEELPP_GIRDER_API_KEY=${FEELPP_GIRDER_API_KEY}
-ENV FEELPP_GITHUB_TOKEN=${FEELPP_GITHUB_TOKEN}
-ENV FEELPP_CKAN_API_KEY=${FEELPP_CKAN_API_KEY}
-ENV FEELPP_CKAN_URL=${FEELPP_CKAN_URL}
-ENV FEELPP_CKAN_ORGANIZATION=${FEELPP_CKAN_ORGANIZATION}
-RUN ctest --preset feelpp || true
-
-# Clean up build artifacts (keep source for downstream builds)
-RUN rm -rf build/feelpp/{CMakeFiles,_deps,benchmarks,testsuite,doc} && \
-    find build/feelpp -name "*.o" -delete && \
-    sudo ldconfig
+    cmake --build --preset feelpp && \
+    ctest --preset feelpp || true && \
+    cmake --install build/feelpp && \
+    ldconfig && \
+    rm -rf build/feelpp /root/feelppdb /root/.cache /feel
 
 # =============================================================================
 # Stage 2: RUNTIME - Minimal production image
