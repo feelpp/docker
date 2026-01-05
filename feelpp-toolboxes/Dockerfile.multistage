@@ -85,17 +85,20 @@ LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
 # Switch to root for copying and ldconfig
 USER root
 
-# Copy toolboxes binaries
-COPY --from=builder /usr/local/bin/feelpp_toolbox* /usr/local/bin/
+# Copy toolboxes core libraries (modelcore, modelmesh - always built)
+COPY --from=builder /usr/local/lib/libfeelpp_model* /usr/local/lib/
 
-# Copy toolboxes libraries
-COPY --from=builder /usr/local/lib/libfeelpp_toolbox* /usr/local/lib/
-
-# Copy toolboxes headers (if any)
+# Copy toolboxes headers
 COPY --from=builder /usr/local/include/feelpp/toolboxes /usr/local/include/feelpp/toolboxes
 
 # Copy toolboxes CMake and data files
 COPY --from=builder /usr/local/share/feelpp/toolboxes /usr/local/share/feelpp/toolboxes
+
+# Copy optional toolbox binaries and libraries (may not exist if toolboxes disabled)
+# Using shell to gracefully handle missing files
+RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
+    cp /mnt/builder/bin/feelpp_toolbox* /usr/local/bin/ 2>/dev/null || true && \
+    cp /mnt/builder/lib/libfeelpp_toolbox* /usr/local/lib/ 2>/dev/null || true
 
 # Update library cache
 RUN ldconfig
