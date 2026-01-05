@@ -93,6 +93,10 @@ COPY --from=builder /usr/local/lib/libfeelpp_mor* /usr/local/lib/
 COPY --from=builder /usr/local/lib/libfeelpp_openturns* /usr/local/lib/
 COPY --from=builder /usr/local/include/openturns /usr/local/include/openturns
 
+# Copy MOR plugin libraries (e.g., lib_unsteadyheat1d.so) referenced by CMake export targets
+RUN --mount=from=builder,source=/usr/local/lib,target=/mnt/lib \
+    cp /mnt/lib/lib_*.so* /usr/local/lib/ 2>/dev/null || true
+
 # Copy CRB application libraries (optional, may not exist)
 RUN --mount=from=builder,source=/usr/local/lib,target=/mnt/lib \
     cp /mnt/lib/libfeelpp-applications-crb-* /usr/local/lib/ 2>/dev/null || true
