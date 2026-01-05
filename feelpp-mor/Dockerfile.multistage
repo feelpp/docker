@@ -101,8 +101,8 @@ RUN --mount=from=builder,source=/usr/local/lib,target=/mnt/lib \
 RUN --mount=from=builder,source=/usr/local/lib,target=/mnt/lib \
     cp /mnt/lib/libfeelpp-applications-crb-* /usr/local/lib/ 2>/dev/null || true
 
-# Copy MOR headers
-COPY --from=builder /usr/local/include/feelpp/mor /usr/local/include/feelpp/mor
+# Copy MOR headers (feel/feelmor contains crb.hpp, pbdw.hpp, etc.)
+COPY --from=builder /usr/local/include/feelpp/feel/feelmor /usr/local/include/feelpp/feel/feelmor
 
 
 # Copy MOR CMake and data files
