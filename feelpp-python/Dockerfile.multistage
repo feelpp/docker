@@ -68,7 +68,7 @@ RUN cmake --preset python \
         -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
         ${CMAKE_FLAGS} && \
     cmake --build --preset python && \
-    ctest --preset python || true && \
+    (ctest --preset python || true) && \
     cmake --install build/python && \
     ldconfig && \
     rm -rf build/python /root/feelppdb /root/.cache /feel
@@ -86,6 +86,9 @@ ARG DESCRIPTION
 LABEL maintainer="Feel++ Support <support@feelpp.org>"
 LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
 
+# Switch to root for copying and ldconfig
+USER root
+
 # Copy Python modules
 COPY --from=builder /usr/local/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/
 
@@ -102,12 +105,4 @@ USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
 WORKDIR ${HOME}
-CMD ["/bin/bash"]
-
-# =============================================================================
-# Default target: builder
-# =============================================================================
-FROM builder AS default
-USER root
-WORKDIR /root
 CMD ["/bin/bash"]

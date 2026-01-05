@@ -67,7 +67,7 @@ RUN cmake --preset mor \
         -DCMAKE_C_COMPILER=${CC} \
         ${CMAKE_FLAGS} && \
     cmake --build --preset mor && \
-    ctest --preset mor || true && \
+    (ctest --preset mor || true) && \
     cmake --install build/mor && \
     ldconfig && \
     rm -rf build/mor /root/feelppdb /root/.cache /feel
@@ -81,6 +81,9 @@ FROM ${FROM_IMAGE} AS runtime
 ARG DESCRIPTION
 LABEL maintainer="Feel++ Support <support@feelpp.org>"
 LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
+
+# Switch to root for copying and ldconfig
+USER root
 
 # Copy MOR binaries
 COPY --from=builder /usr/local/bin/feelpp_mor* /usr/local/bin/
@@ -101,12 +104,4 @@ USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
 WORKDIR ${HOME}
-CMD ["/bin/bash"]
-
-# =============================================================================
-# Default target: builder
-# =============================================================================
-FROM builder AS default
-USER root
-WORKDIR /root
 CMD ["/bin/bash"]
