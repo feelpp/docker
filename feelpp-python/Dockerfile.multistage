@@ -73,8 +73,8 @@ RUN cmake --preset python \
     ldconfig && \
     rm -rf build/python /root/feelppdb /root/.cache /feel
 
-# Update Python path
-ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
+# Update Python path (match Python 3.12 install location)
+ENV PYTHONPATH=/usr/local/lib/python3.12/dist-packages:${PYTHONPATH}
 
 # =============================================================================
 # Stage 2: RUNTIME
@@ -89,14 +89,12 @@ LABEL org.opencontainers.image.description="${DESCRIPTION} (runtime)"
 # Switch to root for copying and ldconfig
 USER root
 
-# Copy Python modules
-COPY --from=builder /usr/local/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/
+# Copy Python modules (installed under python3.12)
+RUN mkdir -p /usr/local/lib/python3.12/dist-packages
+COPY --from=builder /usr/local/lib/python3.12/dist-packages/feelpp* /usr/local/lib/python3.12/dist-packages/
 
-# Copy any additional binaries
-COPY --from=builder /usr/local/bin/feelpp_py* /usr/local/bin/
-
-# Set Python path
-ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
+# Set Python path (match installed location)
+ENV PYTHONPATH=/usr/local/lib/python3.12/dist-packages:${PYTHONPATH}
 
 # Update library cache
 RUN ldconfig
