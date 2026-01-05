@@ -62,6 +62,7 @@ WORKDIR /src/feelpp
 # Tests run BEFORE install (they use build paths, not install paths)
 RUN cmake --preset python \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_C_COMPILER=${CC} \
         -DFEELPP_ENABLE_FEELPP_PYTHON=ON \
