@@ -88,11 +88,18 @@ USER root
 # Copy MOR binaries
 COPY --from=builder /usr/local/bin/feelpp_mor* /usr/local/bin/
 
-# Copy MOR libraries
+# Copy MOR libraries (mor, mor_plugin_*, openturns)
 COPY --from=builder /usr/local/lib/libfeelpp_mor* /usr/local/lib/
+COPY --from=builder /usr/local/lib/libfeelpp_openturns* /usr/local/lib/
+COPY --from=builder /usr/local/include/openturns /usr/local/include/openturns
+
+# Copy CRB application libraries (optional, may not exist)
+RUN --mount=from=builder,source=/usr/local/lib,target=/mnt/lib \
+    cp /mnt/lib/libfeelpp-applications-crb-* /usr/local/lib/ 2>/dev/null || true
 
 # Copy MOR headers
 COPY --from=builder /usr/local/include/feelpp/mor /usr/local/include/feelpp/mor
+
 
 # Copy MOR CMake and data files
 COPY --from=builder /usr/local/share/feelpp/mor /usr/local/share/feelpp/mor
