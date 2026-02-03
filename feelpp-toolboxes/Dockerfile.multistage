@@ -58,8 +58,8 @@ RUN git config --global user.name "Docker Robot" && \
 
 WORKDIR /src/feelpp
 
-# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
-# Tests run BEFORE install (they use build paths, not install paths)
+# Configure, build, install, test, and cleanup in a SINGLE layer to minimize image size
+# Install runs BEFORE tests so tests use installed paths
 RUN cmake --preset toolboxes \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -67,9 +67,9 @@ RUN cmake --preset toolboxes \
         -DCMAKE_C_COMPILER=${CC} \
         ${CMAKE_FLAGS} && \
     cmake --build --preset toolboxes && \
-    (ctest --preset toolboxes || true) && \
-    cmake --install build/toolboxes && \
+    cmake --build --preset toolboxes -t install && \
     ldconfig && \
+    (ctest --preset toolboxes || true) && \
     rm -rf build/toolboxes /root/feelppdb /root/.cache /feel
 
 # =============================================================================
@@ -100,11 +100,17 @@ RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
     cp /mnt/builder/bin/feelpp_toolbox* /usr/local/bin/ 2>/dev/null || true && \
     cp /mnt/builder/lib/libfeelpp_toolbox* /usr/local/lib/ 2>/dev/null || true
 
+# Copy Python bindings for toolboxes (optional, may not exist if Python disabled)
+RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
+    mkdir -p /usr/local/lib/python3/dist-packages && \
+    cp -r /mnt/builder/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/ 2>/dev/null || true
+
 # Update library cache
 RUN ldconfig
 
 USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
 WORKDIR ${HOME}
 CMD ["/bin/bash"]

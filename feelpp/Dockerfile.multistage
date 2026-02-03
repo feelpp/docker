@@ -54,8 +54,8 @@ RUN git config --global user.name "Docker Robot" && \
 
 WORKDIR /src/feelpp
 
-# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
-# Tests run BEFORE install (they use build paths, not install paths)
+# Configure, build, install, test, and cleanup in a SINGLE layer to minimize image size
+# Install runs BEFORE tests so tests use installed paths
 RUN cmake --preset feelpp \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DCMAKE_BUILD_TYPE=Release \
@@ -63,9 +63,9 @@ RUN cmake --preset feelpp \
         -DCMAKE_C_COMPILER=${CC} \
         ${CMAKE_FLAGS} && \
     cmake --build --preset feelpp && \
-    ctest --preset feelpp || true && \
-    cmake --install build/feelpp && \
+    cmake --build --preset feelpp -t install && \
     ldconfig && \
+    ctest --preset feelpp || true && \
     rm -rf build/feelpp /root/feelppdb /root/.cache /feel
 
 # =============================================================================

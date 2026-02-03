@@ -58,8 +58,8 @@ RUN git config --global user.name "Docker Robot" && \
 
 WORKDIR /src/feelpp
 
-# Configure, build, test, install, and cleanup in a SINGLE layer to minimize image size
-# Tests run BEFORE install (they use build paths, not install paths)
+# Configure, build, install, test, and cleanup in a SINGLE layer to minimize image size
+# Install runs BEFORE tests so tests use installed paths
 RUN cmake --preset mor \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -67,9 +67,9 @@ RUN cmake --preset mor \
         -DCMAKE_C_COMPILER=${CC} \
         ${CMAKE_FLAGS} && \
     cmake --build --preset mor && \
-    (ctest --preset mor || true) && \
-    cmake --install build/mor && \
+    cmake --build --preset mor -t install && \
     ldconfig && \
+    (ctest --preset mor || true) && \
     rm -rf build/mor /root/feelppdb /root/.cache /feel
 
 # =============================================================================
@@ -108,11 +108,17 @@ COPY --from=builder /usr/local/include/feelpp/feel/feelmor /usr/local/include/fe
 # Copy MOR CMake and data files
 COPY --from=builder /usr/local/share/feelpp/mor /usr/local/share/feelpp/mor
 
+# Copy Python bindings for MOR (optional, may not exist if Python disabled)
+RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
+    mkdir -p /usr/local/lib/python3/dist-packages && \
+    cp -r /mnt/builder/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/ 2>/dev/null || true
+
 # Update library cache
 RUN ldconfig
 
 USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
 WORKDIR ${HOME}
 CMD ["/bin/bash"]
