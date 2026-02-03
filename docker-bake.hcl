@@ -67,11 +67,11 @@ group "default" {
 }
 
 group "all-dev" {
-  targets = ["feelpp", "toolboxes", "mor", "python"]
+  targets = ["feelpp", "toolboxes", "mor"]
 }
 
 group "all" {
-  targets = ["feelpp-runtime", "toolboxes-runtime", "mor-runtime", "python-runtime"]
+  targets = ["feelpp-runtime", "toolboxes-runtime", "mor-runtime"]
 }
 
 group "full" {
@@ -220,50 +220,6 @@ target "mor-runtime" {
     "${REGISTRY}/feelpp-mor:${DIST}"
   ] : [
     "${REGISTRY}/feelpp-mor:${DIST}-${BRANCH}"
-  ]
-}
-
-# =============================================================================
-# Python Bindings
-# =============================================================================
-# Builder uses RUNTIME base image (not -dev) - smaller, just needs installed libs.
-# Source is cloned in the Dockerfile.
-
-target "python" {
-  context = "feelpp-python"
-  dockerfile = "Dockerfile.multistage"
-  target = "builder"
-  args = {
-    FROM_IMAGE = BRANCH == "develop" ? "${REGISTRY}/feelpp-mor:${DIST}" : "${REGISTRY}/feelpp-mor:${DIST}-${BRANCH}"
-    DESCRIPTION = "Feel++ Python Bindings (dev)"
-    BRANCH = "${BRANCH}"
-    CXX = "${CXX}"
-    CC = "${CC}"
-    CMAKE_FLAGS = "${CMAKE_FLAGS}"
-    FEELPP_GITHUB_TOKEN = "${FEELPP_GITHUB_TOKEN}"
-    FEELPP_GIRDER_API_KEY = "${FEELPP_GIRDER_API_KEY}"
-    FEELPP_CKAN_API_KEY = "${FEELPP_CKAN_API_KEY}"
-    FEELPP_CKAN_URL = "${FEELPP_CKAN_URL}"
-    FEELPP_CKAN_ORGANIZATION = "${FEELPP_CKAN_ORGANIZATION}"
-  }
-  tags = BRANCH == "develop" ? [
-    "${REGISTRY}/feelpp-python:${DIST}-dev"
-  ] : [
-    "${REGISTRY}/feelpp-python:${DIST}-${BRANCH}-dev"
-  ]
-  platforms = ["linux/amd64"]
-}
-
-target "python-runtime" {
-  inherits = ["python"]
-  target = "runtime"
-  args = {
-    DESCRIPTION = "Feel++ Python Bindings"
-  }
-  tags = BRANCH == "develop" ? [
-    "${REGISTRY}/feelpp-python:${DIST}"
-  ] : [
-    "${REGISTRY}/feelpp-python:${DIST}-${BRANCH}"
   ]
 }
 
