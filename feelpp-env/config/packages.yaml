@@ -45,7 +45,9 @@ groups:
       - python3-h5py
       - python3-mpi4py
       - python3-numpy
+      - python3-petsc4py
       - python3-petsc4py-real
+      - python3-slepc4py
       - python3-slepc4py-real
       - python3-venv
       - python3-pymongo
@@ -61,6 +63,8 @@ groups:
       - python3-pytest
       - python3-mpi4py-openmpi
       - python3-petsc-openmpi
+      - python3-petsc4py-openmpi
+      - python3-slepc4py-openmpi
       - pybind11-devel
       - pybind11-json-devel
   

@@ -69,7 +69,7 @@ RUN cmake --preset toolboxes \
     cmake --build --preset toolboxes && \
     cmake --build --preset toolboxes -t install && \
     ldconfig && \
-    (ctest --preset toolboxes || true) && \
+    ctest --preset toolboxes && \
     rm -rf build/toolboxes /root/feelppdb /root/.cache /feel
 
 # =============================================================================

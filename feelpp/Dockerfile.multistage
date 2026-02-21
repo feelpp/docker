@@ -92,6 +92,11 @@ COPY --from=builder /usr/local/include/feelpp /usr/local/include/feelpp
 # Feel++ CMake configuration and data files
 COPY --from=builder /usr/local/share/feelpp /usr/local/share/feelpp
 
+# Copy Python bindings (feelpp.core) if they were built
+RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
+    mkdir -p /usr/local/lib/python3/dist-packages && \
+    cp -r /mnt/builder/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/ 2>/dev/null || true
+
 # Update library cache
 RUN ldconfig
 
@@ -99,6 +104,7 @@ RUN ldconfig
 USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
+ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
 
 WORKDIR ${HOME}
 CMD ["/bin/bash"]

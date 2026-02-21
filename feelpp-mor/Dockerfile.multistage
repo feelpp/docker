@@ -69,7 +69,7 @@ RUN cmake --preset mor \
     cmake --build --preset mor && \
     cmake --build --preset mor -t install && \
     ldconfig && \
-    (ctest --preset mor || true) && \
+    ctest --preset mor && \
     rm -rf build/mor /root/feelppdb /root/.cache /feel
 
 # =============================================================================
