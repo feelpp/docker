@@ -101,9 +101,16 @@ RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
     cp /mnt/builder/lib/libfeelpp_toolbox* /usr/local/lib/ 2>/dev/null || true
 
 # Copy Python bindings for toolboxes (optional, may not exist if Python disabled)
+# Handle both python3 and python3.X directory layouts, and the Debian
+# posix_local scheme that may place files under local/lib/python3.X/...
 RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
-    mkdir -p /usr/local/lib/python3/dist-packages && \
-    cp -r /mnt/builder/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/ 2>/dev/null || true
+    for d in /mnt/builder/lib/python3*/dist-packages /mnt/builder/local/lib/python3*/dist-packages; do \
+        if [ -d "$d" ] && ls "$d"/feelpp* >/dev/null 2>&1; then \
+            pyver=$(echo "$d" | grep -oP 'python3[^/]*') && \
+            mkdir -p "/usr/local/lib/$pyver/dist-packages" && \
+            cp -r "$d"/feelpp* "/usr/local/lib/$pyver/dist-packages/"; \
+        fi; \
+    done
 
 # Update library cache
 RUN ldconfig

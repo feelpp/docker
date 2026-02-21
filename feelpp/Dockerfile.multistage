@@ -93,9 +93,16 @@ COPY --from=builder /usr/local/include/feelpp /usr/local/include/feelpp
 COPY --from=builder /usr/local/share/feelpp /usr/local/share/feelpp
 
 # Copy Python bindings (feelpp.core) if they were built
+# Handle both python3 and python3.X directory layouts, and the Debian
+# posix_local scheme that may place files under local/lib/python3.X/...
 RUN --mount=from=builder,source=/usr/local,target=/mnt/builder \
-    mkdir -p /usr/local/lib/python3/dist-packages && \
-    cp -r /mnt/builder/lib/python3/dist-packages/feelpp* /usr/local/lib/python3/dist-packages/ 2>/dev/null || true
+    for d in /mnt/builder/lib/python3*/dist-packages /mnt/builder/local/lib/python3*/dist-packages; do \
+        if [ -d "$d" ] && ls "$d"/feelpp* >/dev/null 2>&1; then \
+            pyver=$(echo "$d" | grep -oP 'python3[^/]*') && \
+            mkdir -p "/usr/local/lib/$pyver/dist-packages" && \
+            cp -r "$d"/feelpp* "/usr/local/lib/$pyver/dist-packages/"; \
+        fi; \
+    done
 
 # Update library cache
 RUN ldconfig
@@ -104,6 +111,8 @@ RUN ldconfig
 USER feelpp
 ENV HOME=/home/feelpp
 ENV FEELPP_REPOSITORY=/feel
+# Python searches /usr/local/lib/python3.X/dist-packages by default;
+# add /usr/local/lib/python3/dist-packages for Debian version-agnostic layout
 ENV PYTHONPATH=/usr/local/lib/python3/dist-packages:${PYTHONPATH}
 
 WORKDIR ${HOME}
