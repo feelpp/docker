@@ -4,6 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 echo "=== Feel++ Docker Factory Integration Test ==="
 echo ""
@@ -29,7 +30,15 @@ warn() {
 
 # Test 1: Validate configuration
 echo "Test 1: Configuration validation"
-if ./factory.sh validate >/dev/null 2>&1; then
+if [ ! -d ".venv" ]; then
+    uv venv .venv
+    source .venv/bin/activate
+    uv pip install -q -e "${PROJECT_ROOT}"
+else
+    source .venv/bin/activate
+fi
+
+if .venv/bin/feelpp-factory validate >/dev/null 2>&1; then
     pass "Configuration is valid"
 else
     fail "Configuration validation failed"
@@ -39,7 +48,7 @@ fi
 echo ""
 echo "Test 2: Dockerfile generation"
 mkdir -p test-integration
-if ./factory.sh generate --output-dir test-integration >/dev/null 2>&1; then
+if .venv/bin/feelpp-factory generate --output-dir test-integration >/dev/null 2>&1; then
     pass "All Dockerfiles generated"
 else
     fail "Dockerfile generation failed"
@@ -75,9 +84,8 @@ pass "All directories have required files"
 # Test 5: Verify build matrix generation
 echo ""
 echo "Test 5: Build matrix generation"
-source .venv/bin/activate
-if python -m factory.cli matrix --format yaml >/dev/null 2>&1; then
-    count=$(python -m factory.cli matrix --format json | grep -c '"service"' || echo 0)
+if .venv/bin/feelpp-factory matrix --format yaml >/dev/null 2>&1; then
+    count=$(.venv/bin/feelpp-factory matrix --format json | grep -c '"service"' || echo 0)
     pass "Build matrix generated ($count distributions)"
 else
     fail "Build matrix generation failed"

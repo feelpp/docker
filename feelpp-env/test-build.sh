@@ -5,11 +5,22 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [ ! -x ".venv/bin/feelpp-factory" ]; then
+    uv venv .venv
+    source .venv/bin/activate
+    uv pip install -q -e "${PROJECT_ROOT}"
+fi
+FACTORY=".venv/bin/feelpp-factory"
+
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <distribution>"
     echo ""
     echo "Available distributions:"
-    ./factory.sh show --variant feelpp-env | grep -E "debian:|ubuntu:|fedora:" || true
+    "$FACTORY" show --variant feelpp-env | grep -E "debian:|ubuntu:|fedora:" || true
     exit 1
 fi
 

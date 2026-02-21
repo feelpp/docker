@@ -3,6 +3,15 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+if [ ! -x ".venv/bin/feelpp-factory" ]; then
+    uv venv .venv
+    source .venv/bin/activate
+    uv pip install -q -e "${PROJECT_ROOT}"
+fi
+FACTORY=".venv/bin/feelpp-factory"
 
 echo "=== Dockerfile Comparison ==="
 echo ""
@@ -51,7 +60,7 @@ if [ -f ".github/workflows/feelpp-env.yml" ]; then
     echo "  Old workflow: ~$old_count distributions"
 fi
 
-new_count=$(./factory.sh matrix --format json | grep -c '"service"' || echo 0)
+new_count=$("$FACTORY" matrix --format json | grep -c '"service"' || echo 0)
 echo "  New factory:  $new_count distributions"
 
 echo ""

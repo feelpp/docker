@@ -4,10 +4,10 @@ run-name: "Test Factory [${{ github.event_name }}]"
 on:
   pull_request:
     paths:
-      - 'feelpp-env/factory/**'
+      - 'src/feelpp/docker/factory/**'
       - 'feelpp-env/config/**'
       - 'feelpp-env/templates/**'
-      - 'feelpp-env/factory.sh'
+      - 'pyproject.toml'
       - '.github/workflows/test-factory.yml'
   workflow_dispatch:
 
@@ -19,41 +19,33 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     
-    - name: Install uv
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
     
     - name: Setup Python environment
-      working-directory: feelpp-env
       run: |
         uv venv .venv
         source .venv/bin/activate
-        uv pip install pyyaml jinja2 click rich pydantic
+        uv pip install -e .
     
     - name: Validate configuration
-      working-directory: feelpp-env
       run: |
-        source .venv/bin/activate
-        ./factory.sh validate
+        .venv/bin/feelpp-factory validate
     
     - name: Show configuration
-      working-directory: feelpp-env
       run: |
-        source .venv/bin/activate
-        ./factory.sh show --variant feelpp-env
+        .venv/bin/feelpp-factory show --variant feelpp-env
     
     - name: Generate all Dockerfiles
-      working-directory: feelpp-env
       run: |
-        source .venv/bin/activate
-        ./factory.sh generate --output-dir test-output
+        .venv/bin/feelpp-factory generate --output-dir feelpp-env/test-output
     
     - name: Verify ninja-build in all Dockerfiles
-      working-directory: feelpp-env
       run: |
         echo "Checking for ninja-build in generated Dockerfiles..."
-        for dockerfile in test-output/*/Dockerfile; do
+        for dockerfile in feelpp-env/test-output/*/Dockerfile; do
           if ! grep -q "ninja-build" "$dockerfile"; then
             echo "ERROR: ninja-build missing in $dockerfile"
             exit 1
@@ -62,10 +54,9 @@ jobs:
         done
     
     - name: Verify auxiliary files
-      working-directory: feelpp-env
       run: |
         echo "Checking for auxiliary files..."
-        for dir in test-output/*/; do
+        for dir in feelpp-env/test-output/*/; do
           for file in Dockerfile bashrc.feelpp feelpp.conf.sh start.sh WELCOME; do
             if [ ! -f "$dir/$file" ]; then
               echo "ERROR: $file missing in $dir"
@@ -76,11 +67,9 @@ jobs:
         done
     
     - name: Generate build matrix
-      working-directory: feelpp-env
       run: |
-        source .venv/bin/activate
         echo "Build matrix:"
-        ./factory.sh matrix
+        .venv/bin/feelpp-factory matrix
     
     - name: Lint Dockerfiles
       uses: hadolint/hadolint-action@v3.1.0

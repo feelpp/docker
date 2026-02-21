@@ -14,7 +14,7 @@ variants:
       - debian:testing
       - debian:sid
       - ubuntu:24.04
-      # - ubuntu:26.04  # Disabled: resolute repositories not yet available on mirrors
+      - ubuntu:26.04
       - fedora:42
     extra_packages:
       apt: []

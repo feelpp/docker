@@ -6,10 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "feelpp-docker-factory"
 version = "0.1.0"
 description = "Docker image factory for Feel++ development environments"
-authors = [
-    {name = "Feel++ Team", email = "support@feelpp.org"}
-]
-readme = "DOCKER_FACTORY_EVALUATION.md"
+authors = [{ name = "Feel++ Team", email = "support@feelpp.org" }]
+readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "jinja2>=3.1.0",
@@ -29,15 +27,18 @@ dev = [
 ]
 
 [project.scripts]
-feelpp-factory = "factory.cli:main"
+feelpp-factory = "feelpp.docker.factory.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["factory*"]
+where = ["src"]
+include = ["feelpp*"]
 
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 
 [tool.ruff]
 line-length = 100

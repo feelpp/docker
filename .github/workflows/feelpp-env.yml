@@ -6,6 +6,8 @@ on:
       - master
     paths:
       - 'feelpp-env/**'
+      - 'src/feelpp/docker/factory/**'
+      - 'pyproject.toml'
       - '.github/workflows/feelpp-env.yml'
   workflow_dispatch:
     inputs:
@@ -52,8 +54,8 @@ jobs:
       fail-fast: true
       max-parallel: 4
       matrix: 
-        # Auto-generated from: feelpp-env/factory.sh matrix --format yaml
-        # To update: cd feelpp-env && ./factory.sh matrix --format yaml
+        # Auto-generated from: feelpp-factory matrix --format yaml
+        # To update: uv venv .venv && source .venv/bin/activate && uv pip install -e . && feelpp-factory matrix --format yaml
         include:
           - {service: feelpp-env, dist: trixie,   flavor: debian, version: "13",      tag: debian-13,      experimental: false, platforms: "linux/amd64,linux/arm64", dockerfile: Dockerfile}
           - {service: feelpp-env, dist: testing,  flavor: debian, version: "testing", tag: debian-testing, experimental: true,  platforms: "linux/amd64",              dockerfile: Dockerfile}
@@ -77,19 +79,17 @@ jobs:
     - name: Setup Python factory
       run: |
           echo "Setting up Python factory environment..."
-          cd feelpp-env
           uv venv .venv
           source .venv/bin/activate
-          uv pip install -q pyyaml jinja2 click rich pydantic
-          ./factory.sh validate
+          uv pip install -q -e .
+          .venv/bin/feelpp-factory validate
     - name: generate
       run: |
-          ./factory.sh generate --dist ${{ matrix.flavor }}:${{ matrix.version }}
+          .venv/bin/feelpp-factory generate --dist ${{ matrix.flavor }}:${{ matrix.version }} --output-dir feelpp-env
           dir="${{ matrix.flavor }}-${{ matrix.version }}-clang++"
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate
-      working-directory: feelpp-env
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
@@ -135,19 +135,17 @@ jobs:
     - name: Setup Python factory
       run: |
           echo "Setting up Python factory environment..."
-          cd feelpp-env
           uv venv .venv
           source .venv/bin/activate
-          uv pip install -q pyyaml jinja2 click rich pydantic
-          ./factory.sh validate
+          uv pip install -q -e .
+          .venv/bin/feelpp-factory validate
     - name: generate
       run: |
-          ./factory.sh generate --dist ${{ inputs.flavor }}:${{ inputs.version }}
+          .venv/bin/feelpp-factory generate --dist ${{ inputs.flavor }}:${{ inputs.version }} --output-dir feelpp-env
           dir="${{ inputs.flavor }}-${{ inputs.version }}-clang++"
           echo "context=feelpp-env/${dir}" >> "$GITHUB_OUTPUT"
           ls -lrt
       id: generate
-      working-directory: feelpp-env
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx

@@ -1,0 +1,2 @@
+[console_scripts]
+feelpp-factory = feelpp.docker.factory.cli:main
