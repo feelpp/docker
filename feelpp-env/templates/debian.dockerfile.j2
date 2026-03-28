@@ -60,3 +60,28 @@ RUN useradd -m -s /bin/bash -G sudo feelpp && \
 # Set Feel++ environment
 ENV FEELPP_DEP_INSTALL_PREFIX=/usr/local
 ENV PATH=/usr/local/bin:$PATH
+{% if environment %}
+{% for key, value in environment.items() %}
+ENV {{ key }}={{ value }}
+{% endfor %}
+{% endif %}
+{% if create_directories %}
+
+# Prepare runtime directories
+RUN mkdir -p {{ create_directories | join(' ') }}
+{% endif %}
+{% if post_install_commands %}
+
+# Variant-specific setup
+{% for command in post_install_commands %}
+RUN {{ command }}
+{% endfor %}
+{% endif %}
+{% if workdir %}
+
+WORKDIR {{ workdir }}
+{% endif %}
+{% if volumes %}
+
+VOLUME [{% for volume in volumes %}"{{ volume }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+{% endif %}

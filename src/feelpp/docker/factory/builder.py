@@ -124,6 +124,11 @@ class ImageBuilder:
             
             # Variant info
             'variant_name': variant.description,
+            'environment': variant.environment,
+            'create_directories': variant.create_directories,
+            'volumes': variant.volumes,
+            'post_install_commands': variant.post_install_commands,
+            'workdir': variant.workdir,
         }
         
         return context

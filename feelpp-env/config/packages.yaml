@@ -64,7 +64,6 @@ groups:
       - python3-mpi4py-openmpi
       - python3-petsc-openmpi
       - python3-petsc4py-openmpi
-      - python3-slepc4py-openmpi
       - pybind11-devel
       - pybind11-json-devel
   
@@ -193,6 +192,22 @@ groups:
       - quilt
       - debhelper
     dnf: []
+
+  pkg_builder_tools:
+    apt:
+      - aptly
+      - debootstrap
+      - devscripts
+      - dirmngr
+      - dpkg-dev
+      - eatmydata
+      - fakeroot
+      - lintian
+      - pbuilder
+      - python3-pip
+      - python3-venv
+      - ubuntu-dev-tools
+    dnf: []
   
   openmpi_ubuntu_debian:
     apt:
@@ -234,3 +249,10 @@ layers:
     - containers_tools
     - misc_tools
     - debian_packaging
+
+  pkg_builder:
+    - core_build_tools
+    - system_utilities
+    - misc_tools
+    - debian_packaging
+    - pkg_builder_tools

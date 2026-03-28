@@ -19,3 +19,38 @@ variants:
     extra_packages:
       apt: []
       dnf: []
+
+  pkg-env:
+    description: "Feel++ Debian/Ubuntu package builder"
+    layers:
+      - pkg_builder
+    enable_openmpi: false
+    distributions:
+      - ubuntu:24.04
+    extra_packages:
+      apt: []
+      dnf: []
+    environment:
+      HOME: /root
+      DEB_BUILD_OPTIONS: "parallel=20"
+    create_directories:
+      - /var/cache/pbuilder
+      - /var/lib/pbuilder
+      - /var/cache/apt/archives
+      - /srv/aptly
+      - /work
+    volumes:
+      - /var/cache/pbuilder
+      - /var/lib/pbuilder
+      - /var/cache/apt/archives
+      - /srv/aptly
+      - /work
+    post_install_commands:
+      - python3 -m venv /opt/pkg-env
+      - /opt/pkg-env/bin/pip install --no-cache-dir --upgrade pip
+      - /opt/pkg-env/bin/pip install --no-cache-dir awscli
+      - ln -sf /opt/pkg-env/bin/aws /usr/local/bin/aws
+      - install -d -m 0755 /etc/pbuilder
+      - printf '%s\n' '#!/bin/sh' 'set -e' 'export DEBIAN_FRONTEND=noninteractive' 'export PKGDIR=/var/cache/pbuilder' 'export BASETGZ=/var/cache/pbuilder/$DIST-base.tgz' 'export BUILDRESULT=/var/cache/pbuilder/result' 'export APTCACHE=/var/cache/apt/archives' > /etc/pbuilderrc
+      - chmod 0644 /etc/pbuilderrc
+    workdir: /work

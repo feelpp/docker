@@ -56,6 +56,26 @@ class Variant(BaseModel):
         default_factory=dict,
         description="Extra packages per package manager"
     )
+    environment: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Additional environment variables injected into the image"
+    )
+    create_directories: List[str] = Field(
+        default_factory=list,
+        description="Directories to create in the image"
+    )
+    volumes: List[str] = Field(
+        default_factory=list,
+        description="Runtime volumes declared by the image"
+    )
+    post_install_commands: List[str] = Field(
+        default_factory=list,
+        description="Shell commands executed after package installation"
+    )
+    workdir: Optional[str] = Field(
+        default=None,
+        description="Default working directory for the image"
+    )
 
 
 class Config:
